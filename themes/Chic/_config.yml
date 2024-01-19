@@ -6,7 +6,8 @@ nav:
   Posts: /archives
   Categories: /category
   Tags: /tag
-  About: /about
+  About: /
+  # /about
 
 # favicon
 favicon: /favicon.ico
