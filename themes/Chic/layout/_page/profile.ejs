@@ -4,20 +4,25 @@
             <a href="<%- url_for(theme.nav.Posts) %>"><img src="<%- url_for(theme.avatar) %>"></a>
         </div>
         <div class="nickname"><%- theme.nickname %></div>
-        <div class="description"><%- markdown(theme.description) %></div>
+        <div class="description" style="word-break: break-word;">
+            <!-- <p>“在计算机科学中，唯一不变的是变化。” —— 卡尔·萨根</p> -->
+            <p>“优秀不够，你是否不可替代” —— Skyner</p>
+            <!-- <p>"Programming is an art, not just a science." — Donald Knuth</p> -->
+            <!-- <%- markdown(theme.description) %> -->
+        </div>
         <div class="links">
-            <% if (theme.links !== undefined) { %>
+            <% if (theme.links !==undefined) { %>
                 <% for (var key in theme.links){ %>
                     <a class="link-item" title="<%- key %>" href="<%= theme.links[key] %>">
                         <% if(theme.links_text_enable) { %>
                             <%= key %>
-                        <%}%>
-                        <%if(theme.links_icon_enable){ %>
-                            <i class="iconfont icon-<%- key.toLowerCase() %>"></i>
-                        <%}%>
+                                <%}%>
+                                    <%if(theme.links_icon_enable){ %>
+                                        <i class="iconfont icon-<%- key.toLowerCase() %>"></i>
+                                        <%}%>
                     </a>
-                <% } %>
-            <% } %>
+                    <% } %>
+                        <% } %>
         </div>
     </div>
 </div>
