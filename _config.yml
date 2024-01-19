@@ -3,10 +3,10 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 程序猿视界—— Hello World  一名坚持完美且有爱的开发技术博主，分享知识,持续学习
+title: Hello World  分享知识,持续学习
 subtitle: '一名的程序猿,梦想技术让世界变得更美好!'
 description: '这是一个技术博客，记录技术分享和学习，欢迎访问！'
-keywords: 编程,开发,软件工程,前端,全栈,技术博客,程序猿,技术分享交流,
+keywords: 程序猿视界,编程,开发,软件工程,前端,全栈,技术博客,程序猿,技术分享交流
 author: Shenhuanjie
 language: zh
 timezone: 'Asia/Shanghai'
