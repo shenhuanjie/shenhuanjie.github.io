@@ -9,7 +9,7 @@ tags:
 - 起点
 ---
 
-![dfb6b2432e33261674b4cb3de350c752](https://raw.githubusercontent.com/shenhuanjie/hexo-picgo-service/main/img/dfb6b2432e33261674b4cb3de350c752.jpg)
+![dfb6b2432e33261674b4cb3de350c752](/tag/dfb6b2432e33261674b4cb3de350c752.jpg)
 
 “Hello, World!”，这句简单而亲切的问候，在全球数以百万计的程序员心中占据着特殊的地位。对于每一个开启编程学习之旅的人来说，他们的旅程往往从这个简洁明快的程序开始。"Hello World" 程序是编程入门的标志性实践，它不仅象征着接触一门新语言或技术的开端，也承载着对知识探索和技能掌握的热情与期待。
 
