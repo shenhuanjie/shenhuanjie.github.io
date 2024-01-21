@@ -1,9 +1,11 @@
 ---
 title: Hello World：编程之旅的起点
 categories:
-- 编程人生
+- 程序人生
 tags:
 - 编程
+- 代码
+- 起点
 ---
 
 
