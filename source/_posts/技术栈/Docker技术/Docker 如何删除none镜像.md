@@ -7,7 +7,6 @@ category:
 tags: 
 - Docker
 ---
-# Docker 如何删除none镜像
 ### Linux环境
 删除none的镜像，要先删除镜像中的容器。要删除镜像中的容器，必须先停止容器。
 
