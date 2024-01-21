@@ -44,8 +44,3 @@ docker rmi $(docker images -f “dangling=true” -q)
 ```bash
 docker rmi $(docker images --filter “dangling=true” -q --no-trunc)
 ```
-
-
-**END**
-
-**欢迎评论区留言加关注哟！**
