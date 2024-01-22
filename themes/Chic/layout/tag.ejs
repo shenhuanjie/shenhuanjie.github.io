@@ -22,16 +22,16 @@ how to add a tag page:
 <% if(is_tag()){ %>
     <%- partial('_page/tag', {pagination: config.tag, index: true}) %>
 <% }else{ %>
-    <div class="container">
-        <div class="post-wrap tags">
-            <h2 class="post-title">-&nbsp;Tag Cloud&nbsp;-</h2>
+	<div class="container">
+		<div class="post-wrap tags">
+			<h2 class="post-title">-&nbsp;Tag Cloud&nbsp;-</h2>
 
-            <div class="tag-cloud-tags">
-                <%site.tags.forEach(item=>{%>
-                    <a href="<%-url_for(item.path)%>"><%- item.name%><small>(<%-item.length%>)</small></a>
-                <%})%>
-            </div>
-        </div>
-    </div>
+			<div class="tag-cloud-tags">
+				<%site.tags.sort((a, b) => a.length - b.length).forEach(item=>{%>
+					<a href="<%-url_for(item.path)%>"><%- item.name%><small>(<%-item.length%>)</small></a>
+				<%})%>
+			</div>
+		</div>
+	</div>
 
 <% } %>
