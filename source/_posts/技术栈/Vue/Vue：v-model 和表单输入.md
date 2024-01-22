@@ -1,7 +1,7 @@
 ---
 title: Vue：v-model 和表单输入
 date: 2024-01-22 17:32:28
-category: 技术栈
+category: Vue
 tags:
   - Vue
 ---

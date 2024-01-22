@@ -2,7 +2,7 @@
 title: Docker 如何删除 none 镜像
 date: 2024-01-22 01:34:18
 category: 
-- 技术栈
+- Docker
 tags: 
 - Docker
 ---
