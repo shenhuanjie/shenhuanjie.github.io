@@ -2,7 +2,7 @@
 title: 如何使用 Docker 安装 GitLab
 date: 2024-01-22 02:18:30
 category: 
-- 技术栈
+- Docker
 tags: 
 - Docker
 - GitLab
