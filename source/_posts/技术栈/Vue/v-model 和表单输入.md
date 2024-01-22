@@ -1,5 +1,5 @@
 ---
-title: Vue：v-model 和表单输入
+title: v-model 和表单输入
 date: 2024-01-22 17:32:28
 category: Vue
 tags:
