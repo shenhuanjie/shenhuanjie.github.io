@@ -1,7 +1,7 @@
 ---
-title: Vue3.js ：v-model 和表单输入
+title: Vue3 ：v-model 和表单输入
 date: 2024-01-22 17:32:28
-category: Vue3
+category: 技术栈
 tags:
   - Vue3
 ---
