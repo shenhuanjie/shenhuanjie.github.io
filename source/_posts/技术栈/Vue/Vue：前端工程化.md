@@ -1,7 +1,8 @@
 ---
 title: Vue：前端工程化
 date: 2024-01-22 18:09:00
-tags:
+category: 技术栈
+tags: Vue
 ---
 
 Vue.js 3 组件化，涉及到了 SCF 开发模式。默认情况下，不能直接使用单文件组件来编写组件，因为浏览器不认识 SFC（.vue）文件。因此，我们需要使用 webpack 或者 Vite 构建一个支持 SFC 开发的 Vue.js 3环境。目前，webpack 被广泛使用，但使用 Vite 的人也越来越多了。无论是使用 webpack 还是 Vite 构建，都属于前端工程化。
