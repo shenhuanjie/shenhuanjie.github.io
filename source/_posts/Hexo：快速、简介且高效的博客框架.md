@@ -101,6 +101,6 @@ echo 'PATH="$PATH:./node_modules/.bin"' >> ~/.profile
 |3.0 - 3.1|0.10 或 iojs|未知|
 |0.0.1 - 2.8|0.10|未知|
 
-### 原文链接
+## 原文链接
 
 [Hexo：快速、简介且高效的博客框架](https://hexo.io/zh-cn/docs/)
