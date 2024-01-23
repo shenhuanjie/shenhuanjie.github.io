@@ -24,7 +24,24 @@ A slide describing the objectives of JSX can be found [here](http://www.slidesha
 
 There is [JSX wiki](https://github.com/jsx/JSX/wiki) to gather JSX resources.
 
+---
+
+JSX是一种静态类型的、面向对象的编程语言，设计用于在现代web浏览器上运行。作为DeNA的一个研究项目，该语言具有以下特点。
+
+## 更快的
+
+JSX在将源代码编译为JavaScript时执行优化。生成的代码比直接用JavaScript编写的等效代码运行得快。增益可能会有所不同，但即使是优化的JavaScript库(如Box2D)在移植到JSX时也会变得更快(在iOS 5.1上快12%，在Android 2.3上快29%)。
+
+## 更安全的
+
+与JavaScript相比，JSX是静态类型的，并且大部分是类型安全的。当使用JSX开发应用程序时，应用程序的质量会变得更高，因为在编译过程中会捕获许多错误。它还提供了编译器级别的调试功能。
+
+## 更容易
+
+JSX提供了一个非常类似于Java的坚实的类系统，使开发人员不必再使用JavaScript提供的过于原始的基于原型的继承系统。然而，表达式和语句基本上等同于JavaScript，因此JavaScript程序员很容易开始使用JSX。还计划为编辑器/ ide提供语言服务，例如代码补全，以使编码更容易。
+
 ## 原文链接
+
 * [http://jsx.github.io/](http://jsx.github.io/)
 
 
