@@ -22,3 +22,24 @@ Vue 使用一种基于 HTML 的模板语法，使我们能够声明式地将其�
 ```html
 <span>Message: {{ msg }}</span>
 ```
+
+双大括号标签会被替换为相应组件实例中 `msg` 属性的值。同时每次`msg`属性更改时它也会同步更新。
+
+## 原始 HTML
+
+双大括号会将数据解释为纯文本，而不是 HTML。若想插入 HTML，你需要使用 `v-html` 指令：
+
+```html
+<p>Using mustaches: {{ rawHtml }}</p>
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+```
+
+```
+Using text interpolation: <span style="color: red">This should be red.</span>
+
+Using v-html directive: This should be red.
+```
+
+这里我们遇到了一个新的概念。这里看到的 `v-html` attribute 被称为一个指令。指令由 `v-` 作为前缀，表明它们是一些由 Vue 提供的特殊 attribute，你可能已经猜到了，它们将为渲染的 DOM 应用特殊的响应式行为。这里我们做的事情简单来说就是：在当前组件实例上，将此元素的 innerHTML 与 `rawHtml` 属性保持同步。
+
+`span` 的内容将会被替换为 `rawHtml` 属性的值，插值为纯 HTML————数据绑定将会被忽略。注意，你不能使用 `v-html` 来拼接组合模板，因为 Vue 不是一个基于字符串的模板引擎。在使用 Vue 时，应当使用组件作为 UI 重用和组合的基本单元。
