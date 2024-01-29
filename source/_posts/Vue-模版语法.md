@@ -43,3 +43,22 @@ Using v-html directive: This should be red.
 这里我们遇到了一个新的概念。这里看到的 `v-html` attribute 被称为一个指令。指令由 `v-` 作为前缀，表明它们是一些由 Vue 提供的特殊 attribute，你可能已经猜到了，它们将为渲染的 DOM 应用特殊的响应式行为。这里我们做的事情简单来说就是：在当前组件实例上，将此元素的 innerHTML 与 `rawHtml` 属性保持同步。
 
 `span` 的内容将会被替换为 `rawHtml` 属性的值，插值为纯 HTML————数据绑定将会被忽略。注意，你不能使用 `v-html` 来拼接组合模板，因为 Vue 不是一个基于字符串的模板引擎。在使用 Vue 时，应当使用组件作为 UI 重用和组合的基本单元。
+
+**安全警告**
+
+在网站上动态渲染任意 HTML 是非常危险的，因为这非常容易造成 `XSS 漏洞`。请仅在内容安全可信时再使用 `v-html`，并且永远不要使用用户提供的 HTML 内容。
+
+## Attribute 绑定
+
+双大括号不能在 HTML attribute 中使用。想要响应式地绑定一个 attribute，应该使用 `v-bind` 指令：
+
+```html
+<div v-bind:id="dynamicId"></div>
+```
+
+`v-bind` 指令指示 Vue 将元素的 `id` attribute 与组件的 `dynamicId` 属性保持一致。如果绑定的值是 `null`、`undefined` 或 `false`，那么该 attribute 将会从渲染的元素上移除。
+
+### 简写
+
+
+
