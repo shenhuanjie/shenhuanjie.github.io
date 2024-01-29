@@ -71,3 +71,105 @@ Using v-html directive: This should be red.
 > 接下来的指引中，我们都将在示例中使用简写语法，因为这是在实际开发中更常见的用法。
 
 ### 同名简写 `3.4+`
+
+如果 attribute 的名称与绑定的 JavaScript 值的名称相同，那么可以进一步简化语法，省略 attribute 值：
+
+```html
+<!-- same as :id="id" -->
+<div :id></div>
+
+<!-- this also works -->
+<div v-bind:id></div>
+```
+
+这与在 JavaScript 中声明对象时使用的属性简写语法类似。请注意，这是一个只在 Vue 3.4 及以上版本中可用的特性。
+
+### 布尔型 Attribute 
+
+`布尔型 attribute` 依据 true / false 值来决定 attribute 是否应该存在于该元素上。`disabled` 就是最常见的例子之一。
+
+`v-bind` 在这种场景下的行为略有不同：
+
+```html
+<button :disabled="isButtonDisabled">Button</button>
+```
+
+当 `isButtonDisabled` 为`真值`或一个空字符串 (即 `<button disabled="">`) 时，元素会包含这个 `disabled` attribute。而当其为其他**假值**时 attribute 将被忽略。
+
+### 动态绑定多个值 
+
+如果你有像这样的一个包含多个 attribute 的 JavaScript 对象：
+
+```js
+data() {
+  return {
+    objectOfAttrs: {
+      id: 'container',
+      class: 'wrapper'
+    }
+  }
+}
+```
+
+通过不带参数的 `v-bind`，你可以将它们绑定到单个元素上：
+
+```html
+<div v-bind="objectOfAttrs"></div>
+```
+
+## 使用 JavaScript 表达式 
+
+至此，我们仅在模板中绑定了一些简单的属性名。但是 Vue 实际上在所有的数据绑定中都支持完整的 JavaScript 表达式：
+
+```vue
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+```
+
+```html
+<div :id="`list-${id}`"></div>
+```
+
+这些表达式都会被作为 JavaScript ，以当前组件实例为作用域解析执行。
+
+在 Vue 模板内，JavaScript 表达式可以被使用在如下场景上：
+
+* 在文本插值中 (双大括号)
+* 在任何 Vue 指令 (以 `v-` 开头的特殊 attribute) attribute 的值中
+
+### 仅支持表达式 
+
+每个绑定仅支持单一表达式，也就是一段能够被求值的 JavaScript 代码。一个简单的判断方法是是否可以合法地写在 `return` 后面。
+
+因此，下面的例子都是无效的：
+
+```html
+<!-- 这是一个语句，而非表达式 -->
+{{ var a = 1 }}
+
+<!-- 条件控制也不支持，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+### 调用函数 
+
+可以在绑定的表达式中使用一个组件暴露的方法：
+
+```html
+<time :title="toTitleDate(date)" :datetime="date">
+  {{ formatDate(date) }}
+</time>
+```
+
+**TIP**
+
+> 绑定在表达式中的方法在组件每次更新时都会被重新调用，因此不应该产生任何副作用，比如改变数据或触发异步操作。
+
+### 受限的全局访问
+
+模板中的表达式将被沙盒化，仅能够访问到**有限的全局对象列表**。该列表中会暴露常用的内置全局对象，比如 `Math` 和 `Date`。
+
+没有显式包含在列表中的全局对象将不能在模板内表达式中访问，例如用户附加在 **window** 上的属性。然而，你也可以自行在 `app.config.globalProperties` 上显式地添加它们，供所有的 Vue 表达式使用。
