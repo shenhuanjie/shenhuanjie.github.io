@@ -10,7 +10,7 @@ tags:
 
 ## 颜色渐变生成器
 
-### 理论说明
+### 理论分析
 
 > 给出两个颜色，生成平均过渡的 N 个 RGB 值
 
@@ -56,7 +56,7 @@ console.log(transitionColors);
 
 请注意，这个函数返回的是颜色的字符串表示，例如"rgb(255, 0, 0)"。您可以根据需要调整N的值来增加或减少过渡的平滑度。
 
-### 核心源码
+### 完整源码
 
 ```html
 <!DOCTYPE html>
@@ -113,9 +113,9 @@ console.log(transitionColors);
 
         function createGradient() {
             const container = document.getElementById('gradient-container');
-            const startColor = [0, 0, 0]; // Red
-            const endColor = [255, 255, 255]; // Blue
-            const gradientColors = interpolateColors(startColor, endColor, 255);
+            const startColor = [255, 0, 0]; // Red
+            const endColor = [0, 0, 255]; // Blue
+            const gradientColors = interpolateColors(startColor, endColor, 5);
 
             gradientColors.forEach(color => {
                 const colorBox = document.createElement('div');
