@@ -202,3 +202,68 @@ async function increment() {
   // 现在 DOM 已经更新了
 }
 ```
+
+## reactive()
+
+还有另一种声明响应式状态的方式，即使用 `reactive()` API。与将内部值包装在特殊对象中的 ref 不同，`reactive()` 将使对象本身具有响应性：
+
+```js
+import { reactive } from 'vue'
+
+const state = reactive({ count: 0 })
+```
+
+> 参考：为 reactive() 标注类型 
+
+在模板中使用：
+
+```html
+<button @click="state.count++">
+{{ state.count }}
+</button>
+```
+
+响应式对象是 `JavaScript 代理`，其行为就和普通对象一样。不同的是，Vue 能够拦截对响应式对象所有属性的访问和修改，以便进行依赖追踪和触发更新。
+
+`reactive()` 将深层地转换对象：当访问嵌套对象时，它们也会被 `reactive()` 包装。当 ref 的值是一个对象时，`ref()` 也会在内部调用它。与浅层 ref 类似，这里也有一个 `shallowReactive()` API 可以选择退出深层响应性。
+
+### Reactive Proxy vs. Original 
+
+值得注意的是，`reactive()` 返回的是一个原始对象的 `Proxy`，它和原始对象是不相等的：
+
+```js
+const raw = {}
+const proxy = reactive(raw)
+
+// 代理对象和原始对象不是全等的
+console.log(proxy === raw) // false
+```
+
+只有代理对象是响应式的，更改原始对象不会触发更新。因此，使用 Vue 的响应式系统的最佳实践是 仅使用你声明对象的代理版本。
+
+为保证访问代理的一致性，对同一个原始对象调用 `reactive()` 会总是返回同样的代理对象，而对一个已存在的代理对象调用 `reactive()` 会返回其本身：
+
+```js
+// 在同一个对象上调用 reactive() 会返回相同的代理
+console.log(reactive(raw) === proxy) // true
+
+// 在一个代理上调用 reactive() 会返回它自己
+console.log(reactive(proxy) === proxy) // true
+```
+
+这个规则对嵌套对象也适用。依靠深层响应性，响应式对象内的嵌套对象依然是代理：
+
+```js
+const proxy = reactive({})
+
+const raw = {}
+proxy.nested = raw
+
+console.log(proxy.nested === raw) // false
+```
+
+### reactive() 的局限性 
+
+reactive() API 有一些局限性：
+
+1. 有限的值类型：它只能用于对象类型 (对象、数组和如 `Map`、`Set` 这样的`集合类型`)。它不能持有如 `string`、`number` 或 `boolean` 这样的`原始类型`。
