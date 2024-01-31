@@ -79,3 +79,61 @@ Bootstrap是一个功能强大、功能丰富的前端工具包。在几分钟�
 ## JS组件
 
 想知道哪些组件明确需要我们的`JavaScript`和`Popper`吗？单击下面的显示组件链接。如果您对一般页面结构完全不确定，请继续阅读示例页面模板。
+
+
+**显示需要JavaScript的组件**
+
+- Alerts for dismissing 
+- Buttons for toggling states and checkbox/radio functionality 
+- Carousel for all slide behaviors, controls, and indicators 
+- Collapse for toggling visibility of content 
+- Dropdowns for displaying and positioning (also requires Popper)
+- Modals for displaying, positioning, and scroll behavior 
+- Navbar for extending our Collapse and Offcanvas plugins to implement responsive behaviors 
+- Navs with the Tab plugin for toggling content panes 
+- Offcanvases for displaying, positioning, and scroll behavior 
+- Scrollspy for scroll behavior and navigation updates 
+- Toasts for displaying and dismissing 
+- Tooltips and popovers for displaying and positioning (also requires Popper)
+
+
+## Important globals
+
+Bootstrap采用了一些重要的全局样式和设置，所有这些样式和设置几乎都专门用于跨浏览器样式的规范化。让我们深入了解。
+
+## HTML5 doctype
+
+Bootstrap requires the use of the HTML5 doctype. Without it, you’ll see some funky and incomplete styling.
+
+```html
+<!doctype html>
+<html lang="en">
+  ...
+</html>
+```
+
+## Responsive meta tag
+
+Bootstrap是移动优先开发的，我们首先优化移动设备的代码，然后根据需要使用CSS媒体查询来扩展组件。为了确保所有设备都能进行正确的渲染和触摸缩放，请将响应视口元标记添加到<head>中。
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1">
+```
+
+## Box-sizing
+
+For more straightforward sizing in CSS, we switch the global `box-sizing` value from `content-box` to `border-box`. This ensures `padding` does not affect the final computed width of an element, but it can cause problems with some third-party software like Google Maps and Google Custom Search Engine.
+
+在极少数情况下，您需要覆盖它，请使用以下内容：
+
+```css
+.selector-for-some-widget {
+  box-sizing: content-box;
+}
+```
+
+With the above snippet, nested elements—including generated content via `::before` and `::after`—will all inherit the specified `box-sizing` for that `.selector-for-some-widget`.
+
+## Reboot
+
+为了改进跨浏览器渲染，我们使用`Reboot`来纠正浏览器和设备之间的不一致，同时对常见的HTML元素提供稍微更有主见的重置。
