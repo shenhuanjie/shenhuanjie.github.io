@@ -62,10 +62,10 @@ Bootstrap是一个功能强大、功能丰富的前端工具包。在几分钟�
 
 作为参考，以下是我们的主要CDN链接。
 
-Description | URL
---- | ---
-CSS | https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css
-JS | https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js
+| Description | URL                                                                                 |
+|-------------|-------------------------------------------------------------------------------------|
+| CSS         | https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css      |
+| JS          | https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js |
 
 您还可以使用CDN获取“内容”页面中列出的任何其他构建。
 
