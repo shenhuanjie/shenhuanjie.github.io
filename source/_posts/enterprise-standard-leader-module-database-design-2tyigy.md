@@ -27,15 +27,15 @@ toc: true
 ## 标准产品分类表
 
 * 产品名称：product name
-
 * 所属行业：industry
 * 所属领域：domain
 
 ## 标准行业领域分类表
 
-* 分类标题：category title
+* 分类名称：category name
 * 父级分类：parent category
 
+  * 父级 ID：parent id
 * 分类类型：category type
 
   * 行业：industry
@@ -43,9 +43,16 @@ toc: true
 
 ## 标准产品评估方案表
 
-* 产品名称：product title
+* 产品名称：product name
+
+  * 产品 ID：product id
+* 发布日期：publish date
 * 所属行业：industry
+
+  * 行业 ID：industry id
 * 所属领域：domain
+
+  * 领域 ID：domain id
 * 机构名称：institution name
 * 机构统一社会型号代码：institution usci
 * 机构法人：institutional legal person
@@ -57,10 +64,17 @@ toc: true
 
   * 公示中：announcing
   * 已发布：published
+* 发布日期：publish date
 * 企业名称：enterprise name
 * 所在省份：province
+
+  * 省份 ID：province id
 * 所在城市：city
+
+  * 城市 ID：city id
 * 所在区县：districts
+
+  * 区县 ID：districts id
 * 评估机构名称：evaluate institution name
 * 公示开始日期：announcing begin date
 * 公示结束日期：announcing end date
@@ -69,6 +83,10 @@ toc: true
 * 产品名称；product name
 * 产品型号：product model
 * 所属行业：industry
+
+  * 行业 ID：industry id
 * 所属领域：domain
+
+  * 领域 ID：domain id
 
 ‍
