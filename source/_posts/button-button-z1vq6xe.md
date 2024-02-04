@@ -1,5 +1,5 @@
 ---
-title: Layout——按钮 Button
+title: Layui——按钮 Button
 date: '2024-02-04 19:48:08'
 updated: '2024-02-04 19:51:44'
 excerpt: |2
@@ -13,7 +13,7 @@ comments: true
 toc: true
 ---
 
-# 按钮 Button
+# Layout——按钮 Button
 
 > 向任意 HTML 标签设定class\="layui-btn" 建立一个基础按钮。通过追加格式为layui-btn-{type}的 class 来定义其它按钮风格。内置的按钮 class 可以进行任意组合，从而形成更多种按钮风格。
 
