@@ -30,11 +30,8 @@ toc: true
 
 ```html
 layui/
-
   ├─css
-
   │  └─layui.css   # 核心样式库
-
   └─layui.js       # 核心模块库
 ```
 
