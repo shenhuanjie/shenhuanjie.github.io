@@ -7,8 +7,6 @@ comments: true
 toc: true
 ---
 
-# Layui——布局 框体 Layout
-
 > Layui 的主要应用场景是面向中后台的界面搭建，因此也提供了大框体布局方案。
 
 ## 示例
