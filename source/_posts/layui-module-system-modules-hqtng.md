@@ -1,6 +1,9 @@
 ---
 title: Layui——模块系统 Modules
 date: '2024-02-04 17:52:55'
+tags:
+ - layui
+ - javascript
 updated: '2024-02-04 19:11:44'
 permalink: /post/layui-module-system-modules-hqtng.html
 comments: true
