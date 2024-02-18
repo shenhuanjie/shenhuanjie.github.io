@@ -7,8 +7,6 @@ comments: true
 toc: true
 ---
 
-# Linux 后台运行 natapp(ngrok)教程
-
 首先,要确保常规方式运行natapp 没有任何问题.
 
 如 我们将natapp放在 /usr/local/natapp/ 下
