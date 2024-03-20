@@ -5,6 +5,12 @@ updated: '2024-03-20 15:59:04'
 permalink: /post/docker-deploy-mysql-service-15xhhg.html
 comments: true
 toc: true
+tags:
+  - Docker
+  - MySQL
+categories:
+  - Docker
+  - MySQL
 ---
 
 # Docker 部署 MySQL 服务
