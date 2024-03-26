@@ -11,21 +11,21 @@ Learn how to get the client IP address (local and private) using only javascript
 
 ​![articleocw-57dfeb2a430a6](assets/articleocw-57dfeb2a430a6-20240326101556-6ucamey.png)​
 
-Javascript is unable to get (nor stores somewhere) the client IP, however javascript is able to create Http requests, and server side languages are able to retrieve the user public IP, so you could use this as advantage. In other words, if you want to retrieve the public IP of an user you'll depend from a request to any server in order to retrieve the IP. You can easily get a VPS from the Best Node.js Hosting, deploy a simple JS Script, and publish it as a service with Node.js and Express JS so you can request this service, obtaining the IP of the client.
+Javascript无法获取（也无法存储）客户端IP，但是Javascript能够创建Http请求，并且服务器端语言能够检索用户的公共IP，因此您可以利用这一优势。换句话说，如果你想检索用户的公共IP，你将依赖于对任何服务器的请求来检索IP。您可以很容易地从Best Node.js Hosting获得VPS，部署一个简单的js脚本，并将其作为Node.js和Express js的服务发布，这样您就可以请求该服务，获得客户端的IP。
 
-However, with the introduction of the WebRTC, <span style="font-weight: bold;" data-type="strong">you'll be able to retrieve the private IP</span> of the user with a trick using RTCPeerConnection.
+然而，随着WebRTC的引入，您将能够使用RTCPeerConnection来检索用户的私有IP。
 
-In this article you'll learn how to retrieve the user IP (private  using pure javascript and public using a third party service) easily  with a couple of tricks.
+在本文中，您将学习如何通过几个技巧轻松检索用户IP（使用纯javascript的私有IP和使用第三方服务的公共IP）。
 
-## Using webRTC (get private IP)
+## 使用webRTC（获取专用IP）
 
-The RTCPeerConnection interface allow you to create a WebRTC  connection between your computer and a remote peer. However, we are  going to create an  <span style="font-weight: bold;" data-type="strong">&quot;interrupted</span>" version of it in order to retrieve the IP of the client using only javascript.
+RTCPeerConnection接口允许您在您的计算机和远程对等体之间创建一个WebRTC连接。然而，我们将创建它的“中断”版本，以便仅使用javascript检索客户端的IP。
 
-The createOffer method initiates the creation of a session  description protocol (SDP) which offer information about any  MediaStreamTracks attached to the WebRTC session, session, codes and any  candidates already gathered by the ICE agents (which contains our goal,  the IP).
+createOffer方法启动会话描述协议(SDP)的创建，该协议提供有关附加到WebRTC会话、会话、代码和ICE代理(包含我们的目标IP)已经收集的任何候选内容的任何MediaStreamTracks的信息。
 
-In older versions, this method uses callbacks. However, now return a  value based in a Promise that returns the information that we need when  fullfilled:
+在旧版本中，此方法使用回调。但是，现在返回一个基于Promise的值，该值在完成时返回我们需要的信息:
 
-Note: the pure javascript implementation will return the client private IP, not the public. Save this Snippet.
+注意:纯javascript实现将返回客户端的私有IP，而不是公共IP。保存此代码片段。
 
 ```js
 /**
@@ -79,15 +79,15 @@ getUserIP(function(ip){
 
 ```
 
-The `getUserIP`​ method expects as first parameter a function  that will be invoked when the IP of the client is available. The  callbacks receives a string (the ip) as first (and unique) parameter.  You can see the previous snippet in action via JSFiddle:
+ `getUserIP`方法期望作为第一个参数的函数将在客户端的IP可用时被调用。回调函数接收一个字符串(ip)作为第一个(也是唯一的)参数。
 
-## Using a third party service (get public IP)
+## 使用第三方服务(获取公共IP)
 
-If you need to provide cross-browser support, you'll be unable to use  RTCPeerConnection to retrieve your client private  IP, therefore the  only resource you have it's to depend from an external service (a  request to a server, third party service or your autoimplemented service  in your own server).
+如果你需要提供跨浏览器支持，你将无法使用RTCPeerConnection来检索你的客户端私有IP，因此你拥有的唯一资源是依赖于外部服务(对服务器的请求，第三方服务或你自己服务器上的自动实现服务)。
 
-### Insecure connections HTTP
+### 不安全连接HTTP
 
-To get the IP of the user from a website without SSL certificate, you  can rely on ipinfo.io. This service offers an API to get the client IP  with a simple ajax call:
+要从没有SSL证书的网站获取用户的IP，您可以依赖ipinfo.io。这个服务提供了一个API，通过一个简单的ajax调用来获取客户端IP:
 
 ```js
 $.getJSON('http://ipinfo.io', function(data){
@@ -95,12 +95,13 @@ $.getJSON('http://ipinfo.io', function(data){
 });
 ```
 
-The retrieven data object contains localization info like : country, city etc when available. The servers of ipinfo use latency based DNS routing to handle the request so quick as possible. Read more about ipinfo in the official website here.
+检索数据对象包含本地化信息，如:国家，城市等。ipinfo的服务器使用基于延迟的DNS路由来尽可能快地处理请求。在官方网站阅读更多关于ipinfo的信息。
 
-### Secure connections HTTPS (recommended)
+### 安全连接HTTPS(推荐)
 
-To get the IP of the user from a website even in secured websites with SSL, you can use the ipify service which provides a friendly API to get the user IP easily. This service has no request limitations.  
-You can use it in your project requesting to the API (with the format parameter if you need) and you're ready to go.
+即使在使用SSL的安全网站中，也可以从网站获取用户的IP，您可以使用ipify服务，该服务提供了友好的API，可以轻松获取用户IP。此服务没有请求限制。
+
+您可以在向API请求的项目中使用它(如果需要，可以使用format参数)，然后就可以开始了。
 
 |API URI|Response Type|Sample Output (IPv4)|Sample Output (IPv6)|
 | ---------| ---------------| ----------------------| ----------------------|
@@ -109,7 +110,7 @@ You can use it in your project requesting to the API (with the format parameter 
 |​`https://api.ipify.org?format=jsonp`​|​`jsonp`​|​`callback({"ip":"11.111.111.111"});`​|​`?`​|
 |​`https://api.ipify.org?format=jsonp&callback=getip`​|​`jsonp`​|​`getip({"ip":"11.111.111.111"});`​|​`?`​|
 
-You can use it with JSONP:
+你可以使用它与JSONP:
 
 ```html
 <script type="application/javascript">
@@ -121,7 +122,7 @@ You can use it with JSONP:
 <script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
 ```
 
-Or retrieve an object with a json request using jQuery:
+或者使用jQuery检索一个json请求对象:
 
 ```js
 $.getJSON('https://api.ipify.org?format=json', function(data){
@@ -129,6 +130,4 @@ $.getJSON('https://api.ipify.org?format=json', function(data){
 });
 ```
 
-Besides, you can create, in case you have your own server and you're  able to work on it, create your own private service that returns the IP  of the user with a server language like PHP,ASP.NET etc.
-
-Have fun !
+此外，如果你有自己的服务器，你可以创建自己的私有服务，用PHP,ASP等服务器语言返回用户的IP。
