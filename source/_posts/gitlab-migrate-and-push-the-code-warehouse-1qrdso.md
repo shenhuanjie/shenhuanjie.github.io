@@ -14,26 +14,28 @@ toc: true
 
 ## 一、创建空仓库
 
-1. 在 Gitlab 上创建一个空仓库
+**在 Gitlab 上创建一个空仓库**
 
-    * 方式一：点击左上角“+”号，选择新建项目/仓库
-    * 方式二：进入“项目”界面，点击右上角“新建项目”按钮
+* 方式一：点击左上角“+”号，选择新建项目/仓库
+* 方式二：进入“项目”界面，点击右上角“新建项目”按钮
 
 ​![image](https://qiniu.skyner.cn/image-20240920110715-ftt7xwq.png)​
 
 ‍
 
-2. 选择“创建空白项目”
+**选择“创建空白项目”**
 
 ​![image](https://qiniu.skyner.cn/image-20240920110917-sglhbcw.png)​
 
-3. 填写项目信息并点击“新建项目”
+**填写项目信息并点击“新建项目”**
 
-> TIP：不要勾选“项目配置->使用自述文件初始化仓库”选项
+* <span data-type="text" style="color: var(--b3-font-color9);">温馨提示</span>：不要勾选“项目配置->使用自述文件初始化仓库”选项
+
+> ‍
 
 ​![image](https://qiniu.skyner.cn/image-20240920111158-4n9mln8.png)​
 
-* 点击完成创建项目
+点击完成创建项目
 
 ​![image](https://qiniu.skyner.cn/image-20240920111412-3oaajpi.png)​
 
@@ -87,16 +89,14 @@ git push --set-upstream origin --all
 git push --set-upstream origin --tags
 ```
 
----
-
 > **温馨提示：**
 >
 > 在进行迁移时，请确保在迁移过程中对数据进行备份，以防数据丢失。同时，迁移完成后，需要更新项目的文档和团队成员的仓库地址。如果迁移涉及到权限和用户信息，还需要确保在新服务器上正确设置这些信息。
 
 ### **参考文章**
 
-* ## [Git cheatsheet](https://skyner.cn/archives/git-cheatsheet-zzyv1y)
-* ## [Linux 生成 git ssh 公钥](https://skyner.cn/archives/linux-generates-git-ssh-public-key-z1zfmkc)
-* ## [服务器部署 Gitlab 并设置 Https 域名](https://skyner.cn/archives/server-deploy-gitlab-and-set-up-https-domain-names-z1lbxus)
+* [Git cheatsheet](https://skyner.cn/archives/git-cheatsheet-zzyv1y)
+* [Linux 生成 git ssh 公钥](https://skyner.cn/archives/linux-generates-git-ssh-public-key-z1zfmkc)
+* [服务器部署 Gitlab 并设置 Https 域名](https://skyner.cn/archives/server-deploy-gitlab-and-set-up-https-domain-names-z1lbxus)
 
 ‍
