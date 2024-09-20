@@ -16,28 +16,27 @@ toc: true
 
 **在 Gitlab 上创建一个空仓库**
 
-* 方式一：点击左上角“+”号，选择新建项目/仓库
-* 方式二：进入“项目”界面，点击右上角“新建项目”按钮
+方式一：点击左上角“+”号，选择新建项目/仓库
 
-​![image](https://qiniu.skyner.cn/image-20240920110715-ftt7xwq.png)​
+方式二：进入“项目”界面，点击右上角“新建项目”按钮
+
+​![image](https://qiniu.skyner.cn/image-20240920110715-ftt7xwq.png "图 1-1")​
 
 ‍
 
 **选择“创建空白项目”**
 
-​![image](https://qiniu.skyner.cn/image-20240920110917-sglhbcw.png)​
+​![image](https://qiniu.skyner.cn/image-20240920110917-sglhbcw.png " 图 1-2")​
 
 **填写项目信息并点击“新建项目”**
 
-* <span data-type="text" style="color: var(--b3-font-color9);">温馨提示</span>：不要勾选“项目配置->使用自述文件初始化仓库”选项
+* 建议不要勾选“`项目配置`​->`使用自述文件初始化仓库`​”选项
 
-> ‍
+​![image](https://qiniu.skyner.cn/image-20240920111158-4n9mln8.png " 图 1-3")​
 
-​![image](https://qiniu.skyner.cn/image-20240920111158-4n9mln8.png)​
+点击完成`创建项目`​
 
-点击完成创建项目
-
-​![image](https://qiniu.skyner.cn/image-20240920111412-3oaajpi.png)​
+​![image](https://qiniu.skyner.cn/image-20240920111412-3oaajpi.png " 图 1-4")​
 
 ## 二、迁移并上传仓库代码
 
