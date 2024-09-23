@@ -152,8 +152,8 @@ pnpm get registry
 
 如果输出的地址是设置的国内镜像源地址，则表示设置成功。
 
-> 更多设置方式，请查看
+> 参考文档：
 >
-> [* 【CSDN]npm、yarn、pnpm 最新国内镜像源设置和常见问题解决](https://blog.csdn.net/weixin_45046532/article/details/139681731 "【CSDN]npm、yarn、pnpm 最新国内镜像源设置和常见问题解决")
+> * [npm、yarn、pnpm 最新国内镜像源设置和常见问题解决](https://blog.csdn.net/weixin_45046532/article/details/139681731)
 
 ‍
