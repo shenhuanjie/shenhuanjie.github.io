@@ -1,17 +1,20 @@
 ---
 title: GitHub Actions 如何将 Node 项目打包成 Docker 镜像并自动推送
 date: '2026-04-20 19:33:36'
-updated: '2026-04-20 19:33:36'
+updated: '2026-04-20 19:42:54'
 permalink: /post/github-actions-build-and-push-node-docker-image.html
 categories:
-  - Docker
   - DevOps
+  - Docker
 tags:
   - GitHub Actions
   - Docker
+  - Docker Hub
   - Node.js
   - CI/CD
   - GHCR
+  - 容器化
+  - 镜像发布
 comments: true
 toc: true
 ---
@@ -30,6 +33,17 @@ toc: true
 
 如果你希望在代码推送后自动完成镜像构建和发布，这套方式非常适合。
 
+这篇内容已经顺手按 2026 年 4 月可用的官方示例做过一轮校正，像 `actions/checkout`、`docker/login-action`、`docker/build-push-action` 这些动作版本，以及 Node 基础镜像版本，都尽量避开了已经过时的写法。
+
+## 信息分类
+
+- 问题类型：CI/CD 自动化构建
+- 目标对象：Node.js 项目
+- 核心能力：自动构建 Docker 镜像并推送到镜像仓库
+- 相关平台：GitHub Actions、Docker Hub、GHCR
+- 适用场景：服务部署、容器化交付、版本化发布
+- 关注重点：`Dockerfile`、Secrets、镜像标签策略、多架构构建、`.dockerignore`
+
 ## 核心流程
 
 整个流程可以理解为：
@@ -43,10 +57,10 @@ toc: true
 
 ## 先准备好 Dockerfile
 
-在项目根目录中准备一个 `Dockerfile`，下面是一份适合大多数 Node 服务项目的基础示例：
+在项目根目录中准备一个 `Dockerfile`，下面是一份适合大多数 Node 服务项目的基础示例。这里用当前仍受支持的 LTS 镜像 `node:24-alpine` 做演示：
 
 ```dockerfile
-FROM node:18-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
@@ -87,16 +101,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -123,7 +137,8 @@ Settings -> Secrets and variables -> Actions
 - `DOCKER_USERNAME`
 - `DOCKER_PASSWORD`
 
-没有这两个变量，工作流无法完成登录，自然也就没法推送镜像。
+没有这两个变量，工作流无法完成登录，自然也就没法推送镜像。  
+实际使用时，`DOCKER_PASSWORD` 也可以放 Docker Hub 的 Access Token，这通常会比直接使用账号密码更稳一些。
 
 ## 推荐做法：同时打多个 Tag
 
@@ -155,14 +170,14 @@ tags: |
 
 ```yaml
 - name: Login to GHCR
-  uses: docker/login-action@v3
+  uses: docker/login-action@v4
   with:
     registry: ghcr.io
     username: ${{ github.actor }}
     password: ${{ secrets.GITHUB_TOKEN }}
 
 - name: Build and Push
-  uses: docker/build-push-action@v5
+  uses: docker/build-push-action@v7
   with:
     context: .
     push: true
@@ -187,7 +202,19 @@ tags: |
 那么可以直接在工作流里开启多架构构建：
 
 ```yaml
-platforms: linux/amd64,linux/arm64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: yourname/your-app:latest
 ```
 
 这一步通常会和 `buildx` 一起使用，用来一次性生成多架构镜像。
@@ -254,3 +281,9 @@ docker push
 ## 参考
 
 - 原始对话分享：<https://chatgpt.com/share/69e60e30-9160-839a-8574-133bfcd000ca>
+- GitHub Docs: Publishing Docker images: <https://docs.github.com/actions/tutorials/publishing-packages/publishing-docker-images>
+- actions/checkout: <https://github.com/actions/checkout>
+- docker/login-action: <https://github.com/docker/login-action>
+- docker/build-push-action: <https://github.com/docker/build-push-action>
+- docker/setup-buildx-action: <https://github.com/docker/setup-buildx-action>
+- Node.js Releases: <https://nodejs.org/en/about/releases/>
