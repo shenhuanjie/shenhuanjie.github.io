@@ -2,19 +2,32 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<% if(config.author){ %>
-    <meta name="author" content="<%- config.author %>">
-<% } %>
-<% if(config.subtitle){ %>
-    <meta name="subtitle" content="<%- config.subtitle %>">
-<% } %>
-<% if(config.description){ %>
-    <meta name="description" content="<%- config.description %>">
-<% } %>
-<% if(config.keywords){ %>
-    <meta name="keywords" content="<%- config.keywords %>">
-<% } %>
 <%
+function compactText(value) {
+    return String(value || '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function isoDate(value) {
+    if (!value) {
+        return undefined;
+    }
+
+    if (typeof value.toISOString === 'function') {
+        return value.toISOString();
+    }
+
+    var date = new Date(value);
+    return isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
+function jsonForHtml(data) {
+    return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
 var title = page.title;
 
 if (is_archive()){
@@ -30,9 +43,75 @@ if (is_archive()){
 } else if (is_tag()){
     title = __('tag') + ': ' + page.tag;
 }
+
+var pageTitle = title ? title + ' | ' + config.title : config.title;
+var pageDescription = compactText(page.excerpt || page.description || config.description || config.subtitle || '');
+var canonicalPath = page.canonical_path || page.path || '';
+var canonicalUrl = (!canonicalPath || canonicalPath === 'index.html') ? full_url_for('') : full_url_for(canonicalPath);
+var ogType = is_post() ? 'article' : 'website';
+var publishedTime = isoDate(page.date);
+var modifiedTime = isoDate(page.updated || page.date);
+var articleJsonLd = null;
+
+if (is_post()) {
+    articleJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: page.title,
+        description: pageDescription,
+        datePublished: publishedTime,
+        dateModified: modifiedTime,
+        author: {
+            '@type': 'Person',
+            name: config.author || config.title
+        },
+        publisher: {
+            '@type': 'Person',
+            name: config.author || config.title
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': canonicalUrl
+        },
+        url: canonicalUrl
+    };
+}
 %>
-<title><% if (title){ %><%= title %> | <% } %><%= config.title %></title>
-<link rel="canonical" href="<%- full_url_for(page.canonical_path || page.path || '') %>">
+<% if(config.author){ %>
+    <meta name="author" content="<%= config.author %>">
+<% } %>
+<% if(config.subtitle){ %>
+    <meta name="subtitle" content="<%= config.subtitle %>">
+<% } %>
+<% if(pageDescription){ %>
+    <meta name="description" content="<%= pageDescription %>">
+<% } %>
+<% if(config.keywords){ %>
+    <meta name="keywords" content="<%= config.keywords %>">
+<% } %>
+<title><%= pageTitle %></title>
+<link rel="canonical" href="<%- canonicalUrl %>">
+<meta property="og:type" content="<%= ogType %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<% if(pageDescription){ %>
+    <meta property="og:description" content="<%= pageDescription %>">
+<% } %>
+<meta property="og:url" content="<%- canonicalUrl %>">
+<meta property="og:site_name" content="<%= config.title %>">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="<%= pageTitle %>">
+<% if(pageDescription){ %>
+    <meta name="twitter:description" content="<%= pageDescription %>">
+<% } %>
+<% if(is_post() && publishedTime){ %>
+    <meta property="article:published_time" content="<%= publishedTime %>">
+<% } %>
+<% if(is_post() && modifiedTime){ %>
+    <meta property="article:modified_time" content="<%= modifiedTime %>">
+<% } %>
+<% if(articleJsonLd){ %>
+    <script type="application/ld+json"><%- jsonForHtml(articleJsonLd) %></script>
+<% } %>
 
 <%# favicon %>
 <% if (theme.favicon){ %>
