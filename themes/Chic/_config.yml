@@ -4,6 +4,7 @@ navname: Hello World
 # navigatior items
 nav:
   Posts: /archives
+  Machine Learning: /machine-learning
   Categories: /category
   Tags: /tag
   About: /about

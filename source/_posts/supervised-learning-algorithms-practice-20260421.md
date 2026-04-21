@@ -253,10 +253,19 @@ print("AUC:", roc_auc_score(y_test, proba))
 
 最稳妥的实践路线是：从简单模型建立可靠基线，用严谨的数据切分和评估方法控制泛化风险，通过错误分析定位瓶颈，再逐步引入更复杂的模型。这样得到的模型不仅指标更可信，也更容易被解释、部署和维护。
 
+### 机器学习专题阅读路径
+
+这篇文章属于 [机器学习专题：从算法基础到工程落地](/machine-learning/)。建议按下面的顺序继续阅读：
+
+1. [机器学习工程全流程：从业务问题到可持续上线的系统方法](/post/machine-learning-engineering-lifecycle-20260421.html)
+2. [监督学习核心算法详解：从线性模型到集成学习的实践指南](/post/supervised-learning-algorithms-practice-20260421.html)
+3. [深度学习基础详解：神经网络、反向传播与优化实践](/post/deep-learning-backpropagation-optimization-practice-20260421.html)
+4. [特征工程与数据治理：决定机器学习上限的关键能力](/post/machine-learning-feature-engineering-data-governance-20260421.html)
+5. [模型评估、可解释性与风险治理：把机器学习做成可信系统](/post/machine-learning-model-evaluation-interpretability-risk-governance-20260421.html)
+
 ### 参考资料
 
 - [scikit-learn Supervised learning User Guide](https://scikit-learn.org/stable/supervised_learning.html)
 - [scikit-learn Model evaluation](https://scikit-learn.org/stable/modules/model_evaluation.html)
 - [scikit-learn Cross-validation](https://scikit-learn.org/stable/modules/cross_validation.html)
 - [Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course)
-

@@ -223,10 +223,19 @@ df["hour_cos"] = np.cos(2 * np.pi * df["hour"] / 24)
 
 一个模型如果依赖不稳定、不可解释、不可复现的特征，即使短期指标很好，也很难长期维护。专业的机器学习实践应该把数据和特征当作一等公民：有定义、有版本、有质量检查、有责任人、有监控、有回滚方案。只有这样，模型效果才不是偶然，迭代才有坚实基础。
 
+### 机器学习专题阅读路径
+
+这篇文章属于 [机器学习专题：从算法基础到工程落地](/machine-learning/)。建议按下面的顺序继续阅读：
+
+1. [机器学习工程全流程：从业务问题到可持续上线的系统方法](/post/machine-learning-engineering-lifecycle-20260421.html)
+2. [监督学习核心算法详解：从线性模型到集成学习的实践指南](/post/supervised-learning-algorithms-practice-20260421.html)
+3. [深度学习基础详解：神经网络、反向传播与优化实践](/post/deep-learning-backpropagation-optimization-practice-20260421.html)
+4. [特征工程与数据治理：决定机器学习上限的关键能力](/post/machine-learning-feature-engineering-data-governance-20260421.html)
+5. [模型评估、可解释性与风险治理：把机器学习做成可信系统](/post/machine-learning-model-evaluation-interpretability-risk-governance-20260421.html)
+
 ### 参考资料
 
 - [scikit-learn Common pitfalls and recommended practices](https://scikit-learn.org/stable/common_pitfalls.html)
 - [scikit-learn Pipelines and composite estimators](https://scikit-learn.org/stable/modules/compose.html)
 - [Google Rules of Machine Learning](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [TensorFlow Extended User Guide](https://www.tensorflow.org/tfx/guide)
-
