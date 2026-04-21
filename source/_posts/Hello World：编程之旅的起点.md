@@ -1,6 +1,7 @@
 ---
 title: Hello World：编程之旅的起点
-date: 1990-06-13 00:00:00
+date: '2024-01-20 02:40:15'
+updated: '2024-01-29 14:58:25'
 categories:
 - 程序人生
 tags:
