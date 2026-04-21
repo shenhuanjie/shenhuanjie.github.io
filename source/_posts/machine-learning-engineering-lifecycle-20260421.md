@@ -201,10 +201,19 @@ model = Pipeline([
 
 对个人学习者而言，最好的训练方式也不是只刷算法，而是完整做一个端到端项目：定义问题、构建数据集、训练基线、做错误分析、封装 Pipeline、设计接口、记录实验、模拟线上监控。这样获得的能力，才是真正能把机器学习带进业务现场的能力。
 
+### 机器学习专题阅读路径
+
+这篇文章属于 [机器学习专题：从算法基础到工程落地](/machine-learning/)。建议按下面的顺序继续阅读：
+
+1. [机器学习工程全流程：从业务问题到可持续上线的系统方法](/post/machine-learning-engineering-lifecycle-20260421.html)
+2. [监督学习核心算法详解：从线性模型到集成学习的实践指南](/post/supervised-learning-algorithms-practice-20260421.html)
+3. [深度学习基础详解：神经网络、反向传播与优化实践](/post/deep-learning-backpropagation-optimization-practice-20260421.html)
+4. [特征工程与数据治理：决定机器学习上限的关键能力](/post/machine-learning-feature-engineering-data-governance-20260421.html)
+5. [模型评估、可解释性与风险治理：把机器学习做成可信系统](/post/machine-learning-model-evaluation-interpretability-risk-governance-20260421.html)
+
 ### 参考资料
 
 - [scikit-learn User Guide](https://scikit-learn.org/stable/user_guide.html)
 - [scikit-learn Common pitfalls and recommended practices](https://scikit-learn.org/stable/common_pitfalls.html)
 - [Google Rules of Machine Learning](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [TensorFlow Extended User Guide](https://www.tensorflow.org/tfx/guide)
-
