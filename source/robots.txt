@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shenhuanjie.github.io/sitemap.xml
