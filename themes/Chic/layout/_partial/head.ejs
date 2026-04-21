@@ -32,6 +32,7 @@ if (is_archive()){
 }
 %>
 <title><% if (title){ %><%= title %> | <% } %><%= config.title %></title>
+<link rel="canonical" href="<%- full_url_for(page.canonical_path || page.path || '') %>">
 
 <%# favicon %>
 <% if (theme.favicon){ %>

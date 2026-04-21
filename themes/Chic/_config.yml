@@ -6,7 +6,7 @@ nav:
   Posts: /archives
   Categories: /category
   Tags: /tag
-  About: /
+  About: /about
   # /about
 
 # favicon
@@ -16,7 +16,7 @@ favicon: favicon.ico
 nickname: Shen Huanjie
 
 ### this variable is MarkDown form.
-description: Lorem ipsum dolor sit amet, **consectetur adipiscing elit.** <br>Fusce eget urna vitae velit *eleifend interdum at ac* nisi.
+description: 记录我在前端、后端、DevOps 与 AI 工具链上的学习、踩坑和实践。<br>希望把复杂问题写清楚，把可复用的经验留下来。
 avatar: https://pic1.zhimg.com/v2-5205ba27b2ea534bcccfccf4622a9ed0_xl.jpg?source=32738c0c
 # /image/avatar.png
 
