@@ -104,6 +104,11 @@ theme: Chic
 sitemap:
   path: sitemap.xml
 
+search:
+  path: search.json
+  field: post
+  content: true
+
 feed:
   type: atom
   path: atom.xml

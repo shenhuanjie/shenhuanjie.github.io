@@ -2,3 +2,49 @@
 // Custom style
 // ==============================
 //  Also You can override the variables in variable.styl to customize the style
+
+.local-search
+  max-width 760px
+  margin 0 auto
+
+.local-search-input
+  width 100%
+  box-sizing border-box
+  padding 12px 14px
+  border 1px solid #d8d8d8
+  border-radius 4px
+  background transparent
+  color inherit
+  font-size 16px
+  line-height 1.6
+  outline none
+  transition border-color .2s ease, box-shadow .2s ease
+  &:focus
+    border-color #888
+    box-shadow 0 0 0 3px rgba(0, 0, 0, .06)
+  .dark-theme &
+    border-color #555
+
+.local-search-status
+  margin 12px 0 24px
+  color #8a8a8a
+  font-size 14px
+
+.local-search-item
+  padding 18px 0
+  border-bottom 1px solid #eeeeee
+  h3
+    margin 0 0 8px
+    font-size 18px
+    line-height 1.5
+    &:before
+      content none
+  p
+    margin 0
+    color #777
+    font-size 14px
+    line-height 1.8
+  .dark-theme &
+    border-bottom-color #333
+    p
+      color #aaa
