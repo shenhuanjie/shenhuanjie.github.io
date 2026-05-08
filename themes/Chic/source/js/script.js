@@ -108,3 +108,121 @@ document.ready(
     // Update on load
     updateProgressBar();
 })();
+
+// ==============================
+// 图片懒加载 - 性能优化
+// ==============================
+(function() {
+    // 获取所有文章内容中的图片
+    function getLazyImages() {
+        // 选择文章内容区域和正文中的图片
+        var selectors = [
+            '.post-content img',
+            '.article-content img',
+            '.entry-content img',
+            'article img',
+            '.post-detail img',
+            '.markdown-body img'
+        ];
+        var images = [];
+        selectors.forEach(function(sel) {
+            var els = document.querySelectorAll(sel);
+            els.forEach(function(el) {
+                // 避免重复处理
+                if (!el.dataset.lazyProcessed) {
+                    images.push(el);
+                }
+            });
+        });
+        return images;
+    }
+
+    // 使用 Intersection Observer 实现懒加载
+    function initImageLazyLoad() {
+        var images = getLazyImages();
+        if (images.length === 0) return;
+
+        // 图片占位样式 - 防止布局抖动
+        var styleEl = document.createElement('style');
+        styleEl.textContent = [
+            'img[loading="lazy"] {',
+            '  opacity: 0;',
+            '  transition: opacity 0.3s ease-in;',
+            '}',
+            'img[loading="lazy"].loaded,',
+            'img.lazy-loaded {',
+            '  opacity: 1;',
+            '}',
+            'img.lazy-placeholder {',
+            '  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);',
+            '  background-size: 200% 100%;',
+            '  animation: lazy-loading 1.5s infinite;',
+            '}',
+            '@keyframes lazy-loading {',
+            '  0% { background-position: 200% 0; }',
+            '  100% { background-position: -200% 0; }',
+            '}'
+        ].join('\n');
+        document.head.appendChild(styleEl);
+
+        // 检查浏览器是否原生支持 loading="lazy"
+        var supportsNativeLazy = 'loading' in HTMLImageElement.prototype;
+
+        // 为图片添加占位背景
+        images.forEach(function(img) {
+            // 保存原始宽高比以防止布局抖动
+            if (!img.style.aspectRatio && !img.getAttribute('width')) {
+                var aspectRatio = img.naturalWidth && img.naturalHeight
+                    ? img.naturalHeight / img.naturalWidth
+                    : 0.5625; // 默认 16:9
+                img.style.aspectRatio = aspectRatio;
+                img.style.maxWidth = '100%';
+            }
+
+            // 添加占位类
+            img.classList.add('lazy-placeholder');
+        });
+
+        // 使用 Intersection Observer 监听图片
+        var observer = new IntersectionObserver(function(entries, obs) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var img = entry.target;
+
+                    if (supportsNativeLazy) {
+                        // 浏览器原生支持，直接设置 loading="lazy"
+                        img.setAttribute('loading', 'lazy');
+                    }
+
+                    // 添加加载完成事件监听
+                    if (img.complete) {
+                        img.classList.remove('lazy-placeholder');
+                        img.classList.add('loaded');
+                    } else {
+                        img.addEventListener('load', function() {
+                            img.classList.remove('lazy-placeholder');
+                            img.classList.add('loaded');
+                        }, { once: true });
+                    }
+
+                    img.dataset.lazyProcessed = 'true';
+                    obs.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px', // 提前 50px 开始加载
+            threshold: 0.01
+        });
+
+        images.forEach(function(img) {
+            observer.observe(img);
+        });
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initImageLazyLoad);
+    } else {
+        initImageLazyLoad();
+    }
+})();

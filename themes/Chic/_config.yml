@@ -10,6 +10,7 @@ nav:
   Search: /search
   About: /about
   # /about
+  Sponsors: /sponsors
 
 # favicon
 favicon: favicon.ico
@@ -121,3 +122,9 @@ utterances:
   label: comment  # 评论标签（可选）
   theme: github-light
   dark_theme: github-dark
+
+# Google Analytics 4
+## https://analytics.google.com/
+google_analytics:
+  enable: true
+  tracking_id: G-XXXXXXXXXX  # 需用户配置 - 替换为你的 GA4 测量 ID

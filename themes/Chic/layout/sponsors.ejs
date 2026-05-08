@@ -1,11 +1,89 @@
 <div class="container">
-    <article class="post-wrap page">
+    <article class="post-wrap page sponsors-page">
         <% if(theme.page_title_enable){ %>
         <h2 class="post-title"><%- page.title %></h2>
         <% } %>
         <section class="post-content">
             <%- page.content %>
         </section>
-        <%- partial('_partial/sponsors') %>
     </article>
 </div>
+
+<style>
+.sponsors-page {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.sponsors-page h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.sponsors-page h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.sponsors-page p {
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.sponsors-page img {
+    max-width: 250px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto;
+    display: block;
+}
+
+.sponsors-page ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    display: inline-block;
+    margin: 1rem 0;
+}
+
+.sponsors-page ul li {
+    padding: 0.5rem 0;
+    line-height: 1.6;
+}
+
+.sponsors-page a {
+    display: inline-block;
+    background: var(--btn-bg);
+    color: var(--btn-color);
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+.sponsors-page a:hover {
+    background: var(--btn-hover-bg);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .sponsors-page h1 {
+        font-size: 1.75rem;
+    }
+
+    .sponsors-page h2 {
+        font-size: 1.25rem;
+    }
+
+    .sponsors-page img {
+        max-width: 200px;
+    }
+}
+</style>

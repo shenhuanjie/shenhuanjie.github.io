@@ -19,6 +19,9 @@ const MAX_TOKENS_TAGS = 50;
 // API 配置
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const API_VERSION = '2023-06-01';
+const TIMEOUT_MS = 30000; // 30秒超时
+const MAX_RETRIES = 3; // 最大重试次数
+const RETRY_DELAY_MS = 1000; // 重试延迟（毫秒）
 
 /**
  * 确保缓存目录存在
@@ -72,40 +75,59 @@ function writeCache(type, content, value) {
 }
 
 /**
- * 调用 Claude API
+ * 调用 Claude API（带超时和重试）
  */
-async function callClaude(prompt, maxTokens) {
+async function callClaude(prompt, maxTokens, retries = MAX_RETRIES) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY 环境变量未设置');
   }
 
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': API_VERSION,
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: maxTokens,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Claude API 错误: ${response.status} - ${error}`);
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': API_VERSION,
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: maxTokens,
+          messages: [{
+            role: 'user',
+            content: prompt
+          }]
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Claude API 错误: ${response.status} - ${error}`);
+      }
+
+      const data = await response.json();
+      return data.content[0].text;
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      console.log(`[AI Helper] 调用失败 (${attempt}/${retries}): ${error.message}`);
+      if (error.message.includes('aborted')) {
+        throw new Error(`API 调用超时（${TIMEOUT_MS / 1000}秒）`);
+      }
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * attempt));
+    }
   }
-
-  const data = await response.json();
-  return data.content[0].text;
 }
 
 /**
@@ -223,6 +245,33 @@ async function generateTags(title, content) {
 }
 
 /**
+ * 估算阅读时长（基于中文字数）
+ * @param {string} content - 文章内容
+ * @param {number} wordsPerMinute - 每分钟阅读字数（默认 500 字/分钟）
+ * @returns {string} - 格式化的阅读时长
+ */
+function estimateReadingTime(content, wordsPerMinute = 500) {
+  // 移除 markdown 语法和代码块
+  const cleanContent = content
+    .replace(/```[\s\S]*?```/g, '') // 移除代码块
+    .replace(/`[^`]*`/g, '') // 移除行内代码
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // 移除链接，保留文字
+    .replace(/[#*_~>`-]/g, '') // 移除 markdown 符号
+    .replace(/\s+/g, ' ') // 合并空白字符
+    .trim();
+
+  // 中文字符数
+  const chineseChars = (cleanContent.match(/[一-龥]/g) || []).length;
+  // 英文单词数
+  const englishWords = (cleanContent.match(/[a-zA-Z]+/g) || []).length;
+  // 总"字"数（中文 + 英文/3，因为英文单词较长）
+  const totalWords = chineseChars + Math.ceil(englishWords / 3);
+
+  const minutes = Math.ceil(totalWords / wordsPerMinute);
+  return minutes < 1 ? '< 1 分钟' : `${minutes} 分钟`;
+}
+
+/**
  * 清除所有缓存
  */
 function clearCache() {
@@ -267,6 +316,7 @@ module.exports = {
   generateSummary,
   generateDescription,
   generateTags,
+  estimateReadingTime,
   clearCache,
   cleanExpiredCache
 };

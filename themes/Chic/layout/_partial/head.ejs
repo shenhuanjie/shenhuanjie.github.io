@@ -2,6 +2,12 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<%# 性能优化：预连接关键外部资源域名 %>
+<link rel="preconnect" href="//qiniu.skyner.cn" crossorigin>
+<link rel="dns-prefetch" href="//qiniu.skyner.cn">
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="dns-prefetch" href="//www.google-analytics.com">
 <%
 function compactText(value) {
     return String(value || '')
@@ -232,6 +238,20 @@ if (is_post()) {
 <% } %>
 <% if(breadcrumbJsonLd){ %>
     <script type="application/ld+json"><%- jsonForHtml(breadcrumbJsonLd) %></script>
+<% } %>
+
+<%# Google Analytics 4 %>
+<% if(theme.google_analytics && theme.google_analytics.enable && theme.google_analytics.tracking_id){ %>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= theme.google_analytics.tracking_id %>"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '<%= theme.google_analytics.tracking_id %>', {
+  page_path: '<%= canonicalPath %>'
+});
+</script>
 <% } %>
 
 <%# favicon %>

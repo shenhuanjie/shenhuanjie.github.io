@@ -159,3 +159,15 @@ deploy:
 
 # AI Helper 配置
 ai_auto_generate: true
+
+# HTML 压缩配置
+html_minifier:
+  enable: true
+  exclude:
+    - '*.min.css'
+    - '*.min.js'
+  ignore_error: false
+  tiny_comments: true
+  remove_comments: true
+  remove_input_type: true
+  remove_attribute_quotas: false

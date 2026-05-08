@@ -17,7 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const aiHelper = require('./ai-helper');
+const aiHelper = require('../scripts/ai-helper');
 
 // 解析命令行参数
 const args = process.argv.slice(2);
