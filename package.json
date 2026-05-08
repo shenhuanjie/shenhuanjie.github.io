@@ -6,7 +6,9 @@
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server",
+    "ai:generate": "node bin/ai-generate",
+    "ai:clear-cache": "node scripts/ai-helper.js --clear"
   },
   "hexo": {
     "version": "8.1.2"

@@ -2,3 +2,7 @@ node_modules/
 public/
 db.json
 .idea
+
+# AI Helper
+.env
+scripts/cache/

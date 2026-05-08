@@ -10,7 +10,7 @@
     // ==============================
     // 配置
     // ==============================
-    var MAX_HISTORY_ITEMS = 10;
+    var MAX_HISTORY_ITEMS = 20;
     var STORAGE_KEY_FAVORITES = 'blog_favorites';
     var STORAGE_KEY_HISTORY = 'blog_reading_history';
 
@@ -93,26 +93,32 @@
         toggle: function() {
             var pageInfo = getPageInfo();
             var bookmarkBtn = document.querySelector('.post-bookmark');
+            var bookmarkIcon = bookmarkBtn.querySelector('.bookmark-icon');
 
             if (this.isFavorited(pageInfo.url)) {
                 this.remove(pageInfo.url);
                 bookmarkBtn.classList.remove('active');
                 bookmarkBtn.setAttribute('title', '收藏文章');
+                bookmarkIcon.textContent = '♡';
             } else {
                 this.add(pageInfo);
                 bookmarkBtn.classList.add('active');
                 bookmarkBtn.setAttribute('title', '已收藏');
+                bookmarkIcon.textContent = '♥';
             }
         },
 
         updateButtonState: function(btn) {
             var pageInfo = getPageInfo();
+            var bookmarkIcon = btn.querySelector('.bookmark-icon');
             if (this.isFavorited(pageInfo.url)) {
                 btn.classList.add('active');
                 btn.setAttribute('title', '已收藏');
+                bookmarkIcon.textContent = '♥';
             } else {
                 btn.classList.remove('active');
                 btn.setAttribute('title', '收藏文章');
+                bookmarkIcon.textContent = '♡';
             }
         },
 

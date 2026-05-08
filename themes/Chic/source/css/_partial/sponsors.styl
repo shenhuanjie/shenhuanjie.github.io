@@ -1,0 +1,166 @@
+// ==============================
+// Sponsors / Donations Component
+// ==============================
+
+.sponsors-container
+  margin: 1.5rem 0
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif
+
+.sponsors-details
+  background: #f8f9fa
+  border: 1px solid #e9ecef
+  border-radius: 8px
+  overflow: hidden
+  transition: all 0.3s ease
+
+  .dark-theme &
+    background: #2a2a2a
+    border-color: #3a3a3a
+
+  &[open]
+    border-color: #2d96bd
+    .dark-theme &
+      border-color: #61afef
+
+    .sponsors-arrow
+      transform: rotate(90deg)
+
+.sponsors-summary
+  display: flex
+  align-items: center
+  gap: 8px
+  padding: 14px 18px
+  cursor: pointer
+  user-select: none
+  font-size: 15px
+  color: #333
+  list-style: none
+  transition: background-color 0.2s ease
+
+  &::-webkit-details-marker
+    display: none
+
+  &:hover
+    background: rgba(45, 150, 189, 0.08)
+    .dark-theme &
+      background: rgba(97, 175, 239, 0.08)
+
+  .dark-theme &
+    color: #eee
+
+.sponsors-icon
+  font-size: 18px
+  color: #e74c3c
+
+.sponsors-text
+  font-weight: 500
+
+.sponsors-arrow
+  margin-left: auto
+  font-size: 14px
+  color: #999
+  transition: transform 0.3s ease
+
+.sponsors-content
+  padding: 0 18px 18px
+  animation: slideDown 0.3s ease
+
+@keyframes slideDown
+  from
+    opacity: 0
+    transform: translateY(-10px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+.sponsors-intro
+  margin: 0 0 16px
+  font-size: 14px
+  color: #666
+  text-align: center
+
+  .dark-theme &
+    color: #aaa
+
+.sponsors-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 20px
+  margin-bottom: 16px
+
+  @media screen and (max-width: 479px)
+    grid-template-columns: 1fr
+
+.sponsor-item
+  text-align: center
+
+  h4
+    margin: 0 0 10px
+    font-size: 14px
+    font-weight: 600
+    color: #333
+
+    .dark-theme &
+      color: #eee
+
+.sponsor-qrcode
+  position: relative
+  width: 140px
+  height: 140px
+  margin: 0 auto
+  background: #fff
+  border: 2px dashed #ddd
+  border-radius: 8px
+  overflow: hidden
+
+  .dark-theme &
+    background: #1a1a1a
+    border-color: #444
+
+  img
+    width: 100%
+    height: 100%
+    object-fit: cover
+
+.qrcode-placeholder-box
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  background: #f8f9fa
+
+  .dark-theme &
+    background: #2a2a2a
+
+.qrcode-icon
+  font-size: 36px
+  line-height: 1
+
+.qrcode-text
+  font-size: 10px
+  color: #999
+  margin-top: 6px
+  text-align: center
+  padding: 0 8px
+
+.sponsor-tip
+  margin: 8px 0 0
+  font-size: 12px
+  color: #999
+
+  .dark-theme &
+    color: #777
+
+.sponsors-thanks
+  margin: 0
+  font-size: 13px
+  color: #2d96bd
+  text-align: center
+
+  .dark-theme &
+    color: #61afef

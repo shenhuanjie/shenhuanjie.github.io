@@ -1,4 +1,15 @@
 <footer id="footer" class="footer">
+    <div class="footer-links">
+        <a href="<%- url_for('/sponsors') %>" class="footer-link-item" title="支持作者">
+            <span class="footer-link-icon">&#9829;</span>
+            <span>支持作者</span>
+        </a>
+        <span class="footer-divider">|</span>
+        <a href="<%- url_for('/about') %>#社群" class="footer-link-item" title="加入社群">
+            <span class="footer-link-icon">&#128218;</span>
+            <span>加入社群</span>
+        </a>
+    </div>
     <div class="copyright">
         <span>© <%= config.author %> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
     </div>

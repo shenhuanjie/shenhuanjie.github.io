@@ -1,0 +1,38 @@
+<!-- 打赏组件 - 支持微信和支付宝打赏 -->
+<div class="sponsors-container">
+    <details class="sponsors-details">
+        <summary class="sponsors-summary">
+            <span class="sponsors-icon">&#9829;</span>
+            <span class="sponsors-text">支持作者</span>
+            <span class="sponsors-arrow">&#8250;</span>
+        </summary>
+        <div class="sponsors-content">
+            <p class="sponsors-intro">如果您觉得博客对您有帮助，欢迎支持</p>
+            <div class="sponsors-grid">
+                <div class="sponsor-item">
+                    <h4>微信打赏</h4>
+                    <div class="sponsor-qrcode">
+                        <img src="<%- url_for('/images/sponsors/wechat-pay.png') %>" alt="微信打赏码" class="qrcode-placeholder" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="qrcode-placeholder-box" style="display: flex;">
+                            <span class="qrcode-icon">&#127760;</span>
+                            <span class="qrcode-text">[待添加微信收款码]</span>
+                        </div>
+                    </div>
+                    <p class="sponsor-tip">扫码添加助手微信打赏</p>
+                </div>
+                <div class="sponsor-item">
+                    <h4>支付宝打赏</h4>
+                    <div class="sponsor-qrcode">
+                        <img src="<%- url_for('/images/sponsors/alipay.png') %>" alt="支付宝打赏码" class="qrcode-placeholder" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="qrcode-placeholder-box" style="display: flex;">
+                            <span class="qrcode-icon">&#127760;</span>
+                            <span class="qrcode-text">[待添加支付宝收款码]</span>
+                        </div>
+                    </div>
+                    <p class="sponsor-tip">扫码添加助手支付宝打赏</p>
+                </div>
+            </div>
+            <p class="sponsors-thanks">感谢您的支持！</p>
+        </div>
+    </details>
+</div>

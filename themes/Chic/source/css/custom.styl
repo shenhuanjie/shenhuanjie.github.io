@@ -172,6 +172,18 @@
   .dark-theme &
     border-top-color #333
 
+  .comments-title
+    font-size 18px
+    font-weight 600
+    color #333
+    margin 0 0 1rem 0
+    padding-bottom 0.5rem
+    border-bottom 2px solid #2d96bd
+    display inline-block
+    .dark-theme &
+      color #eee
+      border-bottom-color #61afef
+
   #utterances-container
     min-height 150px
 
@@ -361,3 +373,148 @@
     .history-panel
       width 280px
       max-height 350px
+
+// ==============================
+// Favorites & History Page
+// ==============================
+.favorites-page
+  max-width 800px
+  margin 0 auto
+  padding 2rem 1rem
+
+.favorites-container
+  display flex
+  flex-direction column
+  gap 2rem
+
+.favorites-section,
+.history-section
+  background #fff
+  border-radius 8px
+  padding 1.5rem
+  box-shadow 0 2px 8px rgba(0, 0, 0, 0.08)
+  .dark-theme &
+    background $dark-background-color
+    box-shadow 0 2px 8px rgba(0, 0, 0, 0.3)
+
+.section-header
+  display flex
+  align-items center
+  justify-content space-between
+  margin-bottom 1rem
+  padding-bottom 0.75rem
+  border-bottom 2px solid #eee
+  .dark-theme &
+    border-bottom-color #444
+
+.section-title
+  display flex
+  align-items center
+  gap 8px
+  margin 0
+  font-size 18px
+  font-weight 600
+  color #333
+  .dark-theme &
+    color #eee
+
+  .section-icon
+    font-size 20px
+
+.section-count
+  display inline-flex
+  align-items center
+  justify-content center
+  min-width 24px
+  height 24px
+  padding 0 8px
+  background #2d96bd
+  color #fff
+  font-size 12px
+  font-weight 600
+  border-radius 12px
+  .dark-theme &
+    background #61afef
+
+.section-empty
+  text-align center
+  padding 2rem
+  color #999
+  font-size 14px
+  .dark-theme &
+    color #777
+
+.favorites-list,
+.history-list
+  list-style none
+  padding 0
+  margin 0
+
+.favorites-item,
+.history-item
+  display flex
+  align-items center
+  padding 12px
+  border-bottom 1px solid #f5f5f5
+  transition background-color 0.2s ease
+  border-radius 4px
+  margin-bottom 4px
+  &:last-child
+    border-bottom none
+  &:hover
+    background rgba(45, 150, 189, 0.05)
+    .dark-theme &
+      background rgba(97, 175, 239, 0.05)
+
+  .dark-theme &
+    border-bottom-color #333
+
+.favorites-title,
+.history-title
+  flex 1
+  color $light-post-link-color
+  font-size 14px
+  text-decoration none
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+  &:hover
+    color $light-post-link-hover-color
+  .dark-theme &
+    color $dark-post-link-color
+    &:hover
+      color $dark-post-link-hover-color
+
+.favorites-date,
+.history-date
+  margin-left 1rem
+  font-size 12px
+  color #999
+  white-space nowrap
+  .dark-theme &
+    color #777
+
+.favorites-remove
+  margin-left 8px
+  width 24px
+  height 24px
+  display flex
+  align-items center
+  justify-content center
+  background transparent
+  border 1px solid #ddd
+  border-radius 4px
+  color #999
+  font-size 16px
+  cursor pointer
+  transition all 0.2s ease
+  &:hover
+    background #ff4757
+    border-color #ff4757
+    color #fff
+  .dark-theme &
+    border-color #444
+    color #aaa
+    &:hover
+      background #ff4757
+      border-color #ff4757

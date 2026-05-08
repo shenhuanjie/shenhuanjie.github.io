@@ -36,15 +36,26 @@ layout: about
   <p style="margin: 0.5rem 0 0 0; font-size: 12px; color: #999;">AI/科技资讯 首发渠道</p>
 </div>
 
+<span id="社群"></span>
+
 ## 加入社群
 
-<!-- 知识星球/付费社群入口占位区域 -->
+<!-- 知识星球入口 -->
 <div style="text-align: center; margin: 2rem 0; padding: 1.5rem; background: #f0f7ff; border-radius: 8px; border: 1px dashed #b3d4fc;">
-  <p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #333;">加入专属社群</p>
+  <p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #333;">加入 AI 资讯社群，与 1000+ 开发者交流</p>
   <div style="width: 160px; height: 160px; margin: 0 auto; background: #fff; border: 2px dashed #b3d4fc; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
     <span style="font-size: 48px; line-height: 1;">&#128218;</span>
-    <span style="font-size: 12px; color: #999; margin-top: 8px;">[待添加二维码]</span>
+    <span style="font-size: 12px; color: #999; margin-top: 8px;">[待添加知识星球二维码]</span>
   </div>
-  <p style="margin: 0.5rem 0 0 0; font-size: 12px; color: #666;">AI学习交流群 | 早鸟优惠中</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 11px; color: #999;">添加微信：shenhuanjie 备注"社群"</p>
+  <p style="margin: 0.5rem 0 0 0; font-size: 12px; color: #666;">知识星球 · 早鸟优惠中</p>
+</div>
+
+<!-- 微信群入口 -->
+<div style="text-align: center; margin: 2rem 0; padding: 1.5rem; background: #fff8f0; border-radius: 8px; border: 1px dashed #ffd699;">
+  <p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #333;">加入微信群</p>
+  <div style="width: 160px; height: 160px; margin: 0 auto; background: #fff; border: 2px dashed #ffd699; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+    <span style="font-size: 48px; line-height: 1;">&#127760;</span>
+    <span style="font-size: 12px; color: #999; margin-top: 8px;">[待添加微信群二维码]</span>
+  </div>
+  <p style="margin: 0.5rem 0 0 0; font-size: 12px; color: #666;">扫码添加助手微信，回复「社群」加入</p>
 </div>

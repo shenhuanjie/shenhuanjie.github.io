@@ -1,2 +1,33 @@
 .copyright
   font-size 14px
+
+.footer-links
+  display flex
+  align-items center
+  justify-content center
+  gap 8px
+  margin-bottom 12px
+  font-size 14px
+
+.footer-link-item
+  display inline-flex
+  align-items center
+  gap 4px
+  color #666
+  text-decoration none
+  transition color 0.2s ease
+  &:hover
+    color #2d96bd
+    text-decoration none
+  .dark-theme &
+    color #aaa
+    &:hover
+      color #61afef
+
+.footer-link-icon
+  font-size 14px
+
+.footer-divider
+  color #ddd
+  .dark-theme &
+    color #444

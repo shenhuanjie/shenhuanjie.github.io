@@ -156,3 +156,6 @@ feed:
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ''
+
+# AI Helper 配置
+ai_auto_generate: true

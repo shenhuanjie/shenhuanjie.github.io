@@ -96,6 +96,8 @@ stylesheets:
 scripts:
   - /js/script.js
   - /js/tocbot.min.js
+  - /js/user-interaction.js
+  - /js/favorites-page.js
     # tscanlin/tocbot: Build a table of contents from headings in an HTML document.
     # https://github.com/tscanlin/tocbot
 
@@ -113,8 +115,8 @@ mathjax:
 ## https://utteranc.es/
 ## 需要在 GitHub 仓库中安装 utterances APP
 utterances:
-  enable: false
-  repo: your-github-username/your-repo-name  # 格式: username/repo
+  enable: true
+  repo: shenhuanjie/shenhuanjie.github.io  # 格式: username/repo
   issue_term: pathname  # pathname, url, title, og:title
   label: comment  # 评论标签（可选）
   theme: github-light
