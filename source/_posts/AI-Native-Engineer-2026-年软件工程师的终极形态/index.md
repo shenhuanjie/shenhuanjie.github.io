@@ -28,11 +28,11 @@ tags:
 | <strong>竞争焦点</strong> | 了解最新框架 | 高效解决业务问题 |<br>
 | <strong>思维方式</strong> | 确定性逻辑 | 非确定性、数据驱动 |<br>
 | <strong>工具使用</strong> | 手动编写代码 | 驾驭 AI Agent 编排 |<br>
-| <strong>核心���能</strong> | 语言特性、算法 | Prompt、Context、Harness |<br>
+| <strong>核心技能</strong> | 语言特性、算法 | Prompt、Context、Harness |<br>
 | <strong>系统观</strong> | 静态架构 | 持续学习的动态系统 |</p>
 <h2 id="ai">AI 工程范式的三次跃迁</h2>
 <p>理解 AI Native Engineer，需要理解 AI 工程化的演进历程。这不是简单的技能升级，而是<strong>三次深刻的认知跃迁</strong>。</p>
-<h3 id="prompt-engineering2023">第一次跃迁：Prompt Engineering（2023）</h3>
+<h3 id="prompt-engineering2023">第���次跃迁：Prompt Engineering（2023）</h3>
 <p><strong>核心假设</strong>：只要给 AI 正确的指令，它就能给出正确的结果。</p>
 <p><strong>主要技能</strong>：<br>
 - <strong>指令设计</strong>：角色定义、输入输出规范、约束条件<br>
@@ -196,7 +196,7 @@ tags:
 
 <h3 id="5-mlops">5. MLOps 和工程化</h3>
 <p><strong>核心实践</strong>：<br>
-- <strong>训练管道</strong>：数据版本、实验追踪、模型���册<br>
+- <strong>训练管道</strong>：数据版本、实验追踪、模型注册<br>
 - <strong>监控和评估</strong>：性能指标、漂移检测、异常告警<br>
 - <strong>自动化工作流</strong>：CI/CD for ML、A/B 测试、渐进式部署<br>
 - <strong>数据管理</strong>：数据质量、隐私保护、合规性</p>
@@ -381,7 +381,7 @@ tags:
 <li><strong>OpenHands</strong>：开源 AI 软件工程师</li>
 <li><strong>OpenCode</strong>：开源 AI 编码助手</li>
 <li><strong>Cursor</strong>：AI 原生 IDE</li>
-<li><strong>Replit Agent</strong>：在线 AI 开发环境</li>
+<li><strong>Replit Agent</strong>：在线 AI ���发环境</li>
 <li><strong>GitHub Copilot Workspace</strong>：AI 驱动的开发环境</li>
 </ul>
 <h2 id="ai-native">AI Native 的思维模式</h2>
