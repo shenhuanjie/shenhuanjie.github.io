@@ -317,7 +317,7 @@ async function fetchArticleContent(url) {
 /**
  * 保存草稿文件
  */
-function saveDraft(post, source, outputDir) {
+async function saveDraft(post, source, outputDir) {
   const slug = slugify(post.title);
   const filename = `${slug}.md`;
   const filepath = path.join(outputDir, filename);
@@ -335,8 +335,24 @@ function saveDraft(post, source, outputDir) {
 
   // 生成内容
   const frontMatter = generateFrontMatter(post, source);
-  const summary = stripHtml(post.description).slice(0, 200);
-  const content = `${frontMatter}## 资讯概要\n\n${summary}\n\n## 详细内容\n\n请访问 [原文链接](${post.link}) 查看完整内容。\n`;
+  const summary = stripHtml(post.description).slice(0, 500);
+
+  // 尝试获取完整文章内容
+  let fullContent = '';
+  try {
+    fullContent = await fetchArticleContent(post.link);
+  } catch (e) {
+    // 忽略错误
+  }
+
+  // 根据是否有完整内容决定输出格式
+  let content;
+  if (fullContent && fullContent.length > 200) {
+    content = `${frontMatter}## 资讯概要\n\n${summary}\n\n## 详细内容\n\n${fullContent}\n`;
+  } else {
+    // RSS只有摘要，没有完整内容时，不生成空洞的"详细内容"部分
+    content = `${frontMatter}## 资讯概要\n\n${summary}\n\n> ⚠️ 注意：本文为RSS摘要采集，完整内容请访问 [原文链接](${post.link}) 查看。\n`;
+  }
 
   fs.writeFileSync(filepath, content, 'utf8');
   console.log(`  [创建] ${filename}`);
@@ -375,7 +391,7 @@ async function fetchSource(sourceKey, sourceConfig, config) {
       }
 
       // 保存草稿
-      if (saveDraft(item, sourceConfig.name, config.outputDir)) {
+      if (await saveDraft(item, sourceConfig.name, config.outputDir)) {
         savedCount++;
       }
 

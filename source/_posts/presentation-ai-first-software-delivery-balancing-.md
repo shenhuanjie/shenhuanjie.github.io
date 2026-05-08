@@ -1,9 +1,10 @@
 ---
-title: Presentation: AI-First Software Delivery: Balancing Innovation with Proven Practices
+title: "Presentation: AI-First Software Delivery: Balancing Innovation with Proven Practices"
 date: 2026-05-06 00:00:00
 updated: 2026-05-08
-description: <img src="https://res.infoq.com/presentations/ai-first-practices/en/mediumimage/medium-1777371216610.jpeg"/><p>Wes Reisz discusses the shift toward AI
+description: "Wes Reisz discusses the shift toward AI-first software delivery practices"
 cover:
+  - https://res.infoq.com/presentations/ai-first-practices/en/mediumimage/medium-1777371216610.jpeg
 categories:
   - AI资讯
 tags:
