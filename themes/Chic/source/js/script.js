@@ -85,3 +85,26 @@ document.ready(
         // ready function.
     }
 );
+
+// ==============================
+// Reading Progress Bar
+// ==============================
+(function() {
+    var progressBar = document.createElement('div');
+    progressBar.className = 'reading-progress';
+    document.body.appendChild(progressBar);
+
+    function updateProgressBar() {
+        var windowHeight = window.innerHeight;
+        var documentHeight = document.documentElement.scrollHeight - windowHeight;
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var progress = (scrollTop / documentHeight) * 100;
+        progressBar.style.width = Math.min(progress, 100) + '%';
+    }
+
+    // Update on scroll
+    window.addEventListener('scroll', updateProgressBar, { passive: true });
+
+    // Update on load
+    updateProgressBar();
+})();

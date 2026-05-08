@@ -1,3 +1,34 @@
+// declaraction of document.ready() function.
+(function () {
+    var ie = !!(window.attachEvent && !window.opera);
+    var wk = /webkit\/(\d+)/i.test(navigator.userAgent) && (RegExp.$1 < 525);
+    var fn = [];
+    var run = function () {
+        for (var i = 0; i < fn.length; i++) fn[i]();
+    };
+    var d = document;
+    d.ready = function (f) {
+        if (!ie && !wk && d.addEventListener)
+            return d.addEventListener('DOMContentLoaded', f, false);
+        if (fn.push(f) > 1) return;
+        if (ie)
+            (function () {
+                try {
+                    d.documentElement.doScroll('left');
+                    run();
+                } catch (err) {
+                    setTimeout(arguments.callee, 0);
+                }
+            })();
+        else if (wk)
+            var t = setInterval(function () {
+                if (/^(loaded|complete)$/.test(d.readyState))
+                    clearInterval(t), run();
+            }, 0);
+    };
+})();
+
+
 (function () {
   function getText(value) {
     if (Array.isArray(value)) {
@@ -61,6 +92,12 @@
     return excerpt;
   }
 
+  function highlightKeyword(text, keyword) {
+    if (!keyword || !text) return text;
+    var regex = new RegExp('(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  }
+
   function renderResults(results, keyword) {
     var container = document.getElementById('local-search-results');
     var status = document.getElementById('local-search-status');
@@ -83,6 +120,10 @@
       var url = normalizeUrl(post.url);
       var excerpt = escapeHtml(getExcerpt(post.content || post.title || '', keyword));
 
+      // Highlight keyword in title and excerpt
+      title = highlightKeyword(title, keyword);
+      excerpt = highlightKeyword(excerpt, keyword);
+
       return [
         '<article class="local-search-item">',
         '<h3><a href="' + escapeHtml(url) + '">' + title + '</a></h3>',
@@ -101,6 +142,14 @@
     }
 
     status.textContent = '正在加载搜索索引...';
+
+    // Keyboard shortcut: press "/" to focus search
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) {
+        e.preventDefault();
+        input.focus();
+      }
+    });
 
     fetch('/search.json')
       .then(function (response) {

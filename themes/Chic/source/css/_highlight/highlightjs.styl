@@ -1,127 +1,168 @@
-// Highlight Color
-$highlight-deletion     = #fdd
-$highlight-addition     = #dfd
-$highlight-background   = #f7f7f7
-$highlight-current-line = #efefef
-$highlight-selection    = #d6d6d6
-$highlight-foreground   = #4d4d4c
-$highlight-comment      = #8e908c
-$highlight-red          = #c82829
-$highlight-orange       = #f5871f
-$highlight-yellow       = #eab700
-$highlight-green        = #718c00
-$highlight-aqua         = #3e999f
-$highlight-blue         = #4271ae
-$highlight-purple       = #8959a8
-$highlight-gutter       = #869194
+// Highlight Color - Modern Dark Theme
+$highlight-deletion     = #f92672
+$highlight-addition     = #a6e22e
+$highlight-background   = #282c34
+$highlight-current-line = #3a3f4b
+$highlight-selection    = #4a4f5b
+$highlight-foreground   = #abb2bf
+$highlight-comment      = #75715e
+$highlight-red          = #e06c75
+$highlight-orange       = #d19a66
+$highlight-yellow       = #e5c07b
+$highlight-green        = #98c379
+$highlight-aqua         = #56b6c2
+$highlight-blue         = #61afef
+$highlight-purple       = #c678dd
+$highlight-gutter       = #4b5263
 
 .post-content {
   figure.highlight {
-		margin: 2em 0;
-		background: $highlight-background;
-		color: $highlight-foreground;
-		font-size: 12px;
-		overflow: scroll;
-		overflow-y: hidden;
-		overflow-x: auto;
+    margin: 1.5em 0;
+    background: $highlight-background;
+    color: $highlight-foreground;
+    font-size: 13px;
+    overflow: scroll;
+    overflow-y: hidden;
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 1px solid #3a3f4b;
 
-		.gutter {
-			color: $hight-gutter;
-		}
+    .gutter {
+      color: $highlight-gutter;
+      background: darken($highlight-background, 3%);
+      border-right: 1px solid #3a3f4b;
+    }
 
-		pre {
-			background: $highlight-background;
-			margin: 0;
-		}
-	}
+    pre {
+      background: $highlight-background;
+      margin: 0;
+      padding: 1em 1.2em;
+    }
 
-	code {
-		padding: 2px 4px;
-		background: $highlight-background;
-		font-family: Menlo,Monaco,Consolas,Courier New,monospace;
-		font-size: 12px;
-	}
+    .code {
+      background: $highlight-background;
+      pre {
+        margin: 0 10px;
+      }
+    }
+  }
 
-	pre {
-		padding: 10px;
-		overflow: auto;
-		background: $highlight-background;
-		font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+  code {
+    padding: 2px 5px;
+    background: #f0f0f0;
+    font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+    font-size: 13px;
+    border-radius: 4px;
+    color: #c7254e;
+  }
 
-		code {
-			padding: 0;
-		}
-	}
+  pre {
+    padding: 10px 15px;
+    overflow: auto;
+    background: $highlight-background;
+    font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+    border-radius: 6px;
 
+    code {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+    }
+  }
 
+  // Dark theme code styles
+  .dark-theme & {
+    code {
+      background: #3a3a3a;
+      color: #ff79c6;
+    }
 
-	pre .deletion { background: $highlight-deletion; }
-	pre .addition { background: $highlight-addition; }
-	pre .meta     { color: $highlight-purple; }
+    figure.highlight {
+      background: #282c34;
+      border-color: #3a3f4b;
 
-	pre {
+      .gutter {
+        background: #21252b;
+        border-color: #3a3f4b;
+      }
 
-		.comment { color: $highlight-comment; }
+      pre {
+        background: #282c34;
+      }
 
-		.variable
-		.attribute
-		.tag
-		.regexp
-		.ruby .constant
-		.xml .tag .title
-		.xml .pi
-		.xml .doctype
-		.html .doctype
-		.css .id
-		.css .class
-		.css .pseudo {
-			color: $highlight-red;
-		}
+      .code {
+        background: #282c34;
+      }
+    }
+  }
 
-		.number
-		.preprocessor
-		.built_in
-		.literal
-		.params
-		.constant
-		.command {
-			color: $highlight-orange;
-		}
+  pre .deletion { background: $highlight-deletion; }
+  pre .addition { background: $highlight-addition; }
+  pre .meta     { color: $highlight-purple; }
 
-		.ruby .class .title
-		.css .rules .attribute
-		.string
-		.value
-		.inheritance
-		.header
-		.ruby .symbol
-		.xml .cdata
-		.special
-		.number
-		.formula {
-			color: $highlight-green;
-		}
+  pre {
 
-		.title
-		.css .hexcolor {
-			color: $highlight-aqua;
-		}
+    .comment { color: $highlight-comment; }
 
-		.function
-		.python .decorator
-		.python .title
-		.ruby .function .title
-		.ruby .title .keyword
-		.perl .sub
-		.javascript .title
-		.coffeescript .title {
-			color: $highlight-blue;
-		}
+    .variable
+    .attribute
+    .tag
+    .regexp
+    .ruby .constant
+    .xml .tag .title
+    .xml .pi
+    .xml .doctype
+    .html .doctype
+    .css .id
+    .css .class
+    .css .pseudo {
+      color: $highlight-red;
+    }
 
-		.keyword
-		.javascript .function {
-			color: $highlight-purple;
-		}
+    .number
+    .preprocessor
+    .built_in
+    .literal
+    .params
+    .constant
+    .command {
+      color: $highlight-orange;
+    }
 
-	}
+    .ruby .class .title
+    .css .rules .attribute
+    .string
+    .value
+    .inheritance
+    .header
+    .ruby .symbol
+    .xml .cdata
+    .special
+    .number
+    .formula {
+      color: $highlight-green;
+    }
+
+    .title
+    .css .hexcolor {
+      color: $highlight-aqua;
+    }
+
+    .function
+    .python .decorator
+    .python .title
+    .ruby .function .title
+    .ruby .title .keyword
+    .perl .sub
+    .javascript .title
+    .coffeescript .title {
+      color: $highlight-blue;
+    }
+
+    .keyword
+    .javascript .function {
+      color: $highlight-purple;
+    }
+
+  }
 }

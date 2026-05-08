@@ -8,8 +8,20 @@
         <% last_year = cur_year; } %>
 
         <article class="archive-item">
-            <a class="archive-item-link" href="<%- url_for(post.path) %>"><%= post.title %></a>
-            <span class="archive-item-date"><%- date(post.date, theme.date_format) %></span>
+            <div class="archive-item-header">
+                <a class="archive-item-link" href="<%- url_for(post.path) %>"><%= post.title %></a>
+                <span class="archive-item-date"><%- date(post.date, theme.date_format) %></span>
+            </div>
+            <% if(post.categories && post.categories.length > 0) { %>
+                <div class="archive-item-categories">
+                    <% post.categories.forEach(function(cat) { %>
+                        <span class="category-tag"><%- cat.name %></span>
+                    <% }); %>
+                </div>
+            <% } %>
+            <% if(post.excerpt) { %>
+                <div class="archive-item-excerpt"><%- strip_html(post.excerpt).substring(0, 100) %>...</div>
+            <% } %>
         </article>
     <% }) %>
     <%- partial('_partial/paginator') %>

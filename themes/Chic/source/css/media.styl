@@ -3,27 +3,27 @@
   .archive
     width 90%
 
-@media screen and (max-width: 479px) 
+@media screen and (max-width: 479px)
   .main
     padding-top 40pt
   .navbar
     display: none
 
 
-  .navbar-mobile 
+  .navbar-mobile
     display: block !important
     position: fixed
     width: 100%
     z-index: 100
     transition: all 0.6s ease 0s
-    .container 
+    .container
       padding: 0
       margin: 0
       //height: 5em
       line-height: 5.5em
       background: $light-background-color
 
-      .navbar-header 
+      .navbar-header
         display: flex
         justify-content: space-between
         align-items: flex-start
@@ -34,12 +34,12 @@
         position relative
 
 
-        .menu-toggle 
+        .menu-toggle
           cursor: pointer
           line-height: 5.5em
           padding auto 2em
 
-          span 
+          span
             display: block
             background: #000
             width: 36px
@@ -51,82 +51,80 @@
             -moz-transition: .25s margin .25s, .25s transform
             transition: .25s margin .25s, .25s transform
 
-            .dark-theme & 
+            .dark-theme &
               background: $dark-font-color
-            
-          
 
-          span:nth-child(1) 
+
+
+          span:nth-child(1)
             margin-bottom: 8px
-          
-          span:nth-child(3) 
-            margin-top: 8px
-          
 
-          &.active 
-            span 
+          span:nth-child(3)
+            margin-top: 8px
+
+
+          &.active
+            span
               -webkit-transition: .25s margin, .25s transform .25s
               -moz-transition: .25s margin, .25s transform .25s
               transition: .25s margin, .25s transform .25s
-            
-            span:nth-child(1) 
+
+            span:nth-child(1)
               -moz-transform: rotate(45deg) translate(4px, 6px)
               -ms-transform: rotate(45deg) translate(4px, 6px)
               -webkit-transform: rotate(45deg) translate(4px, 6px)
               transform: rotate(45deg) translate(4px, 6px)
-            
 
-            span:nth-child(2) 
+
+            span:nth-child(2)
               opacity: 0
-            
 
-            span:nth-child(3) 
+
+            span:nth-child(3)
               -moz-transform: rotate(-45deg) translate(8px, -10px)
               -ms-transform: rotate(-45deg) translate(8px, -10px)
               -webkit-transform: rotate(-45deg) translate(8px, -10px)
               transform: rotate(-45deg) translate(8px, -10px)
-            
-          
-        
-      
 
-      .menu 
-        text-align: center
-        background: #ffffff
-        border-top: 1px solid #000000
-        padding-top: 1em
-        padding-bottom: 1em
-        display: none
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.1)
-        a 
-          //display: block
 
-          //changed
-          display inline-block
-          margin 0 1em
 
-          line-height: 2.5em
-        
+        .menu
+          text-align: center
+          background: #ffffff
+          border-top: 1px solid #000000
+          padding-top: 1em
+          padding-bottom: 1em
+          display: none
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.1)
+          a
+            //display: block
 
-        &.active 
-          display: flex
-          flex-wrap: wrap
-          //changed
-          white-space nowrap
-          box-sizing border-box
-          overflow-x auto
+            //changed
+            display inline-block
+            margin 0 1em
 
-        .dark-theme & 
-          background: $dark-background-color
-          border-top: 2px solid $dark-font-secondary-color
-          justify-content: center
-        
-      
-      .dark-theme & 
-        background: $dark-background-color !important
-      
-    
-  
+            line-height: 2.5em
+
+
+          &.active
+            display: flex
+            flex-wrap: wrap
+            //changed
+            white-space nowrap
+            box-sizing border-box
+            overflow-x auto
+
+          .dark-theme &
+            background: $dark-background-color
+            border-top: 2px solid $dark-font-secondary-color
+            justify-content: center
+
+
+        .dark-theme &
+          background: $dark-background-color !important
+
+
+
 
   .archive
     width 90%
@@ -135,10 +133,10 @@
         display none
 
 
-  #dynamic-to-top 
+  #dynamic-to-top
     display: none !important
-  
-  .footer 
+
+  .footer
     height: 3rem
     width: 100%
     text-align: center
@@ -146,7 +144,7 @@
     padding-top: 2em
 
   .post-warp
-    padding-top: 6em
+    padding-top 6em
     .archive-item-date
       display: none
 
@@ -159,6 +157,40 @@
         .categories
           overflow: hidden
 
+  /* Mobile post content optimization */
+  .post-content
+    font-size 15px
+    line-height 1.9em
+    padding 1rem 0.8rem
+
+    h1
+      font-size 1.6em
+    h2
+      font-size 1.4em
+    h3
+      font-size 1.2em
+
+    code
+      font-size 12px
+      padding 2px 4px
+
+    pre
+      font-size 11px
+      padding 8px
+
+    img
+      max-width calc(100% + 1.6rem)
+      margin-left -0.8rem
+
+    blockquote
+      margin 1em 0
+      padding 0.8em
+
+    table
+      font-size 13px
+      display: block
+      overflow-x: auto
+      -webkit-overflow-scrolling: touch
 
 /* iPads (portrait and landscape) ----------- */
 @media screen and (max-width: 1023px)
@@ -174,6 +206,6 @@
 
 
 /* post toc Style */
-@media screen and (max-width: 1279px) // 最大宽度1279px时应用这条规则。（最大宽度小于1279px返回false，屏蔽规则。）
+@media screen and (max-width: 1279px)
   .post-toc
     display none

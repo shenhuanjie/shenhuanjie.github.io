@@ -7,6 +7,20 @@
 
   .archive-item
     margin-left 1.4rem
+    margin-bottom 1.2rem
+
+    &:hover
+      .archive-item-link
+        color $light-global-link-hover-color
+        .dark-theme &
+          color $dark-global-link-hover-color
+
+.archive-item-header
+  display flex
+  justify-content space-between
+  align-items baseline
+  flex-wrap wrap
+  gap 0.5rem
 
 .archive-item-link
     display inline-block
@@ -17,7 +31,7 @@
     &:hover
       color $light-global-link-hover-color
       background-color transparent
-    
+
     .dark-theme &
       color $dark-global-link-color
       text-decoration none
@@ -32,6 +46,33 @@
     float right
     text-align right
     color $light-font-secondary-color
+    font-size 0.85em
+    white-space nowrap
 
-    .dark-theme & 
+    .dark-theme &
       color $dark-font-secondary-color
+
+.archive-item-categories
+  margin-top 0.3rem
+  margin-left 0.5rem
+
+.archive-item-excerpt
+  margin-top 0.3rem
+  margin-left 0.5rem
+  color $light-font-secondary-color
+  font-size 0.9em
+  line-height 1.5
+  .dark-theme &
+    color $dark-font-secondary-color
+
+.category-tag
+  display inline-block
+  font-size 0.75em
+  padding 2px 8px
+  margin-right 0.5em
+  background $light-post-table-background-color
+  border-radius 3px
+  color $light-post-link-color
+  .dark-theme &
+    background $dark-post-table-background-color
+    color $dark-post-link-color
