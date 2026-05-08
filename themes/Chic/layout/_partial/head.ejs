@@ -61,7 +61,27 @@ var articleJsonLd = null;
 var breadcrumbJsonLd = null;
 
 if (is_post()) {
-    var articleImage = page.cover || config.og_image || null;
+    // 确保 image 字段始终存在（Google 结构化数据要求）
+    var articleImage = page.cover || config.og_image || full_url_for('/images/og-default.png');
+    // 获取文章关键词（从 tags 和 keywords 合并）
+    var articleKeywords = [];
+    if (page.tags && page.tags.length > 0) {
+        articleTags = page.tags.data || page.tags;
+        articleTags.forEach(function(tag) {
+            var tagName = tag.name || tag;
+            if (articleKeywords.indexOf(tagName) === -1) {
+                articleKeywords.push(tagName);
+            }
+        });
+    }
+    if (config.keywords) {
+        var siteKeywords = config.keywords.split(',').map(function(k) { return k.trim(); });
+        siteKeywords.forEach(function(keyword) {
+            if (articleKeywords.indexOf(keyword) === -1) {
+                articleKeywords.push(keyword);
+            }
+        });
+    }
     articleJsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -71,11 +91,13 @@ if (is_post()) {
         dateModified: modifiedTime,
         author: {
             '@type': 'Person',
-            name: config.author || config.title
+            name: config.author || config.title,
+            url: full_url_for('')
         },
         publisher: {
             '@type': 'Organization',
             name: '程序猿视界',
+            url: full_url_for(''),
             logo: {
                 '@type': 'ImageObject',
                 url: full_url_for('/images/og-default.png')
@@ -85,11 +107,10 @@ if (is_post()) {
             '@type': 'WebPage',
             '@id': canonicalUrl
         },
-        url: canonicalUrl
+        url: canonicalUrl,
+        image: articleImage,
+        keywords: articleKeywords.join(', ')
     };
-    if (articleImage) {
-        articleJsonLd.image = articleImage;
-    }
 
     // BreadcrumbList for posts
     var breadcrumbItems = [

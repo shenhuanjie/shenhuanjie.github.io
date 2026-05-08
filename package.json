@@ -8,7 +8,11 @@
     "deploy": "hexo deploy",
     "server": "hexo server",
     "ai:generate": "node bin/ai-generate",
-    "ai:clear-cache": "node scripts/ai-helper.js --clear"
+    "ai:clear-cache": "node scripts/ai-helper.js --clear",
+    "check:links": "node scripts/check-article-links.js",
+    "check:images": "node scripts/check-article-images.js",
+    "check:frontmatter": "node scripts/validate-frontmatter.js",
+    "check:quality": "node scripts/quality-check.js"
   },
   "hexo": {
     "version": "8.1.2"
@@ -27,5 +31,8 @@
     "hexo-renderer-marked": "^6.2.0",
     "hexo-renderer-stylus": "^2.1.0",
     "hexo-server": "^3.0.0"
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.1"
   }
 }

@@ -153,6 +153,60 @@ var readingTime = estimateReadingTime(page.content);
                 <p class="qrcode-tip">使用微信扫码</p>
             </div>
         </div>
+        <%# 相关文章推荐模块 %>
+        <%
+        // 生成相关文章（基于标签和分类匹配）
+        var relatedPosts = [];
+        var currentPostId = page.id || page.path;
+        var allPosts = site.posts.toArray();
+
+        if (allPosts.length > 1) {
+            var currentTags = (page.tags || []).map(function(t) { return t.name || t; });
+            var currentCats = (page.categories || []).map(function(c) { return c.name || c; });
+
+            var scored = allPosts.filter(function(p) {
+                return (p.id || p.path) !== currentPostId;
+            }).map(function(p) {
+                var score = 0;
+                var postTags = (p.tags || []).map(function(t) { return t.name || t; });
+                var postCats = (p.categories || []).map(function(c) { return c.name || c; });
+
+                // 标签匹配
+                currentTags.forEach(function(tag) {
+                    if (postTags.indexOf(tag) !== -1) score += 3;
+                });
+                // 分类匹配
+                currentCats.forEach(function(cat) {
+                    if (postCats.indexOf(cat) !== -1) score += 2;
+                });
+
+                return { post: p, score: score };
+            });
+
+            scored.sort(function(a, b) { return b.score - a.score; });
+            relatedPosts = scored.slice(0, 5).filter(function(item) { return item.score > 0; }).map(function(item) { return item.post; });
+        }
+        %>
+        <% if(relatedPosts.length > 0){ %>
+        <section class="related-posts">
+            <h3 class="related-title">相关文章</h3>
+            <ul class="related-list">
+                <% relatedPosts.forEach(function(post){ %>
+                <li class="related-item">
+                    <a href="<%- url_for(post.path) %>">
+                        <% if(post.cover){ %>
+                        <span class="related-thumb" style="background-image: url(<%= post.cover %>)"></span>
+                        <% } %>
+                        <span class="related-info">
+                            <span class="related-post-title"><%= post.title %></span>
+                            <span class="related-date"><%- date(post.date, 'YYYY-MM-DD') %></span>
+                        </span>
+                    </a>
+                </li>
+                <% }); %>
+            </ul>
+        </section>
+        <% } %>
         <section class="post-nav">
             <% if(post.prev){ %>
                 <a class="prev" rel="prev" href="<%- url_for(post.prev.path)%>"><%- post.prev.title%></a>

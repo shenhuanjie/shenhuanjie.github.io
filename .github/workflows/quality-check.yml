@@ -1,0 +1,92 @@
+name: Quality Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install js-yaml for validation scripts
+        run: npm install js-yaml --save-dev
+
+      - name: Run Frontmatter Validation
+        run: npm run check:frontmatter
+        continue-on-error: true
+
+      - name: Run Link Check
+        run: npm run check:links
+        continue-on-error: true
+
+      - name: Run Image Check
+        run: npm run check:images
+        continue-on-error: true
+
+      - name: Run Quality Check
+        run: npm run check:quality
+        continue-on-error: true
+
+      - name: Upload Check Results
+        if: always()
+        run: |
+          echo "=== Quality Check Results ==="
+          echo "Frontmatter validation, link check, image check, and quality check completed."
+          echo "Check the output above for details."
+
+  build:
+    runs-on: ubuntu-latest
+    needs: quality-check
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
