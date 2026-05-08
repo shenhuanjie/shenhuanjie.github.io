@@ -52,6 +52,35 @@
         });
     }
 
+    function trackWechatShare() {
+        var pageInfo = getPageInfo();
+        trackEvent('wechat_share', {
+            event_category: 'engagement',
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    function trackDonateClick(method) {
+        var pageInfo = getPageInfo();
+        trackEvent('donate_click', {
+            event_category: 'conversion',
+            method: method,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    function trackCommunityClick(location) {
+        var pageInfo = getPageInfo();
+        trackEvent('community_click', {
+            event_category: 'engagement',
+            location: location,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
     function trackComment(action) {
         var pageInfo = getPageInfo();
         trackEvent('comment_submit', {
@@ -344,10 +373,76 @@
                 var platform = btn.classList.contains('twitter') ? 'twitter' :
                                btn.classList.contains('facebook') ? 'facebook' :
                                btn.classList.contains('linkedin') ? 'linkedin' :
-                               btn.classList.contains('email') ? 'email' : 'other';
+                               btn.classList.contains('email') ? 'email' :
+                               btn.classList.contains('wechat') ? 'wechat' : 'other';
                 trackShare(platform);
             });
         });
+
+        // 微信分享点击追踪（复制链接等场景）
+        var wechatShareBtn = document.querySelector('.share-btn.wechat');
+        if (wechatShareBtn) {
+            wechatShareBtn.addEventListener('click', function() {
+                trackWechatShare();
+            });
+        }
+
+        // 公众号引导模块点击追踪
+        var wechatGuideBtn = document.querySelector('.wechat-guide-btn');
+        if (wechatGuideBtn) {
+            wechatGuideBtn.addEventListener('click', function() {
+                trackEvent('wechat_guide_click', {
+                    event_category: 'engagement',
+                    page_title: getPageInfo().title,
+                    page_url: getPageInfo().url
+                });
+            });
+        }
+
+        // 打赏按钮点击追踪
+        var sponsorsDetails = document.querySelector('.sponsors-details');
+        if (sponsorsDetails) {
+            sponsorsDetails.addEventListener('toggle', function() {
+                if (sponsorsDetails.hasAttribute('open')) {
+                    trackDonateClick('open');
+                }
+            });
+            // 追踪具体的打赏二维码点击
+            var sponsorItems = document.querySelectorAll('.sponsor-item');
+            sponsorItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    var method = item.querySelector('h4');
+                    if (method) {
+                        trackDonateClick(method.textContent.toLowerCase().includes('wechat') ? 'wechat' : 'alipay');
+                    }
+                });
+            });
+        }
+
+        // 底部打赏链接点击追踪
+        var footerSponsorsLink = document.querySelector('.footer-link-item[href*="sponsors"]');
+        if (footerSponsorsLink) {
+            footerSponsorsLink.addEventListener('click', function() {
+                trackDonateClick('footer_link');
+            });
+        }
+
+        // 社群入口点击追踪
+        var communityLinks = document.querySelectorAll('.footer-link-item[href*="社群"], .community-link, .zsxq-link');
+        communityLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                var location = link.textContent.trim() || 'community';
+                trackCommunityClick(location);
+            });
+        });
+
+        // 知识星球入口点击追踪
+        var zsxqLink = document.querySelector('a[href*="zsxq"], a[href*="知识星球"]');
+        if (zsxqLink) {
+            zsxqLink.addEventListener('click', function() {
+                trackCommunityClick('zsxq');
+            });
+        }
 
         // 评论事件追踪（监听 utterances iframe）
         var utterancesObserver = new MutationObserver(function(mutations) {

@@ -55,6 +55,10 @@ links:
   Weibo: https://weibo.com/u/1667695521
   # WeChat: shenhuanjie1024
   Github: https://github.com/shenhuanjie
+  # 微信公众号
+  WeChat: /wechat
+  # 知识星球
+  知识星球: /zsxq
 
 # how links show: you have 2 choice--text or icon.
 links_text_enable: false

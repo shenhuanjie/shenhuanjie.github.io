@@ -1,4 +1,81 @@
 // ==============================
+// Post WeChat Guide (v1.7)
+// ==============================
+.post-wechat-guide
+  margin 1.5rem 0
+  padding 1rem
+  background linear-gradient(135deg, #07c160 0%, #10b757 100%)
+  border-radius 8px
+  .dark-theme &
+    background linear-gradient(135deg, #0a8f3c 0%, #0d7a35 100%)
+
+.wechat-guide-content
+  display flex
+  align-items center
+  gap 12px
+
+.wechat-guide-icon
+  font-size 32px
+  flex-shrink 0
+
+.wechat-guide-text
+  flex 1
+  .dark-theme &
+    color #fff
+
+.wechat-guide-title
+  margin 0
+  font-size 16px
+  font-weight 600
+  color #fff
+
+.wechat-guide-desc
+  margin 4px 0 0 0
+  font-size 13px
+  color rgba(255, 255, 255, 0.85)
+  .dark-theme &
+    color rgba(255, 255, 255, 0.75)
+
+.wechat-guide-btn
+  display inline-block
+  padding 8px 20px
+  background #fff
+  color #07c160
+  font-size 14px
+  font-weight 500
+  border-radius 50px
+  text-decoration none
+  transition all 0.2s ease
+  flex-shrink 0
+  &:hover
+    background rgba(255, 255, 255, 0.9)
+    color #06a050
+    text-decoration none
+  .dark-theme &
+    background #fff
+    color #07c160
+
+// Mobile responsive
+@media screen and (max-width: 479px)
+  .post-wechat-guide
+    margin 1rem 0
+    padding 0.75rem
+
+  .wechat-guide-content
+    flex-wrap wrap
+    text-align center
+
+  .wechat-guide-icon
+    font-size 28px
+
+  .wechat-guide-text
+    flex 1 1 100%
+    margin-top 8px
+
+  .wechat-guide-btn
+    margin-top 8px
+
+// ==============================
 // Custom style
 // ==============================
 //  Also You can override the variables in variable.styl to customize the style
