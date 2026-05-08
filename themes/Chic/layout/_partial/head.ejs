@@ -74,8 +74,12 @@ if (is_post()) {
             name: config.author || config.title
         },
         publisher: {
-            '@type': 'Person',
-            name: config.author || config.title
+            '@type': 'Organization',
+            name: '程序猿视界',
+            logo: {
+                '@type': 'ImageObject',
+                url: full_url_for('/images/og-default.png')
+            }
         },
         mainEntityOfPage: {
             '@type': 'WebPage',

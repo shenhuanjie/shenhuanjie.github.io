@@ -2,6 +2,7 @@
 title: 2026年大模型技术全景演进：核心突破、落地范式与未来深水区
 date: '2026-05-08 10:00:00'
 updated: '2026-05-08 10:00:00'
+description: 深入解析2026年大模型技术演进脉络，涵盖基座架构升级、国产大模型突破、AI Agent落地范式、混合架构部署等核心话题
 permalink: /post/2026-05-08-2026-llm-technology-overview.html
 comments: true
 toc: true

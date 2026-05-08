@@ -96,6 +96,7 @@ stylesheets:
 # scripts loaded in the end of the body
 scripts:
   - /js/script.js
+  - /js/lazyload.js
   - /js/tocbot.min.js
   - /js/user-interaction.js
   - /js/favorites-page.js
@@ -152,6 +153,7 @@ cdn:
   # JavaScript 文件
   js:
     - /js/script.js
+    - /js/lazyload.js
     - /js/tocbot.min.js
     - /js/user-interaction.js
     - /js/favorites-page.js
