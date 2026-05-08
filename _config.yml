@@ -178,22 +178,31 @@ deploy:
 ai_auto_generate: true
 
 # ==============================
-# 数据分析配置 (v2.1 Phase 3)
+# 数据分析配置 (v2.2 Phase 3)
 # ==============================
 # Google Analytics 4 配置
-# 说明：静态博客数据分析能力有限，详细配置请参考 docs/product/数据分析配置指南.md
+# 说明：详细配置说明请参考 docs/product/数据分析配置指南.md
+#
+# 【重要】主题配置说明：
+# Chic 主题的 GA4 配置位于 themes/Chic/_config.yml
+# 该配置文件供 Hexo 插件或自定义集成使用
+#
+# 【如何获取 Measurement ID】
+# 1. 访问 https://analytics.google.com/ 并登录
+# 2. 进入「管理」→「数据流」→ 选择您的网站数据流
+# 3. 点击「测量 ID」查看，格式为 G-XXXXXXXXXX
 google_analytics:
-  enable: false
+  enable: true
   # 请替换为您的 GA4 Measurement ID (格式: G-XXXXXXXXXX)
-  measurement_id: ''
+  measurement_id: 'G-XXXXXXXXXX'
   # 高级选项
   options:
     anonymize_ip: true          # 匿名化 IP（GDPR 合规）
     send_page_view: true        # 自动发送页面浏览事件
     debug_mode: false            # 调试模式（仅开发时启用）
 
-# 百度统计配置（可选，国内访问数据更准确）
-# 说明：与 GA4 二选一使用，详细配置请参考 docs/product/数据分析配置指南.md
+# 百度统计配置（可选，作为 GA4 的补充，国内访问数据更准确）
+# 说明：与 GA4 可同时使用，详细配置请参考 docs/product/数据分析配置指南.md
 baidu_tongji:
   enable: false
   # 请替换为您的百度统计代码
@@ -238,7 +247,7 @@ i18n:
 
 # HTML 压缩配置
 html_minifier:
-  enable: true
+  enable: false
   exclude:
     - '*.min.css'
     - '*.min.js'

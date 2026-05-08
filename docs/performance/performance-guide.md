@@ -140,6 +140,12 @@ lighthouse https://shenhuanjie.github.io/ --output html --output-path ./lighthou
    - 图片压缩 (使用 imagemin 或 similar)
    - 考虑使用 CSS Sprite 合并小图标
 
+2. **CDN 配置（已规划，待实施）**
+   - 评估七牛云、Cloudflare 或其他 CDN 服务
+   - 图片资源迁移到 CDN（当前存储在 `source/images/posts/`，共 41MB）
+   - 配置 CDN 缓存策略
+   - 更新图片引用路径
+
 2. **缓存策略**
    - 配置合理的 Cache-Control
    - 启用浏览器缓存
