@@ -40,131 +40,235 @@ const ARTICLES = [
   }
 ];
 
-function fetchUrl(url) {
-  return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? https : http;
-    const options = {
-      headers: {
-        'User-Agent': USER_AGENT,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
-      },
-      timeout: 30000
-    };
+// 配置常量
+const MIN_CONTENT_LENGTH = 200;  // 最小文章长度
+const MAX_RETRIES = 3;           // 最大重试次数
+const RETRY_DELAY = 2000;        // 重试延迟(ms)
+const POSTS_DIR = path.join(__dirname, '..', 'source', '_posts');
 
-    protocol.get(url, options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(data));
-    }).on('error', reject).on('timeout', () => reject(new Error('Timeout')));
-  });
+/**
+ * 获取已存在的文章标题列表（用于去重）
+ */
+function getExistingArticles() {
+  const existing = new Set();
+  if (!fs.existsSync(POSTS_DIR)) return existing;
+
+  const dirs = fs.readdirSync(POSTS_DIR);
+  for (const dir of dirs) {
+    const indexPath = path.join(POSTS_DIR, dir, 'index.md');
+    if (fs.existsSync(indexPath)) {
+      try {
+        const content = fs.readFileSync(indexPath, 'utf-8');
+        const titleMatch = content.match(/^title:\s*(.+)$/m);
+        if (titleMatch) existing.add(titleMatch[1].trim());
+      } catch (e) {
+        console.warn(`警告: 读取已有文章失败 ${dir}: ${e.message}`);
+      }
+    }
+  }
+  return existing;
+}
+
+/**
+ * 检查URL是否已采集
+ */
+function isUrlAlreadyCrawled(url, existingArticles) {
+  for (const title of existingArticles) {
+    const slug = sanitizeFilename(title);
+    const articleDir = path.join(POSTS_DIR, slug);
+    if (fs.existsSync(articleDir)) {
+      const indexPath = path.join(articleDir, 'index.md');
+      if (fs.existsSync(indexPath)) {
+        const content = fs.readFileSync(indexPath, 'utf-8');
+        if (content.includes(url)) return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * 延迟函数
+ */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * 带重试的URL获取
+ */
+async function fetchUrl(url, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      console.log(`  [${attempt}/${retries}] 请求: ${url}`);
+      const protocol = url.startsWith('https') ? https : http;
+      const options = {
+        headers: {
+          'User-Agent': USER_AGENT,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        },
+        timeout: 30000
+      };
+
+      const response = await new Promise((resolve, reject) => {
+        const req = protocol.get(url, options, (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            // 处理重定向
+            resolve(fetchUrl(res.headers.location, 1));
+            return;
+          }
+          if (res.statusCode !== 200) {
+            reject(new Error(`HTTP ${res.statusCode}`));
+            return;
+          }
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => resolve(data));
+        });
+        req.on('error', reject);
+        req.on('timeout', () => {
+          req.destroy();
+          reject(new Error('Timeout'));
+        });
+      });
+      return response;
+    } catch (e) {
+      console.log(`  请求失败: ${e.message}`);
+      if (attempt < retries) {
+        console.log(`  ${RETRY_DELAY}ms 后重试...`);
+        await delay(RETRY_DELAY);
+      } else {
+        throw e;
+      }
+    }
+  }
 }
 
 function extractCnblogsContent(html) {
-  const dom = new JSDOM(html);
-  const doc = dom.window.document;
+  try {
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
+    const postBody = doc.querySelector('#post_detail');
+    if (!postBody) return null;
 
-  // 博客园文章内容
-  const postBody = doc.querySelector('#post_detail');
-  if (!postBody) return null;
+    const title = doc.querySelector('.postTitle')?.textContent?.trim() || '';
+    const date = doc.querySelector('.postDesc')?.textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
+    const content = postBody.querySelector('.blogpost-body')?.innerHTML || postBody.innerHTML;
 
-  const title = doc.querySelector('.postTitle')?.textContent?.trim() || '';
-  const date = doc.querySelector('.postDesc')?.textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
-  const content = postBody.querySelector('.blogpost-body')?.innerHTML || postBody.innerHTML;
+    const images = [];
+    const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+    let match;
+    while ((match = imgRegex.exec(content)) !== null) {
+      images.push(match[1]);
+    }
 
-  // 提取图片并下载
-  const images = [];
-  const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
-  let match;
-  while ((match = imgRegex.exec(content)) !== null) {
-    images.push(match[1]);
+    return { title, date, content, images };
+  } catch (e) {
+    console.error(`  提取博客园内容失败: ${e.message}`);
+    return null;
   }
-
-  return { title, date, content, images };
 }
 
 function extractCsdnContent(html, url) {
-  const dom = new JSDOM(html);
-  const doc = dom.window.document;
+  try {
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
 
-  const title = doc.querySelector('h1.title-h1')?.textContent?.trim() ||
-                doc.querySelector('h1')?.textContent?.trim() || '';
-  const dateMatch = doc.querySelector('.time')?.textContent?.match(/\d{4}-\d{2}-\d{2}/) ||
-                    html.match(/发布时间.*?(\d{4}-\d{2}-\d{2})/);
-  const date = dateMatch ? dateMatch[1] : '';
+    const title = doc.querySelector('h1.title-h1')?.textContent?.trim() ||
+                  doc.querySelector('h1')?.textContent?.trim() || '';
+    const dateMatch = doc.querySelector('.time')?.textContent?.match(/\d{4}-\d{2}-\d{2}/) ||
+                      html.match(/发布时间.*?(\d{4}-\d{2}-\d{2})/);
+    const date = dateMatch ? dateMatch[1] : '';
 
-  const content = doc.querySelector('#content_views')?.innerHTML ||
-                  doc.querySelector('.article-content')?.innerHTML || '';
+    const content = doc.querySelector('#content_views')?.innerHTML ||
+                    doc.querySelector('.article-content')?.innerHTML || '';
 
-  // 清理CSDN的图片引用
-  let cleanContent = content.replace(/data-src=/g, 'src=');
-  cleanContent = cleanContent.replace(/https:\/\/img-blog\.csdn\.net[^"']*/g, (match) => {
-    return match;
-  });
+    let cleanContent = content.replace(/data-src=/g, 'src=');
+    cleanContent = cleanContent.replace(/https:\/\/img-blog\.csdn\.net[^"']*/g, (match) => {
+      return match;
+    });
 
-  const images = [];
-  const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
-  let match;
-  while ((match = imgRegex.exec(cleanContent)) !== null) {
-    images.push(match[1]);
+    const images = [];
+    const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+    let match;
+    while ((match = imgRegex.exec(cleanContent)) !== null) {
+      images.push(match[1]);
+    }
+
+    return { title, date, content: cleanContent, images };
+  } catch (e) {
+    console.error(`  提取CSDN内容失败: ${e.message}`);
+    return null;
   }
-
-  return { title, date, content: cleanContent, images };
 }
 
 function extractTencentContent(html, url) {
-  const dom = new JSDOM(html);
-  const doc = dom.window.document;
+  try {
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
 
-  // 腾讯开发者社区文章内容提取
-  const articleContent = doc.querySelector('.mod-article-content') ||
-                         doc.querySelector('.mod-content__markdown') ||
-                         doc.querySelector('.article-content');
+    const articleContent = doc.querySelector('.mod-article-content') ||
+                           doc.querySelector('.mod-content__markdown') ||
+                           doc.querySelector('.article-content');
 
-  const title = doc.querySelector('h1')?.textContent?.trim() ||
-                 doc.querySelector('.cdc-m-header-article__title')?.textContent?.trim() || '';
+    const title = doc.querySelector('h1')?.textContent?.trim() ||
+                   doc.querySelector('.cdc-m-header-article__title')?.textContent?.trim() || '';
 
-  // 提取日期
-  const dateMeta = doc.querySelector('meta[name="subjectTime"]')?.getAttribute('content');
-  const dateMatch = dateMeta ? dateMeta.match(/\d{4}-\d{2}-\d{2}/) : null;
-  const date = dateMatch ? dateMatch[0] : '';
+    const dateMeta = doc.querySelector('meta[name="subjectTime"]')?.getAttribute('content');
+    const dateMatch = dateMeta ? dateMeta.match(/\d{4}-\d{2}-\d{2}/) : null;
+    const date = dateMatch ? dateMatch[0] : '';
 
-  const content = articleContent?.innerHTML || '';
+    const content = articleContent?.innerHTML || '';
 
-  // 清理腾讯的图片引用
-  let cleanContent = content.replace(/data-src=/g, 'src=');
-  cleanContent = cleanContent.replace(/src="[^"]*cloudcache[^"]*"/g, (match) => {
-    return match;
-  });
+    let cleanContent = content.replace(/data-src=/g, 'src=');
+    cleanContent = cleanContent.replace(/src="[^"]*cloudcache[^"]*"/g, (match) => {
+      return match;
+    });
 
-  const images = [];
-  const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
-  let imgMatch;
-  while ((imgMatch = imgRegex.exec(cleanContent)) !== null) {
-    images.push(imgMatch[1]);
+    const images = [];
+    const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+    let imgMatch;
+    while ((imgMatch = imgRegex.exec(cleanContent)) !== null) {
+      images.push(imgMatch[1]);
+    }
+
+    return { title, date, content: cleanContent, images };
+  } catch (e) {
+    console.error(`  提取腾讯内容失败: ${e.message}`);
+    return null;
   }
-
-  return { title, date, content: cleanContent, images };
 }
 
 function sanitizeFilename(name) {
   return name.replace(/[^\w一-龥]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-async function downloadImage(imgUrl, saveDir, index) {
-  try {
-    const filename = `image-${index}${path.extname(imgUrl.split('?')[0]) || '.png'}`;
-    const filepath = path.join(saveDir, filename);
+/**
+ * 下载图片（带重试）
+ */
+async function downloadImage(imgUrl, saveDir, index, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const ext = path.extname(imgUrl.split('?')[0]) || '.png';
+      const filename = `image-${index}${ext}`;
+      const filepath = path.join(saveDir, filename);
 
-    if (fs.existsSync(filepath)) return filename;
+      if (fs.existsSync(filepath)) return filename;
 
-    const response = await fetchUrl(imgUrl);
-    fs.writeFileSync(filepath, response);
-
-    return filename;
-  } catch (e) {
-    console.log(`Failed to download image: ${imgUrl}`);
-    return null;
+      const response = await fetchUrl(imgUrl, 1);
+      fs.writeFileSync(filepath, response);
+      console.log(`    图片已下载: ${filename}`);
+      return filename;
+    } catch (e) {
+      console.warn(`    图片下载失败 (${attempt}/${retries}): ${imgUrl}`);
+      if (attempt < retries) {
+        await delay(RETRY_DELAY);
+      } else {
+        console.warn(`    跳过图片: ${imgUrl}`);
+        return null;
+      }
+    }
   }
 }
 
@@ -186,13 +290,14 @@ async function processImages(content, articleDir, articleTitle) {
   return processedContent;
 }
 
-function convertToHexoPost(title, date, content, source) {
+function convertToHexoPost(title, date, content, source, originalUrl) {
   const slug = sanitizeFilename(title);
   const hexoDate = date ? new Date(date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
 
   const frontMatter = `---
 title: ${title}
 date: ${hexoDate}
+source: ${originalUrl}
 categories:
   - AI编程
   - 大模型
@@ -203,15 +308,40 @@ tags:
 ---
 
 > 来源: ${source}
+> 原文: ${originalUrl}
 
 `;
 
   return frontMatter + content;
 }
 
+/**
+ * 文章质量检查
+ */
+function checkQuality(extracted, originalUrl) {
+  if (!extracted) {
+    console.log(`  质量检查: 提取内容为空`);
+    return false;
+  }
+
+  if (!extracted.content || extracted.content.length < MIN_CONTENT_LENGTH) {
+    console.log(`  质量检查: 内容过短 (${extracted.content?.length || 0} < ${MIN_CONTENT_LENGTH} 字)`);
+    return false;
+  }
+
+  // 过滤无意义内容
+  const strippedContent = extracted.content.replace(/<[^>]+>/g, '').trim();
+  if (strippedContent.length < MIN_CONTENT_LENGTH) {
+    console.log(`  质量检查: 纯文本内容过短`);
+    return false;
+  }
+
+  return true;
+}
+
 async function crawlArticle(article) {
-  console.log(`\n Crawling: ${article.title}`);
-  console.log(` URL: ${article.url}`);
+  console.log(`\n▶ 开始采集: ${article.title}`);
+  console.log(`  URL: ${article.url}`);
 
   try {
     const html = await fetchUrl(article.url);
@@ -223,21 +353,22 @@ async function crawlArticle(article) {
       extracted = extractCsdnContent(html, article.url);
     } else if (article.source === 'tencent') {
       extracted = extractTencentContent(html, article.url);
+    } else {
+      console.log(`  未知来源: ${article.source}`);
+      return false;
     }
 
-    if (!extracted || !extracted.content) {
-      console.log(` Failed to extract content`);
+    // 质量检查
+    if (!checkQuality(extracted, article.url)) {
       return false;
     }
 
     const slug = sanitizeFilename(extracted.title || article.title);
-    const articleDir = path.join(__dirname, '..', 'source', '_posts', slug);
+    const articleDir = path.join(POSTS_DIR, slug);
     const imagesDir = path.join(articleDir, 'images');
 
-    if (!fs.existsSync(articleDir)) {
-      fs.mkdirSync(articleDir, { recursive: true });
-      fs.mkdirSync(imagesDir, { recursive: true });
-    }
+    fs.mkdirSync(articleDir, { recursive: true });
+    fs.mkdirSync(imagesDir, { recursive: true });
 
     // 处理图片
     const processedContent = await processImages(extracted.content, imagesDir, extracted.title);
@@ -247,30 +378,63 @@ async function crawlArticle(article) {
       extracted.title || article.title,
       extracted.date,
       processedContent,
-      article.source
+      article.source,
+      article.url
     );
 
     const mdPath = path.join(articleDir, 'index.md');
     fs.writeFileSync(mdPath, hexoPost, 'utf-8');
 
-    console.log(` Saved: ${mdPath}`);
+    console.log(`  ✓ 已保存: ${mdPath}`);
+    console.log(`  ✓ 字数: ${processedContent.replace(/<[^>]+>/g, '').length}`);
     return true;
   } catch (e) {
-    console.log(` Error: ${e.message}`);
+    console.error(`  ✗ 错误: ${e.message}`);
     return false;
   }
 }
 
 async function main() {
-  console.log('Starting article crawl...\n');
+  console.log('===========================================');
+  console.log('       文章采集脚本 v2.0');
+  console.log('===========================================');
+  console.log(`\n配置:`);
+  console.log(`  - 最小文章长度: ${MIN_CONTENT_LENGTH} 字`);
+  console.log(`  - 最大重试次数: ${MAX_RETRIES}`);
+  console.log(`  - 文章目录: ${POSTS_DIR}`);
+  console.log('');
+
+  // 获取已存在的文章
+  console.log('检查已存在的文章...');
+  const existingArticles = getExistingArticles();
+  console.log(`已发现 ${existingArticles.size} 篇文章\n`);
 
   let success = 0;
+  let skipped = 0;
+
   for (const article of ARTICLES) {
+    // 去重检查
+    if (isUrlAlreadyCrawled(article.url, existingArticles)) {
+      console.log(`\n⏭ 跳过已采集: ${article.title}`);
+      console.log(`  URL: ${article.url}`);
+      skipped++;
+      continue;
+    }
+
     const ok = await crawlArticle(article);
     if (ok) success++;
   }
 
-  console.log(`\n Done! ${success}/${ARTICLES.length} articles crawled successfully.`);
+  console.log('\n===========================================');
+  console.log('       采集完成');
+  console.log('===========================================');
+  console.log(`成功: ${success}/${ARTICLES.length}`);
+  console.log(`跳过: ${skipped}`);
+  console.log(`失败: ${ARTICLES.length - success - skipped}`);
+  console.log('===========================================\n');
 }
 
-main().catch(console.error);
+main().catch(e => {
+  console.error('脚本执行失败:', e);
+  process.exit(1);
+});

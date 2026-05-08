@@ -279,8 +279,7 @@ gtag('config', '<%= theme.google_analytics.tracking_id %>', {
     <script src="<%- url_for(url) %>"></script>
     <% }); %>
 <% } %>
-<%# 用户互动功能脚本（收藏、阅读历史） %>
-<script src="<%- url_for('/js/user-interaction.js') %>"></script>
+<%# 用户互动功能脚本（收藏、阅读历史）- 已通过 cdn.js 加载 %>
 <%# 二维码生成脚本 %>
 <script src="<%- url_for('/js/qrcode.min.js') %>"></script>
 <%# mathjax support %>
