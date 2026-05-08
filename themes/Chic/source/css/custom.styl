@@ -415,6 +415,7 @@
     width 300px
     max-height 400px
     overflow-y auto
+    overflow-x hidden
     background #fff
     border-radius 8px
     box-shadow 0 4px 20px rgba(0, 0, 0, 0.15)
@@ -426,6 +427,11 @@
     .dark-theme &
       background $dark-background-color
       border 1px solid #444
+
+    // 隐藏水平滚动条
+    .history-list
+      overflow-x hidden
+      word-wrap break-word
 
   .history-header
     padding 12px 16px
