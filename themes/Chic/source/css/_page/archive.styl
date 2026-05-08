@@ -66,13 +66,15 @@
     color $dark-font-secondary-color
 
 .category-tag
-  display inline-block
-  font-size 0.75em
-  padding 2px 8px
+  display inline
+  font-size 0.85em
   margin-right 0.5em
-  background $light-post-table-background-color
-  border-radius 3px
-  color $light-post-link-color
+  color $light-font-secondary-color
+  &::before
+    content "#"
+  &:hover
+    color $light-global-link-hover-color
   .dark-theme &
-    background $dark-post-table-background-color
-    color $dark-post-link-color
+    color $dark-font-secondary-color
+    &:hover
+      color $dark-global-link-hover-color
