@@ -108,3 +108,14 @@ mathjax:
   import: demand # global or demand
   ## global: all pages will load mathjax,this will degrade performance and some grammers may be parsed wrong.
   ## demand: Recommend option,if your post need fomula, you can declare 'mathjax: true' in Front-matter
+
+# Utterances 评论系统
+## https://utteranc.es/
+## 需要在 GitHub 仓库中安装 utterances APP
+utterances:
+  enable: false
+  repo: your-github-username/your-repo-name  # 格式: username/repo
+  issue_term: pathname  # pathname, url, title, og:title
+  label: comment  # 评论标签（可选）
+  theme: github-light
+  dark_theme: github-dark

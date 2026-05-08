@@ -52,8 +52,10 @@ var ogType = is_post() ? 'article' : 'website';
 var publishedTime = isoDate(page.date);
 var modifiedTime = isoDate(page.updated || page.date);
 var articleJsonLd = null;
+var breadcrumbJsonLd = null;
 
 if (is_post()) {
+    var articleImage = page.cover || config.og_image || null;
     articleJsonLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
@@ -75,6 +77,108 @@ if (is_post()) {
         },
         url: canonicalUrl
     };
+    if (articleImage) {
+        articleJsonLd.image = articleImage;
+    }
+
+    // BreadcrumbList for posts
+    var breadcrumbItems = [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: '首页',
+            item: full_url_for('')
+        }
+    ];
+    if (page.categories && page.categories.length > 0) {
+        var category = page.categories.data[0] || page.categories[0];
+        var categoryName = category.name || category;
+        var categorySlug = category.slug || category;
+        breadcrumbItems.push({
+            '@type': 'ListItem',
+            position: 2,
+            name: categoryName,
+            item: full_url_for('categories/' + categorySlug + '/')
+        });
+    }
+    breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: breadcrumbItems.length + 1,
+        name: page.title
+    });
+    breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbItems
+    };
+} else if (is_category()) {
+    // BreadcrumbList for category pages
+    var categoryName = page.category;
+    breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: '首页',
+                item: full_url_for('')
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: '分类: ' + categoryName,
+                item: canonicalUrl
+            }
+        ]
+    };
+} else if (is_tag()) {
+    // BreadcrumbList for tag pages
+    var tagName = page.tag;
+    breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: '首页',
+                item: full_url_for('')
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: '标签: ' + tagName,
+                item: canonicalUrl
+            }
+        ]
+    };
+} else if (is_archive()) {
+    // BreadcrumbList for archive pages
+    var archiveTitle = __('archive_a');
+    if (is_month()) {
+        archiveTitle += ': ' + page.year + '/' + page.month;
+    } else if (is_year()) {
+        archiveTitle += ': ' + page.year;
+    }
+    breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: '首页',
+                item: full_url_for('')
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: archiveTitle,
+                item: canonicalUrl
+            }
+        ]
+    };
 }
 %>
 <% if(config.author){ %>
@@ -89,6 +193,9 @@ if (is_post()) {
 <% if(config.keywords){ %>
     <meta name="keywords" content="<%= config.keywords %>">
 <% } %>
+<% if(config.site_location){ %>
+    <meta name="geo.position" content="<%= config.site_location %>">
+<% } %>
 <title><%= pageTitle %></title>
 <link rel="canonical" href="<%- canonicalUrl %>">
 <meta property="og:type" content="<%= ogType %>">
@@ -98,10 +205,21 @@ if (is_post()) {
 <% } %>
 <meta property="og:url" content="<%- canonicalUrl %>">
 <meta property="og:site_name" content="<%= config.title %>">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="zh_CN">
+<% if(page.cover){ %>
+<meta property="og:image" content="<%= page.cover %>">
+<% } else if(config.og_image){ %>
+<meta property="og:image" content="<%= config.og_image %>">
+<% } %>
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= pageTitle %>">
 <% if(pageDescription){ %>
     <meta name="twitter:description" content="<%= pageDescription %>">
+<% } %>
+<% if(page.cover){ %>
+<meta name="twitter:image" content="<%= page.cover %>">
+<% } else if(config.og_image){ %>
+<meta name="twitter:image" content="<%= config.og_image %>">
 <% } %>
 <% if(is_post() && publishedTime){ %>
     <meta property="article:published_time" content="<%= publishedTime %>">
@@ -111,6 +229,9 @@ if (is_post()) {
 <% } %>
 <% if(articleJsonLd){ %>
     <script type="application/ld+json"><%- jsonForHtml(articleJsonLd) %></script>
+<% } %>
+<% if(breadcrumbJsonLd){ %>
+    <script type="application/ld+json"><%- jsonForHtml(breadcrumbJsonLd) %></script>
 <% } %>
 
 <%# favicon %>
@@ -132,6 +253,8 @@ if (is_post()) {
     <script src="<%- url_for(url) %>"></script>
     <% }); %>
 <% } %>
+<%# 用户互动功能脚本（收藏、阅读历史） %>
+<script src="<%- url_for('/js/user-interaction.js') %>"></script>
 <%# mathjax support %>
 <% if(theme.mathjax.enable!==null&&theme.mathjax.enable===true){ %>
     <%# import mathjax method: global or demand %>

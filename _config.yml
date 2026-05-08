@@ -69,11 +69,38 @@ index_generator:
 # Category & Tag
 default_category: uncategorized
 category_map:
+  AI大模型: ai-llm
+  AI应用: ai-application
+  智能化标准: ai-standard
+  AI周报: ai-weekly
+  AI日更: ai-daily
+  AI人工智能: ai
+  产业观察: industry
+  AI资讯: ai-news
 tag_map:
+  AI大模型: ai-llm
+  大模型: ai-llm
+  LLM: ai-llm
+  GPT: ai-llm
+  AI应用: ai-application
+  AI工具: ai-application
+  智能化标准: ai-standard
+  L1-L4: ai-standard
+  AI分级: ai-standard
+  AI周报: ai-weekly
+  AI日更: ai-daily
+  人工智能: ai
+  AI治理: ai-governance
+  产业动态: industry
+  技术变革: technology
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 meta_generator: true
+
+# Site Location (for geo.position meta tag - OpenStreetMap)
+# Format: latitude;longitude (e.g., "31.2304;121.4737" for Shanghai)
+site_location:
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date
@@ -103,6 +130,12 @@ theme: Chic
 # Search discovery
 sitemap:
   path: sitemap.xml
+  rel: true
+  tags: true
+  categories: true
+
+# Social Sharing Default Image (used when no cover image is specified)
+og_image: https://shenhuanjie.github.io/images/og-default.png
 
 search:
   path: search.json
