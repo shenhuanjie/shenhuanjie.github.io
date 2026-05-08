@@ -1,7 +1,7 @@
 ---
 title: 如何在 LobeChat 中使用 Ollama
 date: '2025-01-08 16:13:20'
-updated: '2025-01-08 16:38:13'
+updated: '2026-05-08 17:00:00'
 excerpt: >-
   本文介绍了如何在LobeChat中使用Ollama框架运行本地大型语言模型。文章详细说明了在macOS、Windows和Linux操作系统下安装和配置Ollama的步骤，并指导用户如何通过Docker容器部署Ollama。此外，文章还介绍了如何在LobeChat中安装和选择Ollama模型进行对话。
 tags:
@@ -46,8 +46,6 @@ launchctl setenv OLLAMA_ORIGINS "*"
 ### 在 LobeChat 中与本地大模型对话
 
 　　接下来，你就可以使用 LobeChat 与本地 LLM 对话了。
-
-​![在 LobeChat 中与 llama3 对话](https://github.com/lobehub/lobe-chat/assets/28616219/7f9a9a9f-fd91-4f59-aac9-3f26c6d49a1e)​
 
 ## 在 windows 下使用 Ollama
 
@@ -145,8 +143,6 @@ docker run -d --gpus=all -v ollama:/root/.ollama -e OLLAMA_ORIGINS="*" -p 11434:
 
 　　在 LobeChat 中，我们默认开启了一些常用的大语言模型，例如 llama3、 Gemma 、 Mistral 等。当你选中模型进行对话时，我们会提示你需要下载该模型。
 
-​![LobeChat 提示安装 Ollama 模型](https://github.com/lobehub/lobe-chat/assets/28616219/4e81decc-776c-43b8-9a54-dfb43e9f601a)​
-
 　　下载完成后即可开始对话。
 
 ### 用 Ollama 拉取模型到本地
@@ -161,6 +157,4 @@ ollama pull llama3
 
 　　你可以在 `设置`​ -\> `语言模型`​ 中找到 Ollama 的配置选项，你可以在这里配置 Ollama 的代理、模型名称等。
 
-​![Ollama 服务商设置](https://github.com/lobehub/lobe-chat/assets/28616219/54b3696b-5b13-4761-8c1b-1e664867b2dd)​
-
-　　你可以前往 [与 Ollama 集成](http://localhost:3210/zh/docs/self-hosting/examples/ollama "http://localhost:3210/zh/docs/self-hosting/examples/ollama") 了解如何部署 LobeChat ，以满足与 Ollama 的集成需求。
+　　你可以前往 [与 Ollama 集成](https://lobehub.com/zh/docs/self-hosting/examples/ollama) 了解如何部署 LobeChat ，以满足与 Ollama 的集成需求。

@@ -142,7 +142,13 @@ function parseRSS(xml, sourceName) {
       const getContent = (tag) => {
         const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
         const m = itemXml.match(regex);
-        return m ? m[1].trim() : '';
+        if (!m) return '';
+        let content = m[1].trim();
+        // 处理 CDATA 标签
+        if (content.startsWith('<![CDATA[') && content.endsWith(']]>')) {
+          content = content.slice(9, -3);
+        }
+        return content;
       };
 
       const title = getContent('title');

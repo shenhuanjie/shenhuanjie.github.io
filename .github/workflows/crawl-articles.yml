@@ -34,7 +34,7 @@ jobs:
         run: npm install
 
       - name: Run Crawl Script
-        run: node scripts/crawl_article.js
+        run: node scripts/ai-news-fetch.js
         env:
           NODE_ENV: production
 
