@@ -26,6 +26,3 @@ ai_generated: false
 
 <img src="https://res.infoq.com/presentations/ai-first-practices/en/mediumimage/medium-1777371216610.jpeg"/><p>Wes Reisz discusses the shift toward AI-first software delivery, emphasizing that agentic
 
-## 详细内容
-
-请访问 [原文链接](https://www.infoq.com/presentations/ai-first-practices/?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global) 查看完整内容。

@@ -75,9 +75,7 @@ public class JavaDiscountCourse extends JavaCourse {
 }
 ```
 
-回顾一下，简单看一下类结构图，如下图所示。
-
-​![image](http://127.0.0.1:52273/assets/image-20240419204510-drjyc9p.png "Course")​
+回顾一下，简单看一下类结构图。代码结构如下所示：
 
 ## 1.2 依赖倒置原则
 
@@ -207,9 +205,7 @@ public class Tom {
     }
 ```
 
-现在我们再来看最终的类图，如下图所示。
-
-​![image](http://127.0.0.1:52273/assets/image-20240419214046-vpctixb.png)​
+现在我们再来看最终的类图。代码结构如下：
 
 大家要切记：以抽象为基准比以细节为基准搭建起来的架构要稳定得多，因此在拿到需求之后，要面向接口编程，先顶层再细节地设计代码结构。
 
@@ -323,9 +319,7 @@ public interface ICourseManager {
 
 ```
 
-来看一下类图，如下图所示。
-
-​![CourseImpl](http://127.0.0.1:52273/assets/CourseImpl-20240421144223-k6y4jai.png)​
+来看一下类图，代码结构如下：
 
 下面我们来看一下方法层面的单一职责设计。有时候我们会偷懒，把一个方法写成下面这样：
 
@@ -477,9 +471,7 @@ public class Dog implements ISwimAnimal, IEatAnimal {
 }
 ```
 
-来看一下两种类图的对比，如下图所示，还是非常清晰明了的。
-
-​![image](http://127.0.0.1:52273/assets/image-20240422125348-lep7kcb.png)​
+来看一下两种类图的对比，代码结构如下：
 
 ## 1.5 迪米特原则
 
@@ -529,9 +521,7 @@ public class Boss {
     }
 ```
 
-写到这里，其实功能都已经实现，代码看上去也没什么问题。根据迪米特原则，Boss 只想要结果，不需要跟 Course 直接交流。而 TeamLeader 统计需要引用 Course 对象。Boss 和 Course 并不是朋友，从下面的类图就可以看出来。
-
-​![image](http://127.0.0.1:52273/assets/image-20240422130531-tzlj9aa.png)​
+写到这里，其实功能都已经实现，代码看上去也没什么问题。根据迪米特原则，Boss 只想要结果，不需要跟 Course 直接交流。而 TeamLeader 统计需要引用 Course 对象。Boss 和 Course 并不是朋友，从代码结构可以看出来：
 
 下面对代码进行改造。
 
@@ -560,9 +550,7 @@ public class Boss {
 }
 ```
 
-再来看下面的类图，Course 和 Boss 已经没有关联了。
-
-​![image](http://127.0.0.1:52273/assets/image-20240422130926-gbnea3f.png)​
+再来看类图，Course 和 Boss 已经没有关联了。代码结构如下：
 
 学习软件设计原则，千万不能形成强迫症。碰到业务复杂的场景，我们需要随机应变。
 
@@ -840,9 +828,7 @@ public class OracleConnection extends DBConnection {
 }
 ```
 
-具体选择交给应用层，来看一下类图，如下所示。
-
-​![image](http://127.0.0.1:52273/assets/image-20240422140154-60y9pgk.png)​
+具体选择交给应用层，来看一下类图，代码结构如下：
 
 ## 1.8 设计原则总结
 

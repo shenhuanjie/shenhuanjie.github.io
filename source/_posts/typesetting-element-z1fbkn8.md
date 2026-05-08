@@ -17,7 +17,7 @@ toc: true
 
   可通过复制粘贴或拖拽来上传图片；上传后的图片可通过拖拽进行大小调整。
 
-  ![](assets/siyuan-128-20210604092205-djd749a.png)
+  <!-- 图片资源已移除 -->
 * <span style="font-weight: bold;" data-type="strong">加粗</span>
 * *倾斜*
 * <u>下划线</u>
@@ -172,11 +172,11 @@ $$
 
 ## 视频
 
-<video controls="controls" src="assets/formatting_elements-20210607225733-o1keasx.mp4" data-src="assets/formatting_elements-20210607213508-y2r3y55-20210608113914-q11ou4j.mp4" style="width: 640px; height: 327px;"></video>
+<!-- 视频资源已移除 -->
 
 ## 音频
 
-<audio controls="controls" src="assets/record1623120470117-20210608104750-2thv5m5.wav" data-src="assets/record1623077643753-20210607225403-7cg1jkq-20210608113713-4eddn56.wav"></audio>
+<!-- 音频资源已移除 -->
 
 ## 脑图
 

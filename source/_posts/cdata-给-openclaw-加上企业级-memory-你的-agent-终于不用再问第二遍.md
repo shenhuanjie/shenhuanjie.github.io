@@ -23,8 +23,3 @@ ai_generated: false
 
 ## 资讯概要
 
-
-
-## 详细内容
-
-请访问 [原文链接](<![CDATA[https://my.oschina.net/u/3874284/blog/19595384]]>) 查看完整内容。

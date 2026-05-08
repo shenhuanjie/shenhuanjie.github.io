@@ -2,7 +2,6 @@
 title: 铭凡推出全闪 AI NAS S7：可容纳 7 块 PCIe 4.0 SSD、双雷电 4 接口
 date: 2026-05-08 00:00:00
 updated: 2026-05-08
-description: <p data-vmark="fff5">IT之家 5 月 8 日消息，在目前正在进行的铭凡发布会中，铭凡推出了旗下面向极客的高端定位全闪 AI NAS S7。</p><p data-vmark="7436" style="text-align: center;"><img src="https:/
 cover:
 categories:
   - AI资讯
@@ -25,6 +24,3 @@ ai_generated: false
 
 <p data-vmark="fff5">IT之家 5 月 8 日消息，在目前正在进行的铭凡发布会中，铭凡推出了旗下面向极客的高端定位全闪 AI NAS S7。</p><p data-vmark="7436" style="text-align: center;"><img src="https://img.ithome.com/newsuploadfiles/2026/5/924ab6db-b5
 
-## 详细内容
-
-请访问 [原文链接](https://www.ithome.com/0/947/687.htm) 查看完整内容。

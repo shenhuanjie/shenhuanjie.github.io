@@ -25,6 +25,3 @@ ai_generated: false
 
 iOS performance engineering often faces challenges when moving from synthetic benchmarks to real-world device performance. This article explores metrics-driven approaches for sustained performance optimization.
 
-## 详细内容
-
-请访问 [原文链接](https://www.infoq.com/articles/metrics-driven-approach-ios-performance/) 查看完整内容。

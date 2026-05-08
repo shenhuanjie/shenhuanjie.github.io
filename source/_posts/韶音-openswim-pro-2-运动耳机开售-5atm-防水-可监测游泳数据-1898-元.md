@@ -2,7 +2,6 @@
 title: 韶音 OpenSwim Pro 2 运动耳机开售：5ATM 防水、可监测游泳数据，1898 元
 date: 2026-05-08 00:00:00
 updated: 2026-05-08
-description: <p data-vmark="5de8">IT之家 5 月 8 日消息，韶音 OpenSwim Pro 2 运动耳机今日正式开售，该产品主打 5ATM 防护等级、智能游泳数据监测，<strong>定价为 1898 元</strong>，政府补贴价 1598 元。</p><p data-vmark="
 cover:
 categories:
   - AI资讯
@@ -25,6 +24,3 @@ ai_generated: false
 
 <p data-vmark="5de8">IT之家 5 月 8 日消息，韶音 OpenSwim Pro 2 运动耳机今日正式开售，该产品主打 5ATM 防护等级、智能游泳数据监测，<strong>定价为 1898 元</strong>，政府补贴价 1598 元。</p><p data-vmark="aebc" style="text-align: center;"><img src="https:
 
-## 详细内容
-
-请访问 [原文链接](https://www.ithome.com/0/947/685.htm) 查看完整内容。

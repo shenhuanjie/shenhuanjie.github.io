@@ -23,8 +23,3 @@ ai_generated: false
 
 ## 资讯概要
 
-
-
-## 详细内容
-
-请访问 [原文链接](<![CDATA[https://36kr.com/newsflashes/3800306441886982?f=rss]]>) 查看完整内容。

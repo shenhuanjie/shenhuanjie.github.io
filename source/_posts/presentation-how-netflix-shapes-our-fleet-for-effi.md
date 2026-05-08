@@ -1,8 +1,8 @@
 ---
-title: Presentation: How Netflix Shapes our Fleet for Efficiency and Reliability
+title: "Presentation: How Netflix Shapes our Fleet for Efficiency and Reliability"
 date: 2026-05-05 00:00:00
 updated: 2026-05-08
-description: <img src="https://res.infoq.com/presentations/strategy-workload-hardware/en/mediumimage/medium-1777370214319.jpg"/><p>The speakers explain the inheren
+description: "Netflix fleet management presentation about efficiency and reliability"
 cover:
 categories:
   - AI资讯
@@ -25,6 +25,3 @@ ai_generated: false
 
 <img src="https://res.infoq.com/presentations/strategy-workload-hardware/en/mediumimage/medium-1777370214319.jpg"/><p>The speakers explain the inherent tension between service efficiency and reliabili
 
-## 详细内容
-
-请访问 [原文链接](https://www.infoq.com/presentations/strategy-workload-hardware/?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global) 查看完整内容。

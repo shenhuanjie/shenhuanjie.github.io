@@ -9,7 +9,7 @@ toc: true
 
 Learn how to get the client IP address (local and private) using only javascript.
 
-​![articleocw-57dfeb2a430a6](assets/articleocw-57dfeb2a430a6-20240326101556-6ucamey.png)​
+<!-- 文章配图已移除 -->
 
 Javascript无法获取（也无法存储）客户端IP，但是Javascript能够创建Http请求，并且服务器端语言能够检索用户的公共IP，因此您可以利用这一优势。换句话说，如果你想检索用户的公共IP，你将依赖于对任何服务器的请求来检索IP。您可以很容易地从Best Node.js Hosting获得VPS，部署一个简单的js脚本，并将其作为Node.js和Express js的服务发布，这样您就可以请求该服务，获得客户端的IP。
 

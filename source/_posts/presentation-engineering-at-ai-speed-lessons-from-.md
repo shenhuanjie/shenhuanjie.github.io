@@ -1,8 +1,7 @@
 ---
-title: Presentation: Engineering at AI Speed: Lessons from the First Agentically Accelerated Software Project
+title: "Presentation: Engineering at AI Speed: Lessons from the First Agentically Accelerated Software Project"
 date: 2026-05-07 00:00:00
 updated: 2026-05-08
-description: <img src="https://res.infoq.com/presentations/engineering-ai/en/mediumimage/medium-1777370739830.jpg"/><p>Adam Wolff discusses the evolution of Claude
 cover:
 categories:
   - AI资讯
@@ -25,6 +24,3 @@ ai_generated: false
 
 <img src="https://res.infoq.com/presentations/engineering-ai/en/mediumimage/medium-1777370739830.jpg"/><p>Adam Wolff discusses the evolution of Claude Code, explaining how AI shifts the SDLC bottlenec
 
-## 详细内容
-
-请访问 [原文链接](https://www.infoq.com/presentations/engineering-ai/?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global) 查看完整内容。
