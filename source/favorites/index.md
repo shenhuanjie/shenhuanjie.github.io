@@ -1,7 +1,6 @@
 ---
 title: 收藏与历史
 layout: favorites
-<!-- v1.5 done -->
 ---
 
 <div class="favorites-page">
