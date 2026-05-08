@@ -1,0 +1,181 @@
+<div class="container api-container">
+    <div class="api-header">
+        <h1>API 文档</h1>
+        <p class="api-subtitle">程序猿视界开放接口 - 内容订阅与发现</p>
+    </div>
+
+    <div class="api-content">
+        <%- page.content %>
+    </div>
+</div>
+
+<style>
+.api-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.api-header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 2px solid var(--border-color, #eee);
+}
+
+.api-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: var(--text-color, #333);
+}
+
+.api-subtitle {
+    font-size: 18px;
+    color: var(--secondary-text, #666);
+    margin: 0;
+}
+
+.api-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 48px 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color, #eee);
+    color: var(--text-color, #333);
+}
+
+.api-content h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 16px 0;
+    color: var(--text-color, #333);
+}
+
+.api-content p {
+    line-height: 1.8;
+    margin: 16px 0;
+    color: var(--text-color, #444);
+}
+
+.api-content code {
+    background: var(--bg-secondary, #f5f5f5);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Consolas, Monaco, monospace;
+    font-size: 14px;
+    color: var(--accent-color, #4CAF50);
+}
+
+.api-content pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.api-content pre code {
+    background: none;
+    padding: 0;
+    color: #d4d4d4;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.api-content ul, .api-content ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.api-content li {
+    line-height: 1.8;
+    margin: 8px 0;
+}
+
+.api-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.api-content th, .api-content td {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color, #eee);
+    text-align: left;
+}
+
+.api-content th {
+    background: var(--bg-secondary, #f5f5f5);
+    font-weight: 600;
+}
+
+.api-content a {
+    color: var(--accent-color, #4CAF50);
+    text-decoration: none;
+}
+
+.api-content a:hover {
+    text-decoration: underline;
+}
+
+.api-content blockquote {
+    margin: 20px 0;
+    padding: 16px 20px;
+    background: var(--bg-secondary, #f9f9f9);
+    border-left: 4px solid var(--accent-color, #4CAF50);
+    border-radius: 0 8px 8px 0;
+}
+
+.api-content blockquote p {
+    margin: 0;
+}
+
+.api-endpoint {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.api-method {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.api-method.get {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.api-method.post {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.api-path {
+    font-family: 'SF Mono', Consolas, Monaco, monospace;
+    font-size: 14px;
+    color: var(--text-color, #333);
+}
+
+@media (max-width: 600px) {
+    .api-header h1 {
+        font-size: 28px;
+    }
+
+    .api-header .api-subtitle {
+        font-size: 16px;
+    }
+
+    .api-content pre {
+        padding: 16px;
+        font-size: 12px;
+    }
+}
+</style>

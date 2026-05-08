@@ -1,0 +1,268 @@
+<div class="container author-container">
+    <div class="author-header">
+        <div class="author-avatar-large">
+            <img src="<%- theme.avatar %>" alt="<%- theme.nickname %>">
+            <div class="author-verified-badge" title="已认证作者">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path fill="#fff" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="author-meta">
+            <h1 class="author-name"><%- theme.nickname %></h1>
+            <p class="author-title">全栈工程师 | AI 技术爱好者 | 技术博主</p>
+            <div class="author-badges">
+                <span class="author-badge verified">
+                    <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    已认证作者
+                </span>
+                <span class="author-badge expert">AI 领域专家</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="author-description">
+        <%- markdown(theme.description) %>
+    </div>
+
+    <div class="author-links">
+        <% if (theme.links !== undefined) { %>
+            <% for (var key in theme.links){ %>
+                <% if(theme.links[key].startsWith('http')) { %>
+                <a class="author-link-item" title="<%- key %>" href="<%= theme.links[key] %>" target="_blank" rel="noopener noreferrer">
+                    <% if(theme.links_icon_enable){ %>
+                    <i class="iconfont icon-<%- key.toLowerCase() %>"></i>
+                    <%}%>
+                    <span><%- key %></span>
+                </a>
+                <% } %>
+            <% } %>
+        <% } %>
+    </div>
+
+    <div class="author-subscribe">
+        <h3>订阅关注</h3>
+        <div class="subscribe-links">
+            <a href="/wechat" class="subscribe-item wechat">
+                <span class="subscribe-icon">&#127760;</span>
+                <span>微信公众号</span>
+            </a>
+            <a href="/zsxq" class="subscribe-item zsxq">
+                <span class="subscribe-icon">&#128100;</span>
+                <span>知识星球</span>
+            </a>
+            <a href="/atom.xml" class="subscribe-item rss">
+                <span class="subscribe-icon">&#128240;</span>
+                <span>RSS 订阅</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="author-license">
+        <p>
+            本博客所有原创文章均采用
+            <a href="http://creativecommons.org/licenses/by-nc/4.0/" rel="external nofollow" target="_blank">
+                CC BY-NC 4.0
+            </a>
+            许可证进行许可。
+        </p>
+    </div>
+</div>
+
+<style>
+.author-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.author-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.author-avatar-large {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.author-avatar-large img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.author-verified-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #fff;
+}
+
+.author-meta {
+    flex: 1;
+}
+
+.author-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: var(--text-color, #333);
+}
+
+.author-title {
+    font-size: 16px;
+    color: var(--secondary-text, #666);
+    margin: 0 0 12px 0;
+}
+
+.author-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.author-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.author-badge.verified {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.author-badge.expert {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.author-description {
+    margin-bottom: 32px;
+    line-height: 1.8;
+}
+
+.author-description p {
+    margin: 0 0 16px 0;
+}
+
+.author-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: var(--bg-secondary, #f9f9f9);
+    border-radius: 12px;
+}
+
+.author-link-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-color, #333);
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.author-link-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.author-subscribe {
+    margin-bottom: 32px;
+}
+
+.author-subscribe h3 {
+    font-size: 18px;
+    margin: 0 0 16px 0;
+}
+
+.subscribe-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.subscribe-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--accent-color, #4CAF50);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.subscribe-item:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.subscribe-icon {
+    font-size: 18px;
+}
+
+.author-license {
+    text-align: center;
+    padding: 24px;
+    background: var(--bg-secondary, #f9f9f9);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--secondary-text, #666);
+}
+
+.author-license a {
+    color: var(--accent-color, #4CAF50);
+}
+
+@media (max-width: 600px) {
+    .author-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .author-avatar-large img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .author-badges {
+        justify-content: center;
+    }
+
+    .author-links {
+        justify-content: center;
+    }
+
+    .subscribe-links {
+        justify-content: center;
+    }
+}
+</style>

@@ -133,6 +133,11 @@ sitemap:
   rel: true
   tags: true
   categories: true
+  # 多语言 Sitemap 配置
+  i18n:
+    enable: true
+    default_language: zh
+    languages: ['zh', 'en']
 
 # Social Sharing Default Image (used when no cover image is specified)
 og_image: https://shenhuanjie.github.io/images/og-default.png
@@ -143,10 +148,22 @@ search:
   content: true
 
 feed:
-  type: atom
-  path: atom.xml
-  limit: 20
-  hub:
+  type:
+    - atom
+    - json
+  atom:
+    path: atom.xml
+    limit: 20
+    hub: https://pubsubhubbub.appspot.com
+  json:
+    path: feed.json
+    limit: 20
+    meta:
+      - title
+      - description
+      - author
+      - email
+    pretty: true
   content:
   content_limit: 140
   content_limit_delim: ' '
@@ -159,6 +176,43 @@ deploy:
 
 # AI Helper 配置
 ai_auto_generate: true
+
+# ==============================
+# 国际化配置 (v1.9)
+# ==============================
+i18n:
+  enable: true
+  default_language: zh
+  languages:
+    - zh
+    - en
+  # 英文分类映射
+  category_map:
+    AI大模型: ai-llm
+    AI应用: ai-application
+    智能化标准: ai-standard
+    AI周报: ai-weekly
+    AI日更: ai-daily
+    AI人工智能: ai
+    产业观察: industry
+    AI资讯: ai-news
+  # 英文标签映射
+  tag_map:
+    AI大模型: ai-llm
+    大模型: ai-llm
+    LLM: ai-llm
+    GPT: ai-llm
+    AI应用: ai-application
+    AI工具: ai-application
+    智能化标准: ai-standard
+    L1-L4: ai-standard
+    AI分级: ai-standard
+    AI周报: ai-weekly
+    AI日更: ai-daily
+    人工智能: ai
+    AI治理: ai-governance
+    产业动态: industry
+    技术变革: technology
 
 # HTML 压缩配置
 html_minifier:

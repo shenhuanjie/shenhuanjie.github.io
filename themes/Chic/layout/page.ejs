@@ -1,1 +1,9 @@
+<% if(page.layout === 'author') { %>
+<%- partial('_page/author', {post: page, index: false}) %>
+<% } else if(page.layout === 'api') { %>
+<%- partial('_page/api', {post: page, index: false}) %>
+<% } else if(page.layout === 'subscribe') { %>
+<%- partial('_page/subscribe', {post: page, index: false}) %>
+<% } else { %>
 <%- partial('_page/page', {post: page, index: false}) %>
+<% } %>

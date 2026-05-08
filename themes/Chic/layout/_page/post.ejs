@@ -123,8 +123,36 @@ var readingTime = estimateReadingTime(page.content);
                 <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(page.permalink) %>" target="_blank" rel="noopener noreferrer" class="share-btn facebook">Facebook</a>
                 <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= encodeURIComponent(page.permalink) %>&title=<%= encodeURIComponent(page.title) %>" target="_blank" rel="noopener noreferrer" class="share-btn linkedin">LinkedIn</a>
                 <a href="mailto:?subject=<%= encodeURIComponent(page.title) %>&body=<%= encodeURIComponent(page.permalink) %>" class="share-btn email">Email</a>
+                <%# 微信分享 - 唤起微信扫一扫分享 %>
+                <a href="javascript:;" class="share-btn wechat" onclick="showWechatShare()" title="微信分享">微信</a>
+                <%# 微博分享 %>
+                <a href="https://service.weibo.com/share/share.php?url=<%= encodeURIComponent(page.permalink) %>&title=<%= encodeURIComponent(page.title) %>" target="_blank" rel="noopener noreferrer" class="share-btn weibo" title="微博分享">微博</a>
+                <%# 二维码分享 %>
+                <a href="javascript:;" class="share-btn qrcode" onclick="showQRCode()" title="生成二维码">二维码</a>
             </div>
         </section>
+        <%# 微信分享弹窗 %>
+        <div id="wechat-share-modal" class="share-modal">
+            <div class="share-modal-content">
+                <span class="share-modal-close" onclick="closeWechatShare()">&times;</span>
+                <h3>微信分享</h3>
+                <p class="share-modal-tip">点击复制链接，在微信中粘贴分享</p>
+                <div class="share-link-box">
+                    <input type="text" id="share-link-input" value="<%= page.permalink %>" readonly>
+                    <button onclick="copyShareLink()">复制</button>
+                </div>
+                <p class="share-modal-note">长按链接复制 → 打开微信 → 粘贴发送给朋友/朋友圈</p>
+            </div>
+        </div>
+        <%# 二维码弹窗 %>
+        <div id="qrcode-modal" class="share-modal">
+            <div class="share-modal-content qrcode-modal-content">
+                <span class="share-modal-close" onclick="closeQRCode()">&times;</span>
+                <h3>扫描二维码分享</h3>
+                <div id="qrcode-container"></div>
+                <p class="qrcode-tip">使用微信扫码</p>
+            </div>
+        </div>
         <section class="post-nav">
             <% if(post.prev){ %>
                 <a class="prev" rel="prev" href="<%- url_for(post.prev.path)%>"><%- post.prev.title%></a>
@@ -155,3 +183,47 @@ var readingTime = estimateReadingTime(page.content);
         <div class="history-empty" style="display: none;">暂无阅读记录</div>
     </div>
 </aside>
+
+<%# 分享功能 JavaScript %>
+<script>
+function showWechatShare() {
+    document.getElementById('wechat-share-modal').style.display = 'flex';
+}
+function closeWechatShare() {
+    document.getElementById('wechat-share-modal').style.display = 'none';
+}
+function copyShareLink() {
+    var input = document.getElementById('share-link-input');
+    input.select();
+    document.execCommand('copy');
+    alert('链接已复制！');
+}
+function showQRCode() {
+    var modal = document.getElementById('qrcode-modal');
+    var container = document.getElementById('qrcode-container');
+    modal.style.display = 'flex';
+    // 生成二维码
+    if (typeof QRCode !== 'undefined') {
+        container.innerHTML = '';
+        var url = '<%= page.permalink %>';
+        new QRCode(container, {
+            text: url,
+            width: 200,
+            height: 200,
+            colorDark: '#333333',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+}
+function closeQRCode() {
+    document.getElementById('qrcode-modal').style.display = 'none';
+}
+// 点击模态框外部关闭
+document.addEventListener('click', function(e) {
+    var wechatModal = document.getElementById('wechat-share-modal');
+    var qrcodeModal = document.getElementById('qrcode-modal');
+    if (e.target === wechatModal) closeWechatShare();
+    if (e.target === qrcodeModal) closeQRCode();
+});
+</script>

@@ -1,4 +1,20 @@
 User-agent: *
 Allow: /
 
+# Disallow
+Disallow: /404.html
+Disallow: /404/
+Disallow: /tags/
+Disallow: /archives/
+Disallow: /search.json
+Disallow: /atom.xml
+
+# Sitemap
 Sitemap: https://shenhuanjie.github.io/sitemap.xml
+Sitemap: https://shenhuanjie.github.io/sitemap-tags.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Host
+Host: https://shenhuanjie.github.io/

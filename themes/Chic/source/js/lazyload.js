@@ -1,9 +1,13 @@
 (function() {
     'use strict';
 
-    // 图片懒加载实现
+    // 图片懒加载实现 - 使用原生 loading="lazy" 和 IntersectionObserver 增强
     function initLazyLoad() {
-        if ('IntersectionObserver' in window) {
+        // 使用原生 loading="lazy"（如果支持）
+        var supportsNativeLazy = 'loading' in HTMLImageElement.prototype;
+
+        if (!supportsNativeLazy && 'IntersectionObserver' in window) {
+            // 降级方案：使用 IntersectionObserver
             var observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
@@ -11,10 +15,13 @@
                         if (img.dataset.src) {
                             img.src = img.dataset.src;
                             img.removeAttribute('data-src');
-                            observer.unobserve(img);
+                            img.classList.add('lazy-loaded');
                         }
+                        observer.unobserve(img);
                     }
                 });
+            }, {
+                rootMargin: '100px 0px'
             });
 
             document.querySelectorAll('img[data-src]').forEach(function(img) {
@@ -23,18 +30,7 @@
         }
     }
 
-    // 为文章内图片添加 data-src 属性
-    function setupPostImages() {
-        document.querySelectorAll('.post-content img').forEach(function(img) {
-            if (!img.hasAttribute('data-src') && img.src) {
-                img.setAttribute('data-src', img.src);
-                img.src = ''; // 暂时清空，触发懒加载
-            }
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        setupPostImages();
         initLazyLoad();
     });
 })();

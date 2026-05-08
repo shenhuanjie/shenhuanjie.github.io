@@ -6,6 +6,8 @@
                 <% for (var i in theme.nav){ %>
                     <a class="menu-item" href="<%- url_for(theme.nav[i]) %>"><%= i %></a>
                 <% } %>
+                <%# Language switcher %>
+                <a class="menu-item lang-switch" id="lang-switch" href="javascript:void(0);">EN</a>
                 <input id="switch_default" type="checkbox" class="switch_default">
                 <label for="switch_default" class="toggleBtn"></label>
             </div>
@@ -25,6 +27,7 @@
                 <% for (var i in theme.nav){ %>
                     <a class="menu-item" href="<%- url_for(theme.nav[i]) %>"><%= i %></a>
                 <% } %>
+                <a class="menu-item lang-switch" href="javascript:void(0);">EN / 中文</a>
             </div>
         </div>
     </nav>

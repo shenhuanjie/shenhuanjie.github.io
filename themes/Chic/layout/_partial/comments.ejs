@@ -1,9 +1,13 @@
-<%# Utterances 评论系统 v1.5 done %>
+<%# Utterances 评论系统 v1.9 优化版 %>
 <%# https://utteranc.es/ %>
 <% if(theme.utterances && theme.utterances.enable && is_post()){ %>
 <section class="post-comments" id="comments">
     <h3 class="comments-title">评论区</h3>
-    <div id="utterances-container"></div>
+    <div class="comments-loading">评论加载中...</div>
+    <div id="utterances-container" class="<%= is_local ? '' : '' %>"></div>
+    <p class="comments-hint">
+        使用 GitHub 账号登录评论 · <a href="https://utteranc.es" target="_blank" rel="noopener">了解 Utterances</a>
+    </p>
 </section>
 <script>
     (function() {
@@ -37,6 +41,16 @@
             }
         }
 
+        // 监听评论加载完成
+        function handleUtterancesLoad() {
+            var container = document.getElementById('utterances-container');
+            var loading = document.querySelector('.comments-loading');
+            if (container && loading) {
+                loading.style.display = 'none';
+                container.classList.add('loaded');
+            }
+        }
+
         // 监听主题切换
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -50,7 +64,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             var container = document.getElementById('utterances-container');
             if (container) {
-                container.appendChild(createUtterancesScript());
+                var script = createUtterancesScript();
+                script.onload = handleUtterancesLoad;
+                container.appendChild(script);
                 observer.observe(document.body, { attributes: true });
             }
         });

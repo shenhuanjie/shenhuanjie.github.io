@@ -1,0 +1,27 @@
+<%
+  // Language switcher component
+  // Supports: zh (Chinese), en (English)
+  var currentLang = page.lang || config.language || 'zh';
+  var supportedLangs = ['zh', 'en'];
+  var langNames = {
+    zh: '中文',
+    en: 'EN'
+  };
+%>
+
+<% if (typeof is_post !== 'undefined' && is_post && page.translation && page.translation.source) { %>
+  <%# This is a translated post, show link to original %>
+  <a class="lang-switch-item" href="<%- url_for(page.translation.source) %>">
+    <%= langNames[page.translation.source] || '原文' %>
+  </a>
+<% } else if (currentLang === 'zh') { %>
+  <%# Show English link for Chinese content %>
+  <a class="lang-switch-item" href="/en<%- url_for(page.path.replace(/^\//, '')) %>">
+    <%= langNames['en'] %>
+  </a>
+<% } else if (currentLang === 'en') { %>
+  <%# Show Chinese link for English content %>
+  <a class="lang-switch-item" href="<%- url_for(page.path.replace(/^\/en\//, '/')) %>">
+    <%= langNames['zh'] %>
+  </a>
+<% } %>
