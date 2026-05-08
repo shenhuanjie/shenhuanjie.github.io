@@ -1,9 +1,9 @@
 /**
- * 文章外部图片检查脚本
- * 检查文章中引用的外部图片是否有效（HEAD 请求验证）
+ * 文章外部链接检查脚本
+ * 检查文章中外部链接的有效性（HEAD 请求验证）
  * 排除 localhost、127.0.0.1 等本地地址
  *
- * 用法: node scripts/check-article-images.js [选项]
+ * 用法: node scripts/check-article-links.js [选项]
  * 选项:
  *   --verbose, -v    显示详细信息
  *   --fix            自动输出修复建议
@@ -21,10 +21,7 @@ const POSTS_DIR = path.join(__dirname, '..', 'source', '_posts');
 const TIMEOUT_MS = 5000;
 const MAX_CONCURRENT = 10;
 
-// 图片扩展名
-const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'ico'];
-
-// 排除的模式（本地地址）
+// 排除的域名/地址（本地地址）
 const EXCLUDED_PATTERNS = [
   /localhost/i,
   /127\.0\.0\.1/i,
@@ -33,8 +30,8 @@ const EXCLUDED_PATTERNS = [
   /\[::1\]/i
 ];
 
-// 图片 URL 正则
-const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)]+)\)/g;
+// HTTP/HTTPS 协议前缀
+const URL_REGEX = /https?:\/\/[^\s\)"']+/gi;
 
 /**
  * 检查 URL 是否应该被排除
@@ -44,47 +41,41 @@ function shouldExclude(url) {
 }
 
 /**
- * 检查是否为图片 URL
+ * 提取文章中所有外部链接
  */
-function isImageUrl(url) {
-  try {
-    const urlObj = new URL(url);
-    const pathname = urlObj.pathname.toLowerCase();
-    return IMAGE_EXTENSIONS.some(ext => pathname.endsWith('.' + ext)) ||
-           pathname.includes('/image') ||
-           pathname.includes('/img') ||
-           url.includes('image');
-  } catch {
-    return false;
-  }
-}
-
-/**
- * 提取文章中所有图片引用
- */
-function extractImages(content) {
-  const images = [];
+function extractLinks(content) {
+  const links = [];
   const seen = new Set();
 
+  // 匹配 Markdown 链接 [text](url) 和直接 URL
+  const markdownLinkRegex = /\[([^\]]*)\]\(([^)]+)\)/g;
   let match;
-  while ((match = IMAGE_REGEX.exec(content)) !== null) {
-    const altText = match[1];
-    const imageUrl = match[2].trim();
-    const line = content.substring(0, match.index).split('\n').length;
 
-    if (imageUrl && !seen.has(imageUrl)) {
-      seen.add(imageUrl);
-      images.push({ url: imageUrl, alt: altText, line });
+  while ((match = markdownLinkRegex.exec(content)) !== null) {
+    const url = match[2].trim();
+    if (url && !seen.has(url) && (url.startsWith('http://') || url.startsWith('https://'))) {
+      seen.add(url);
+      links.push({ url, line: content.substring(0, match.index).split('\n').length });
     }
   }
 
-  return images;
+  // 直接匹配 URL（不在 Markdown 链接中的）
+  const directUrlRegex = /(?<![\]\(])\b(https?:\/\/[^\s\)"']+)/gi;
+  while ((match = directUrlRegex.exec(content)) !== null) {
+    const url = match[1].trim();
+    if (url && !seen.has(url)) {
+      seen.add(url);
+      links.push({ url, line: content.substring(0, match.index).split('\n').length });
+    }
+  }
+
+  return links;
 }
 
 /**
  * 对 URL 发送 HEAD 请求检查有效性
  */
-function checkImageUrl(url) {
+function checkUrl(url) {
   return new Promise((resolve) => {
     const isHttps = url.startsWith('https');
     const protocol = isHttps ? https : http;
@@ -96,27 +87,18 @@ function checkImageUrl(url) {
     try {
       const req = protocol.get(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; ArticleImageChecker/1.0)',
-          'Accept': 'image/*/*'
+          'User-Agent': 'Mozilla/5.0 (compatible; ArticleLinkChecker/1.0)',
+          'Accept': '*/*'
         },
         method: 'HEAD'
       }, (res) => {
         clearTimeout(timeout);
-
-        // 检查 Content-Type 是否为图片
-        const contentType = res.headers['content-type'] || '';
-        const isImageContent = contentType.startsWith('image/');
-
-        // 200-399 都认为可用，图片 404 等会返回 403/404
-        const accessible = (res.statusCode >= 200 && res.statusCode < 400) ||
-                         (res.statusCode >= 400 && res.statusCode < 500 && isImageContent);
-
+        const accessible = res.statusCode >= 200 && res.statusCode < 400;
         resolve({
           url,
           accessible,
           statusCode: res.statusCode,
-          contentType,
-          error: accessible ? null : `HTTP ${res.statusCode} (${contentType})`
+          error: accessible ? null : `HTTP ${res.statusCode}`
         });
       });
 
@@ -138,13 +120,13 @@ function checkImageUrl(url) {
 }
 
 /**
- * 批量检查图片（控制并发数）
+ * 批量检查链接（控制并发数）
  */
-async function checkImagesBatch(images) {
+async function checkLinksBatch(links) {
   const results = [];
-  for (let i = 0; i < images.length; i += MAX_CONCURRENT) {
-    const batch = images.slice(i, i + MAX_CONCURRENT);
-    const batchResults = await Promise.all(batch.map(img => checkImageUrl(img.url)));
+  for (let i = 0; i < links.length; i += MAX_CONCURRENT) {
+    const batch = links.slice(i, i + MAX_CONCURRENT);
+    const batchResults = await Promise.all(batch.map(l => checkUrl(l.url)));
     results.push(...batchResults);
   }
   return results;
@@ -156,37 +138,36 @@ async function checkImagesBatch(images) {
 async function checkArticle(filePath, verbose = false, checkExternal = true) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const fileName = path.basename(filePath);
-  const images = extractImages(content);
+  const links = extractLinks(content);
 
-  // 过滤本地图片
-  const externalImages = images.filter(img => !shouldExclude(img.url));
+  // 过滤本地链接
+  const externalLinks = links.filter(l => !shouldExclude(l.url));
 
   if (verbose) {
     console.log(`\n检查: ${fileName}`);
-    console.log(`  总图片数: ${images.length}, 外部图片: ${externalImages.length}`);
+    console.log(`  总链接数: ${links.length}, 外部链接: ${externalLinks.length}`);
   }
 
-  const invalidImages = [];
+  const invalidLinks = [];
 
-  if (checkExternal && externalImages.length > 0) {
-    // 检查外部图片有效性
-    const results = await checkImagesBatch(externalImages);
+  if (checkExternal && externalLinks.length > 0) {
+    // 检查外部链接有效性
+    const results = await checkLinksBatch(externalLinks);
 
     for (let i = 0; i < results.length; i++) {
       const result = results[i];
-      const img = externalImages[i];
+      const link = externalLinks[i];
 
       if (!result.accessible) {
-        invalidImages.push({
+        invalidLinks.push({
           url: result.url,
-          alt: img.alt,
-          line: img.line,
+          line: link.line,
           error: result.error,
           statusCode: result.statusCode
         });
 
         if (verbose) {
-          console.log(`  [无效] 第 ${img.line} 行: ${result.url}`);
+          console.log(`  [无效] 第 ${link.line} 行: ${result.url}`);
           console.log(`         错误: ${result.error || 'HTTP ' + result.statusCode}`);
         }
       }
@@ -195,10 +176,10 @@ async function checkArticle(filePath, verbose = false, checkExternal = true) {
 
   return {
     fileName,
-    totalImages: images.length,
-    externalImages: externalImages.length,
-    invalidImages,
-    passed: invalidImages.length === 0
+    totalLinks: links.length,
+    externalLinks: externalLinks.length,
+    invalidLinks,
+    passed: invalidLinks.length === 0
   };
 }
 
@@ -211,7 +192,7 @@ async function main() {
   const showFix = args.includes('--fix');
 
   console.log('===========================================');
-  console.log('文章外部图片检查');
+  console.log('文章外部链接检查');
   console.log('===========================================');
   console.log(`检查目录: ${POSTS_DIR}`);
   console.log(`超时设置: ${TIMEOUT_MS}ms`);
@@ -221,22 +202,22 @@ async function main() {
   const files = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith('.md'));
   console.log(`找到 ${files.length} 篇文章\n`);
 
-  let totalImages = 0;
-  let totalExternalImages = 0;
+  let totalLinks = 0;
+  let totalExternalLinks = 0;
   let articlesWithIssues = 0;
-  const allInvalidImages = [];
+  const allInvalidLinks = [];
 
   for (const file of files) {
     const filePath = path.join(POSTS_DIR, file);
     const result = await checkArticle(filePath, verbose, true);
 
-    totalImages += result.totalImages;
-    totalExternalImages += result.externalImages;
+    totalLinks += result.totalLinks;
+    totalExternalLinks += result.externalLinks;
 
     if (!result.passed) {
       articlesWithIssues++;
-      allInvalidImages.push(...result.invalidImages.map(img => ({
-        ...img,
+      allInvalidLinks.push(...result.invalidLinks.map(l => ({
+        ...l,
         file: result.fileName
       })));
     }
@@ -247,41 +228,40 @@ async function main() {
   console.log('检查结果汇总');
   console.log('===========================================');
   console.log(`检查文章数: ${files.length}`);
-  console.log(`总图片数: ${totalImages}`);
-  console.log(`外部图片数: ${totalExternalImages}`);
+  console.log(`总链接数: ${totalLinks}`);
+  console.log(`外部链接数: ${totalExternalLinks}`);
   console.log(`有问题文章数: ${articlesWithIssues}`);
-  console.log(`无效图片总数: ${allInvalidImages.length}`);
+  console.log(`无效链接总数: ${allInvalidLinks.length}`);
   console.log('===========================================');
 
-  if (allInvalidImages.length > 0) {
-    console.log('\n=== 无效图片详情 ===\n');
+  if (allInvalidLinks.length > 0) {
+    console.log('\n=== 无效链接详情 ===\n');
 
     // 按文件分组显示
     const groupedByFile = {};
-    for (const img of allInvalidImages) {
-      if (!groupedByFile[img.file]) {
-        groupedByFile[img.file] = [];
+    for (const link of allInvalidLinks) {
+      if (!groupedByFile[link.file]) {
+        groupedByFile[link.file] = [];
       }
-      groupedByFile[img.file].push(img);
+      groupedByFile[link.file].push(link);
     }
 
-    for (const [file, images] of Object.entries(groupedByFile)) {
+    for (const [file, links] of Object.entries(groupedByFile)) {
       console.log(`📄 ${file}`);
-      for (const img of images) {
-        console.log(`   第 ${img.line} 行: ${img.url}`);
-        console.log(`   Alt文本: ${img.alt || '(无)'}`);
-        console.log(`   错误: ${img.error || 'HTTP ' + img.statusCode}`);
+      for (const link of links) {
+        console.log(`   第 ${link.line} 行: ${link.url}`);
+        console.log(`   错误: ${link.error || 'HTTP ' + link.statusCode}`);
         if (showFix) {
-          console.log(`   建议: 检查图片URL是否正确，替换为有效图片或移除该引用`);
+          console.log(`   建议: 检查链接是否正确，或移除/替换该链接`);
         }
       }
       console.log('');
     }
   } else {
-    console.log('\n✅ 所有外部图片检查通过！');
+    console.log('\n✅ 所有外部链接检查通过！');
   }
 
-  return allInvalidImages.length === 0;
+  return allInvalidLinks.length === 0;
 }
 
 // 运行
@@ -294,4 +274,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { extractImages, checkImageUrl, shouldExclude, checkArticle };
+module.exports = { extractLinks, checkUrl, shouldExclude, checkArticle };
