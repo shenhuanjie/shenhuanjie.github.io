@@ -1,5 +1,5 @@
 /**
- * 用户互动功能
+ * 用户互动功能 v1.5 done
  * - 收藏文章（LocalStorage）
  * - 阅读历史记录（LocalStorage）
  */
@@ -13,6 +13,72 @@
     var MAX_HISTORY_ITEMS = 20;
     var STORAGE_KEY_FAVORITES = 'blog_favorites';
     var STORAGE_KEY_HISTORY = 'blog_reading_history';
+    var READING_TIME_THRESHOLD = 30; // 阅读事件阈值（秒）
+
+    // ==============================
+    // GA4 事件追踪
+    // ==============================
+    function trackEvent(eventName, eventParams) {
+        if (typeof window.gtag !== 'function') return;
+        window.gtag('event', eventName, eventParams);
+    }
+
+    function trackReading() {
+        var pageInfo = getPageInfo();
+        trackEvent('read_article', {
+            event_category: 'engagement',
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    function trackFavorite(action) {
+        var pageInfo = getPageInfo();
+        trackEvent('favorite_article', {
+            event_category: 'engagement',
+            action: action,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    function trackShare(platform) {
+        var pageInfo = getPageInfo();
+        trackEvent('share_article', {
+            event_category: 'engagement',
+            method: platform,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    function trackComment(action) {
+        var pageInfo = getPageInfo();
+        trackEvent('comment_submit', {
+            event_category: 'engagement',
+            action: action,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    // 阅读计时器
+    var readingTimer = null;
+    function startReadingTimer() {
+        if (readingTimer) return;
+        readingTimer = setTimeout(function() {
+            trackReading();
+            readingTimer = null;
+        }, READING_TIME_THRESHOLD * 1000);
+    }
+
+    // 停止阅读计时器（用户离开时）
+    function stopReadingTimer() {
+        if (readingTimer) {
+            clearTimeout(readingTimer);
+            readingTimer = null;
+        }
+    }
 
     // ==============================
     // 工具函数
@@ -100,11 +166,13 @@
                 bookmarkBtn.classList.remove('active');
                 bookmarkBtn.setAttribute('title', '收藏文章');
                 bookmarkIcon.textContent = '♡';
+                trackFavorite('remove');
             } else {
                 this.add(pageInfo);
                 bookmarkBtn.classList.add('active');
                 bookmarkBtn.setAttribute('title', '已收藏');
                 bookmarkIcon.textContent = '♥';
+                trackFavorite('add');
             }
         },
 
@@ -254,5 +322,55 @@
     document.addEventListener('DOMContentLoaded', function() {
         Favorites.init();
         ReadingHistory.init();
+
+        // 启动阅读计时器（文章页面）
+        if (document.querySelector('.post-content')) {
+            startReadingTimer();
+
+            // 用户离开或滚动时停止计时
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopReadingTimer();
+                } else {
+                    startReadingTimer();
+                }
+            });
+        }
+
+        // 分享按钮事件追踪
+        var shareButtons = document.querySelectorAll('.share-btn');
+        shareButtons.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var platform = btn.classList.contains('twitter') ? 'twitter' :
+                               btn.classList.contains('facebook') ? 'facebook' :
+                               btn.classList.contains('linkedin') ? 'linkedin' :
+                               btn.classList.contains('email') ? 'email' : 'other';
+                trackShare(platform);
+            });
+        });
+
+        // 评论事件追踪（监听 utterances iframe）
+        var utterancesObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    var utterances = document.querySelector('.utterances');
+                    if (utterances && !utterances.hasAttribute('data-comments-tracked')) {
+                        utterances.setAttribute('data-comments-tracked', 'true');
+                        // 监听评论提交
+                        var commentButton = document.querySelector('.utterances-button');
+                        if (commentButton) {
+                            commentButton.addEventListener('click', function() {
+                                trackComment('click');
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+        var commentsSection = document.querySelector('.post-comments') || document.querySelector('.comments');
+        if (commentsSection) {
+            utterancesObserver.observe(commentsSection, { childList: true, subtree: true });
+        }
     });
 })();

@@ -128,3 +128,32 @@ utterances:
 google_analytics:
   enable: true
   tracking_id: G-XXXXXXXXXX  # 需用户配置 - 替换为你的 GA4 测量 ID
+
+# ==============================
+# CDN 静态资源加速配置 (v1.5)
+# ==============================
+## 使用 jsDelivr CDN 加速静态资源
+## https://www.jsdelivr.com/
+cdn:
+  enable: true
+  # jsDelivr CDN 基础 URL
+  base: https://cdn.jsdelivr.net/npm
+  # 主题资源路径映射 (格式: 本地路径: CDN路径)
+  # 本地资源: /themes/Chic/source/xxx
+  # CDN 资源: 格式为 gh/username/repo@version/path 或 npm/package@version/path
+  mapping:
+    # 图标字体使用 jsdelivr
+    /fonts: https://cdn.jsdelivr.net/gh/shenhuanjie/shenhuanjie.github.io@master/themes/Chic/source/fonts
+    # CSS 使用 jsdelivr (如果需要额外 CSS)
+    # /css: https://cdn.jsdelivr.net/gh/shenhuanjie/shenhuanjie.github.io@master/themes/Chic/source/css
+  # CSS 文件
+  css:
+    - /css/style.css
+  # JavaScript 文件
+  js:
+    - /js/script.js
+    - /js/tocbot.min.js
+    - /js/user-interaction.js
+    - /js/favorites-page.js
+    # MathJax CDN
+    - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML
