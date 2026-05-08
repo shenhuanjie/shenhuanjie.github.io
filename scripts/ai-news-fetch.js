@@ -154,6 +154,16 @@ function parseRSS(xml, sourceName) {
         if (hrefMatch) link = hrefMatch[1];
       }
 
+      // 验证 link 是否是完整的 URL（以 http:// 或 https:// 开头）
+      // 如果 link 不完整，尝试从 itemXml 中重新提取
+      if (link && !/^https?:\/\//.test(link)) {
+        // 可能是被截断了，尝试重新提取
+        const fullLinkMatch = itemXml.match(/https?:\/\/[^\s<>"']+/);
+        if (fullLinkMatch) {
+          link = fullLinkMatch[0];
+        }
+      }
+
       const description = getContent('description') ||
                          getContent('content:encoded') ||
                          getContent('encoded') ||

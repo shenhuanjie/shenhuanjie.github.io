@@ -250,7 +250,9 @@ function sanitizeFilename(name) {
 async function downloadImage(imgUrl, saveDir, index, retries = MAX_RETRIES) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const ext = path.extname(imgUrl.split('?')[0]) || '.png';
+      // 清理URL：去掉#锚点和?查询参数，获取正确的扩展名
+      const cleanUrl = imgUrl.split('#')[0].split('?')[0];
+      const ext = path.extname(cleanUrl) || '.png';
       const filename = `image-${index}${ext}`;
       const filepath = path.join(saveDir, filename);
 

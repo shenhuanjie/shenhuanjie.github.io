@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * 修复文章日期格式：将 YYYY-MM-DD 转换为 YYYY-MM-DD HH:00:00
  */
