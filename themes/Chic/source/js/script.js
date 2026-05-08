@@ -87,6 +87,132 @@ document.ready(
 );
 
 // ==============================
+// 代码块复制按钮
+// ==============================
+(function() {
+    function initCodeCopyButtons() {
+        var figures = document.querySelectorAll('figure.highlight');
+        if (figures.length === 0) return;
+
+        figures.forEach(function(figure) {
+            // 检查是否已有复制按钮
+            if (figure.querySelector('.copy-btn')) return;
+
+            // 创建复制按钮
+            var copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = 'Copy';
+            copyBtn.setAttribute('title', '复制代码');
+
+            // 获取代码内容
+            var pre = figure.querySelector('pre');
+            if (!pre) return;
+
+            // 添加点击事件
+            copyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var code = figure.querySelector('code');
+                if (!code) code = pre;
+
+                var textToCopy = code.textContent || code.innerText;
+
+                // 复制到剪贴板
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(function() {
+                        showCopiedFeedback(copyBtn, true);
+                    }).catch(function() {
+                        fallbackCopy(textToCopy, copyBtn);
+                    });
+                } else {
+                    fallbackCopy(textToCopy, copyBtn);
+                }
+            });
+
+            figure.appendChild(copyBtn);
+        });
+    }
+
+    function fallbackCopy(text, btn) {
+        var textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCopiedFeedback(btn, true);
+        } catch (err) {
+            showCopiedFeedback(btn, false);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showCopiedFeedback(btn, success) {
+        var originalText = btn.textContent;
+        btn.textContent = success ? 'Copied!' : 'Failed';
+        btn.classList.add(success ? 'copied' : 'copy-failed');
+
+        setTimeout(function() {
+            btn.textContent = originalText;
+            btn.classList.remove('copied', 'copy-failed');
+        }, 1500);
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCodeCopyButtons);
+    } else {
+        initCodeCopyButtons();
+    }
+})();
+
+// ==============================
+// 悬浮式回到顶部按钮
+// ==============================
+(function() {
+    function createBackToTopButton() {
+        // 检查是否已存在
+        if (document.getElementById('back-to-top')) return;
+
+        var btn = document.createElement('button');
+        btn.id = 'back-to-top';
+        btn.className = 'back-to-top';
+        btn.innerHTML = '&#8679;';
+        btn.setAttribute('title', '回到顶部');
+        document.body.appendChild(btn);
+
+        // 滚动事件
+        function toggleVisibility() {
+            if (window.pageYOffset > 300) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('scroll', toggleVisibility, { passive: true });
+
+        // 点击事件
+        btn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createBackToTopButton);
+    } else {
+        createBackToTopButton();
+    }
+})();
+
+// ==============================
 // Reading Progress Bar
 // ==============================
 (function() {

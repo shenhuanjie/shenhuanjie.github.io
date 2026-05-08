@@ -595,3 +595,45 @@
     &:hover
       background #ff4757
       border-color #ff4757
+
+// ==============================
+// Back to Top Button
+// ==============================
+.back-to-top
+  position fixed
+  bottom 30px
+  right 30px
+  width 44px
+  height 44px
+  background #2d96bd
+  color #fff
+  border none
+  border-radius 50%
+  font-size 20px
+  cursor pointer
+  opacity 0
+  visibility hidden
+  transition all 0.3s ease
+  z-index 9999
+  box-shadow 0 2px 10px rgba(0, 0, 0, 0.15)
+  display flex
+  align-items center
+  justify-content center
+  &:hover
+    background #2582a1
+    transform scale(1.1)
+    box-shadow 0 4px 15px rgba(0, 0, 0, 0.2)
+  &.visible
+    opacity 1
+    visibility visible
+  .dark-theme &
+    background #61afef
+    &:hover
+      background #4d9de0
+  // Mobile responsive
+  @media screen and (max-width: 479px)
+    bottom 20px
+    right 20px
+    width 40px
+    height 40px
+    font-size 18px

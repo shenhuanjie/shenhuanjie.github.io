@@ -11,6 +11,7 @@ nav:
   About: /about
   # /about
   Sponsors: /sponsors
+  # Membership: /membership  # 会员页面（待启用）
 
 # favicon
 favicon: favicon.ico
