@@ -27,6 +27,16 @@ const ARTICLES = [
     url: 'https://blog.csdn.net/2301_81888214/article/details/160135708',
     source: 'csdn',
     title: '2026 Top 5的本地大语言模型工具'
+  },
+  {
+    url: 'https://cloud.tencent.com/developer/article/2435158',
+    source: 'tencent',
+    title: '腾讯发布大模型时代的AI十大趋势：走进"机器外脑"时代'
+  },
+  {
+    url: 'https://cloud.tencent.com/developer/article/2438018',
+    source: 'tencent',
+    title: '用腾讯Cloud Studio一键免费部署AI大模型'
   }
 ];
 
@@ -97,6 +107,41 @@ function extractCsdnContent(html, url) {
   let match;
   while ((match = imgRegex.exec(cleanContent)) !== null) {
     images.push(match[1]);
+  }
+
+  return { title, date, content: cleanContent, images };
+}
+
+function extractTencentContent(html, url) {
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+
+  // 腾讯开发者社区文章内容提取
+  const articleContent = doc.querySelector('.mod-article-content') ||
+                         doc.querySelector('.mod-content__markdown') ||
+                         doc.querySelector('.article-content');
+
+  const title = doc.querySelector('h1')?.textContent?.trim() ||
+                 doc.querySelector('.cdc-m-header-article__title')?.textContent?.trim() || '';
+
+  // 提取日期
+  const dateMeta = doc.querySelector('meta[name="subjectTime"]')?.getAttribute('content');
+  const dateMatch = dateMeta ? dateMeta.match(/\d{4}-\d{2}-\d{2}/) : null;
+  const date = dateMatch ? dateMatch[0] : '';
+
+  const content = articleContent?.innerHTML || '';
+
+  // 清理腾讯的图片引用
+  let cleanContent = content.replace(/data-src=/g, 'src=');
+  cleanContent = cleanContent.replace(/src="[^"]*cloudcache[^"]*"/g, (match) => {
+    return match;
+  });
+
+  const images = [];
+  const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+  let imgMatch;
+  while ((imgMatch = imgRegex.exec(cleanContent)) !== null) {
+    images.push(imgMatch[1]);
   }
 
   return { title, date, content: cleanContent, images };
@@ -176,6 +221,8 @@ async function crawlArticle(article) {
       extracted = extractCnblogsContent(html);
     } else if (article.source === 'csdn') {
       extracted = extractCsdnContent(html, article.url);
+    } else if (article.source === 'tencent') {
+      extracted = extractTencentContent(html, article.url);
     }
 
     if (!extracted || !extracted.content) {

@@ -32,7 +32,7 @@ tags:
 | <strong>系统观</strong> | 静态架构 | 持续学习的动态系统 |</p>
 <h2 id="ai">AI 工程范式的三次跃迁</h2>
 <p>理解 AI Native Engineer，需要理解 AI 工程化的演进历程。这不是简单的技能升级，而是<strong>三次深刻的认知跃迁</strong>。</p>
-<h3 id="prompt-engineering2023">第���次跃迁：Prompt Engineering（2023）</h3>
+<h3 id="prompt-engineering2023">第一次跃迁：Prompt Engineering（2023）</h3>
 <p><strong>核心假设</strong>：只要给 AI 正确的指令，它就能给出正确的结果。</p>
 <p><strong>主要技能</strong>：<br>
 - <strong>指令设计</strong>：角色定义、输入输出规范、约束条件<br>
@@ -429,7 +429,7 @@ Agent 编排 (多 Agent 协作)
 </code></pre></div>
 
 <p><strong>效率提升</strong>：3-10 倍</p>
-<h2 id="_4">常见误区和避免方法</h2>
+<h2 id="_4">常见误区和���免方法</h2>
 <h3 id="ai_1">误区一：过度依赖 AI</h3>
 <p><strong>错误</strong>：完全依赖 AI，不学习基础</p>
 <p><strong>正确</strong>：<br>

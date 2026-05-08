@@ -81,7 +81,7 @@ tags:
 <h6><a id="httpsblogcsdnnet2401_85343303articledetails156392404spm1001201430015501Agent_223"></a><a href="https://blog.csdn.net/2401_85343303/article/details/156392404?spm=1001.2014.3001.5501"></a><strong>第二十五章：Agent开发基础</strong></h6> 
 <ol><li>什么是Agent</li><li>什么是Plan, Action, Tools</li><li>经典的Agent开源项目介绍</li><li>编写简单的Agent程序</li><li>Agent目前面临的挑战与机遇</li></ol> 
 <h6><a id="httpsblogcsdnnet2401_85343303articledetails156392404spm1001201430015501Agent_231"></a><a href="https://blog.csdn.net/2401_85343303/article/details/156392404?spm=1001.2014.3001.5501"></a><strong>第二十六章：自定义Agent工具</strong></h6> 
-<ol><li>LangChain所支持的Agent</li><li>什么需要自定义Agent</li><li>@tool decorator的使用</li><li>编写自定义Agent工具</li><li>编写完整的Agent小项目</li></ol> 
+<ol><li>LangChain所支持的Agent</li><li>��么需要自定义Agent</li><li>@tool decorator的使用</li><li>编写自定义Agent工具</li><li>编写完整的Agent小项目</li></ol> 
 <h6><a id="httpsblogcsdnnet2401_85343303articledetails156392404spm1001201430015501ReAct_239"></a><a href="https://blog.csdn.net/2401_85343303/article/details/156392404?spm=1001.2014.3001.5501"></a><strong>第二十七章：深入浅出ReAct框架</strong></h6> 
 <ol><li>回顾什么是CoT</li><li>CoT和Action的结合</li><li>剖析ReAct框架的Prompt结构</li><li>从零实现ReAct（from Scratch)</li><li>ReAct框架的优缺点分析</li></ol> 
 <h6><a id="httpsblogcsdnnet2401_85343303articledetails156392404spm1001201430015501Agent_247"></a><a href="https://blog.csdn.net/2401_85343303/article/details/156392404?spm=1001.2014.3001.5501"></a><strong>第二十八章：【项目实战】开源Agent项目</strong></h6> 
