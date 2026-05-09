@@ -787,7 +787,9 @@ async function main() {
   printSummary(results, dryRun);
 }
 
-// 运行
-main().catch(console.error);
+// 运行 - 只在直接运行时执行，不在require时执行
+if (require.main === module) {
+  main().catch(console.error);
+}
 
 module.exports = { main, fetchSource, saveDraft, checkContentQuality, stopScheduledTask, showScheduleStatus };

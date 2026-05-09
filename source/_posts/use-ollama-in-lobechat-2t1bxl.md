@@ -17,11 +17,7 @@ toc: true
 
 
 
-![image](https://qiniu.skyner.cn/f579b39b-e771-402c-a1d1-620e57a10c75)
-
-
-
-​![image](https://qiniu.skyner.cn/f579b39b-e771-402c-a1d1-620e57a10c75)​
+Ollama 是一款强大的本地运行大型语言模型（LLM）的框架
 
 　　Ollama 是一款强大的本地运行大型语言模型（LLM）的框架，支持多种语言模型，包括 Llama 2, Mistral 等。现在，LobeChat 已经支持与 Ollama 的集成，这意味着你可以在 LobeChat 中轻松使用 Ollama 提供的语言模型来增强你的应用。
 
