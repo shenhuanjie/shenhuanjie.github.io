@@ -1,0 +1,36 @@
+<div class="container">
+    <article class="post-wrap page">
+        <% if(theme.page_title_enable){ %>
+        <h2 class="post-title"><%- page.title %></h2>
+        <% } %>
+
+        <section class="trophy-content">
+            <%- page.content %>
+        </section>
+
+        <style>
+            .trophy-content {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .trophy-content table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }
+            .trophy-content th,
+            .trophy-content td {
+                border: 1px solid #ddd;
+                padding: 12px;
+                text-align: center;
+            }
+            .trophy-content th {
+                background-color: #f5f5f5;
+            }
+            .trophy-content .level-table th,
+            .trophy-content .level-table td {
+                text-align: left;
+            }
+        </style>
+    </article>
+</div>

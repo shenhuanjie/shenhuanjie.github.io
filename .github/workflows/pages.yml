@@ -50,3 +50,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Send Deploy Notification
+        if: success()
+        run: |
+          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            npm run notify:deploy
+          fi
+        env:
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}

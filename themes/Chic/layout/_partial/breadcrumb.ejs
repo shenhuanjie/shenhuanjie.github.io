@@ -1,0 +1,24 @@
+<%#
+  面包屑导航组件
+  格式：首页 > 分类 > 文章标题
+%>
+<% if (page.categories && page.categories.length > 0) { %>
+<nav class="breadcrumb-nav" aria-label="面包屑导航">
+    <div class="breadcrumb">
+        <a href="<%- url_for('/') %>" class="breadcrumb-item">首页</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <% page.categories.forEach((category, index) => { %>
+            <% if (index === page.categories.length - 1) { %>
+                <span class="breadcrumb-item breadcrumb-current"><%- category.name %></span>
+            <% } else { %>
+                <a href="<%- url_for(category.path) %>" class="breadcrumb-item"><%- category.name %></a>
+                <span class="breadcrumb-separator">&gt;</span>
+            <% } %>
+        <% }) %>
+        <% if (page.title) { %>
+            <span class="breadcrumb-separator">&gt;</span>
+            <span class="breadcrumb-item breadcrumb-current"><%- page.title %></span>
+        <% } %>
+    </div>
+</nav>
+<% } %>

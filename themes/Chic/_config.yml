@@ -165,3 +165,18 @@ cdn:
     - /js/favorites-page.js
     # MathJax CDN
     - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML
+
+# ==============================
+# 用户激励体系 - 符号计数时间 (v2.8)
+# ==============================
+symbols_count_time:
+  enable: true
+  post_meta_enable: true
+  post_wordcount_enable: true
+  awad: true
+  awardTitles:
+    'first-post': '首发勋章'
+    'consistent-7': '持续贡献'
+    'quality-content': '优质内容'
+    'high-engagement': '高互动'
+    'yearly-top': '年度作者'

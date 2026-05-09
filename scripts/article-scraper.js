@@ -693,6 +693,32 @@ async function saveArticle(article, source, dryRun = false, options = {}) {
 }
 
 /**
+ * 检查文章是否已存在（基于 source_link URL 去重）
+ * @param {string} targetUrl - 目标URL
+ * @returns {Promise<string|null>} 返回已存在文章的文件路径，不存在则返回 null
+ */
+async function checkArticleExists(targetUrl) {
+  if (!fs.existsSync(POSTS_DIR)) {
+    return null;
+  }
+
+  const files = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith('.md'));
+
+  for (const file of files) {
+    const filepath = path.join(POSTS_DIR, file);
+    const content = fs.readFileSync(filepath, 'utf-8');
+
+    // 解析 frontmatter 中的 source_link
+    const sourceLinkMatch = content.match(/^source_link:\s*(.+)$/m);
+    if (sourceLinkMatch && sourceLinkMatch[1].trim() === targetUrl) {
+      return filepath;
+    }
+  }
+
+  return null;
+}
+
+/**
  * 爬取单篇文章
  * @param {string} targetUrl - 目标URL
  * @param {boolean} dryRun - 是否预览
@@ -701,6 +727,14 @@ async function saveArticle(article, source, dryRun = false, options = {}) {
 async function scrapeArticle(targetUrl, dryRun = false, options = {}) {
   const { useAI = false } = options;
   console.log(`\n正在爬取: ${targetUrl}`);
+
+  // URL 去重检查
+  const existingFile = await checkArticleExists(targetUrl);
+  if (existingFile) {
+    console.log(`  [跳过] 文章已存在: ${path.basename(existingFile)}`);
+    console.log(`  source_link: ${targetUrl}`);
+    return { success: false, reason: 'duplicate', existingFile };
+  }
 
   // 检测网站类型
   const siteKey = detectSite(targetUrl);
@@ -858,6 +892,9 @@ async function main() {
     if (result.aiSummary) {
       console.log(`AI摘要: ${result.aiSummary}`);
     }
+  } else if (result.reason === 'duplicate') {
+    console.log(`跳过采集: 该文章已存在`);
+    console.log(`文件: ${path.basename(result.existingFile)}`);
   } else {
     console.log(`爬取失败: ${result.reason}`);
   }

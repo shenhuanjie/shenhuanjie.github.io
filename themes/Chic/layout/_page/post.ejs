@@ -7,6 +7,8 @@
     <%# article %>
     <article class="post-wrap">
         <header class="post-header">
+            <%# 面包屑导航 %>
+            <%- partial('_partial/breadcrumb') %>
             <h1 class="post-title"><%= page.title %></h1>
             <%
 function estimateReadingTime(content) {
@@ -127,6 +129,8 @@ var readingTime = estimateReadingTime(page.content);
                 <a href="javascript:;" class="share-btn wechat" onclick="showWechatShare()" title="微信分享">微信</a>
                 <%# 微博分享 %>
                 <a href="https://service.weibo.com/share/share.php?url=<%= encodeURIComponent(page.permalink) %>&title=<%= encodeURIComponent(page.title) %>" target="_blank" rel="noopener noreferrer" class="share-btn weibo" title="微博分享">微博</a>
+                <%# Telegram 分享 %>
+                <a href="https://t.me/share/url?url=<%= encodeURIComponent(page.permalink) %>&text=<%= encodeURIComponent(page.title) %>" target="_blank" rel="noopener noreferrer" class="share-btn telegram" title="Telegram 分享">Telegram</a>
                 <%# 二维码分享 %>
                 <a href="javascript:;" class="share-btn qrcode" onclick="showQRCode()" title="生成二维码">二维码</a>
             </div>

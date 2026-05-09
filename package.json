@@ -12,7 +12,11 @@
     "check:links": "node scripts/check-article-links.js",
     "check:images": "node scripts/check-article-images.js",
     "check:frontmatter": "node scripts/validate-frontmatter.js",
-    "check:quality": "node scripts/quality-check.js"
+    "check:quality": "node scripts/quality-check.js",
+    "notify": "node scripts/notify.js",
+    "notify:publish": "node scripts/notify.js --platform feishu --type publish",
+    "notify:deploy": "node scripts/notify.js --platform feishu --type deploy",
+    "notify:scraper": "node scripts/notify.js --platform feishu --type scraper"
   },
   "hexo": {
     "version": "8.1.2"
