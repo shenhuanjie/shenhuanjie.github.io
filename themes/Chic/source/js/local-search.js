@@ -108,6 +108,14 @@
       return;
     }
 
+    // 搜索事件追踪 (v2.7 Phase 15)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'search', {
+        search_term: keyword,
+        result_count: results.length
+      });
+    }
+
     if (!results.length) {
       status.textContent = '没有找到匹配的文章。';
       container.innerHTML = '';

@@ -91,6 +91,51 @@
         });
     }
 
+    // 勋章解锁事件追踪 (v2.7 Phase 15)
+    function trackAchievementUnlock(achievementId, achievementName) {
+        var pageInfo = getPageInfo();
+        trackEvent('achievement_unlock', {
+            event_category: 'engagement',
+            achievement_id: achievementId,
+            achievement_name: achievementName,
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    // 相关文章点击事件追踪 (v2.7 Phase 15)
+    function trackRelatedClick(relatedTitle, relatedUrl) {
+        var pageInfo = getPageInfo();
+        trackEvent('related_click', {
+            event_category: 'engagement',
+            related_title: relatedTitle,
+            related_url: relatedUrl.substring(0, 100),
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    // 目录跳转事件追踪 (v2.7 Phase 15)
+    function trackTocClick(headingId, headingText) {
+        var pageInfo = getPageInfo();
+        trackEvent('toc_click', {
+            event_category: 'navigation',
+            heading_id: headingId,
+            heading_text: headingText ? headingText.substring(0, 50) : '',
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
+    // 站内搜索事件追踪 (v2.7 Phase 15)
+    function trackSearch(searchTerm, resultCount) {
+        trackEvent('search', {
+            event_category: 'engagement',
+            search_term: searchTerm,
+            result_count: resultCount
+        });
+    }
+
     // 阅读计时器
     var readingTimer = null;
     function startReadingTimer() {
@@ -467,5 +512,43 @@
         if (commentsSection) {
             utterancesObserver.observe(commentsSection, { childList: true, subtree: true });
         }
+
+        // 相关文章点击事件追踪 (v2.7 Phase 15)
+        var relatedLinks = document.querySelectorAll('.related-item a, .related-posts a');
+        relatedLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                var title = link.querySelector('.related-post-title') || link;
+                trackRelatedClick(
+                    title.textContent.trim(),
+                    link.getAttribute('href')
+                );
+            });
+        });
+
+        // 目录跳转事件追踪 (v2.7 Phase 15)
+        var tocLinks = document.querySelectorAll('.tocbot-list a, .post-toc a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                var headingId = link.getAttribute('href');
+                var headingText = link.textContent;
+                // 过滤掉功能链接
+                if (headingId && headingId.startsWith('#') && headingId.length > 1) {
+                    trackTocClick(headingId.substring(1), headingText);
+                }
+            });
+        });
+
+        // 页面导航链接点击追踪
+        var navLinks = document.querySelectorAll('.post-nav a');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                trackEvent('post_nav_click', {
+                    event_category: 'navigation',
+                    nav_type: link.classList.contains('prev') ? 'prev' : 'next',
+                    page_title: getPageInfo().title,
+                    page_url: getPageInfo().url
+                });
+            });
+        });
     });
 })();

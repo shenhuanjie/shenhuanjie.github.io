@@ -22,6 +22,8 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment-timezone');
 const yaml = require('js-yaml');
+const https = require('https');
+const http = require('http');
 
 // ============== 配置 ==============
 
@@ -45,8 +47,211 @@ const CONFIG = {
     '大模型': 'AI大模型',
     'AI日更': 'AI日更',
     'AI周报': 'AI周报'
+  },
+  // Webhook 配置
+  webhooks: {
+    // 钉钉 webhook
+    dingtalk: process.env.DINGTALK_WEBHOOK || '',
+    // 飞书 webhook
+    feishu: process.env.FEISHU_WEBHOOK || ''
   }
 };
+
+// ============== Webhook 通知函数 ==============
+
+/**
+ * 发送 HTTP 请求（支持 HTTPS）
+ */
+function sendRequest(url, data) {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    };
+
+    const req = protocol.request(url, options, (res) => {
+      const chunks = [];
+      res.on('data', chunk => chunks.push(chunk));
+      res.on('end', () => {
+        const result = Buffer.concat(chunks).toString();
+        resolve({ status: res.statusCode, body: result });
+      });
+    });
+
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('请求超时'));
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  });
+}
+
+/**
+ * 发送钉钉通知
+ */
+async function sendDingTalkNotification(results) {
+  if (!CONFIG.webhooks.dingtalk) {
+    return { success: false, reason: '未配置钉钉 webhook' };
+  }
+
+  const { published, failed } = results;
+  const now = moment().tz(CONFIG.timeZone).format('YYYY-MM-DD HH:mm');
+
+  // 构建钉钉消息
+  const content = [];
+  content.push(`📢 文章发布通知`);
+  content.push(`⏰ 发布时间: ${now}`);
+  content.push('');
+  content.push(`✅ 成功发布: ${published.length} 篇`);
+
+  if (published.length > 0) {
+    published.forEach((p, i) => {
+      const title = p.message.replace('已发布: ', '');
+      content.push(`   ${i + 1}. ${title}`);
+    });
+  }
+
+  if (failed.length > 0) {
+    content.push('');
+    content.push(`❌ 发布失败: ${failed.length} 篇`);
+    failed.forEach((f, i) => {
+      content.push(`   ${i + 1}. ${f.path}: ${f.reason}`);
+    });
+  }
+
+  const message = {
+    msgtype: 'text',
+    text: {
+      content: content.join('\n')
+    }
+  };
+
+  try {
+    const response = await sendRequest(CONFIG.webhooks.dingtalk, message);
+    if (response.status === 200) {
+      console.log('[Webhook] 钉钉通知发送成功');
+      return { success: true };
+    } else {
+      console.log(`[Webhook] 钉钉通知发送失败: ${response.status}`);
+      return { success: false, reason: `HTTP ${response.status}` };
+    }
+  } catch (error) {
+    console.log(`[Webhook] 钉钉通知发送失败: ${error.message}`);
+    return { success: false, reason: error.message };
+  }
+}
+
+/**
+ * 发送飞书通知
+ */
+async function sendFeishuNotification(results) {
+  if (!CONFIG.webhooks.feishu) {
+    return { success: false, reason: '未配置飞书 webhook' };
+  }
+
+  const { published, failed } = results;
+  const now = moment().tz(CONFIG.timeZone).format('YYYY-MM-DD HH:mm');
+
+  // 构建飞书消息
+  const elements = [
+    {
+      tag: 'markdown',
+      content: `**📢 文章发布通知**\n**⏰ 发布时间:** ${now}`
+    },
+    {
+      tag: 'hr'
+    },
+    {
+      tag: 'markdown',
+      content: `**✅ 成功发布: ${published.length} 篇**`
+    }
+  ];
+
+  if (published.length > 0) {
+    const items = published.map((p, i) => `> ${i + 1}. ${p.message.replace('已发布: ', '')}`).join('\n');
+    elements.push({
+      tag: 'markdown',
+      content: items
+    });
+  }
+
+  if (failed.length > 0) {
+    elements.push({
+      tag: 'markdown',
+      content: `**❌ 发布失败: ${failed.length} 篇**`
+    });
+    const items = failed.map((f, i) => `> ${i + 1}. ${path.basename(f.path)}: ${f.reason}`).join('\n');
+    elements.push({
+      tag: 'markdown',
+      content: items
+    });
+  }
+
+  elements.push({
+    tag: 'note',
+    elements: [
+      {
+        tag: 'plain_text',
+        content: '由定时发布脚本自动发送'
+      }
+    ]
+  });
+
+  const message = {
+    msg_type: 'interactive',
+    card: {
+      config: {
+        wide_screen_mode: true
+      },
+      elements
+    }
+  };
+
+  try {
+    const response = await sendRequest(CONFIG.webhooks.feishu, message);
+    if (response.status === 200) {
+      console.log('[Webhook] 飞书通知发送成功');
+      return { success: true };
+    } else {
+      console.log(`[Webhook] 飞书通知发送失败: ${response.status}`);
+      return { success: false, reason: `HTTP ${response.status}` };
+    }
+  } catch (error) {
+    console.log(`[Webhook] 飞书通知发送失败: ${error.message}`);
+    return { success: false, reason: error.message };
+  }
+}
+
+/**
+ * 发送所有配置的 Webhook 通知
+ */
+async function sendNotifications(results) {
+  const notifications = [];
+
+  if (CONFIG.webhooks.dingtalk) {
+    notifications.push(sendDingTalkNotification(results));
+  }
+
+  if (CONFIG.webhooks.feishu) {
+    notifications.push(sendFeishuNotification(results));
+  }
+
+  if (notifications.length === 0) {
+    console.log('[Webhook] 未配置任何 webhook，跳过通知');
+    return;
+  }
+
+  await Promise.all(notifications);
+}
 
 // ============== 工具函数 ==============
 
@@ -303,8 +508,8 @@ function publishDraft(draftPath, config, options = {}) {
 /**
  * 批量检查并发布草稿
  */
-function processDrafts(config, options = {}) {
-  const { dryRun = false, force = false } = options;
+async function processDrafts(config, options = {}) {
+  const { dryRun = false, force = false, notify = true } = options;
 
   const drafts = getDrafts(config.draftsDir);
   const results = {
@@ -360,6 +565,11 @@ function processDrafts(config, options = {}) {
     }
   }
 
+  // 发送通知
+  if (!dryRun && notify && (results.published.length > 0 || results.failed.length > 0)) {
+    await sendNotifications(results);
+  }
+
   return results;
 }
 
@@ -378,6 +588,7 @@ function showHelp() {
   --now FILE       立即发布指定文件
   --dry-run        预览模式（不实际发布）
   --force          强制覆盖已存在的文件
+  --no-notify      禁用发布通知
   --config         显示当前配置
   --help           显示帮助
 
@@ -386,11 +597,18 @@ function showHelp() {
   PUBLISH_POSTS_DIR     文章目录
   PUBLISH_MAX_PER_DAY   每日发布上限（默认 5）
   PUBLISH_TIME_ZONE     时区（默认 Asia/Shanghai）
+  DINGTALK_WEBHOOK      钉钉 webhook 地址
+  FEISHU_WEBHOOK        飞书 webhook 地址
+
+Webhook 通知:
+  发布成功后会自动发送通知到钉钉/飞书
+  使用 --no-notify 禁用通知
 
 示例:
   node scripts/scheduled-publish.js --dry-run
   node scripts/scheduled-publish.js --list
   node scripts/scheduled-publish.js --now source/_drafts/my-draft.md
+  node scripts/scheduled-publish.js --no-notify
 `);
 }
 
@@ -428,7 +646,7 @@ function showDrafts() {
   }
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
 
   if (args.includes('--help')) {
@@ -447,6 +665,7 @@ function main() {
 
   const dryRun = args.includes('--dry-run');
   const force = args.includes('--force');
+  const noNotify = args.includes('--no-notify');
 
   if (dryRun) {
     console.log('模式: 预览（不实际发布）');
@@ -482,6 +701,11 @@ function main() {
       if (dryRun) {
         console.log(`从: ${result.from}`);
         console.log(`到: ${result.to}`);
+      } else {
+        // 单文件发布也发送通知
+        if (!noNotify) {
+          await sendNotifications({ published: [result], failed: [] });
+        }
       }
     } else {
       console.error(`\n失败: ${result.message}`);
@@ -491,7 +715,7 @@ function main() {
   }
 
   // 默认：检查并发布待发布的草稿
-  const results = processDrafts(CONFIG, { dryRun, force });
+  const results = await processDrafts(CONFIG, { dryRun, force, notify: !noNotify });
 
   console.log('\n===========================================');
   console.log('处理摘要');
@@ -517,5 +741,6 @@ module.exports = {
   processDrafts,
   getDrafts,
   shouldPublish,
+  sendNotifications,
   CONFIG
 };
