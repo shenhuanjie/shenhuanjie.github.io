@@ -2,6 +2,7 @@
 title: 百度文心大模型5.1发布：多维弹性预训练技术背后的技术突破
 date: '2026-05-09 18:00:00'
 updated: '2026-05-09 18:00:00'
+description: 百度发布文心大模型5.1，采用多维弹性预训练技术，预训练成本仅为同级别模型的约6%，实现基础能力全面超越，登顶LMArena搜索榜全球第四。
 permalink: /post/2026-05-09-baidu-ernie-5.1-multidimensional-elastic-pretraining.html
 comments: true
 toc: true
