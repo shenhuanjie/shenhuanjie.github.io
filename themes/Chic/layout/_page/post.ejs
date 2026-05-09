@@ -284,4 +284,75 @@ document.addEventListener('click', function(e) {
     if (e.target === wechatModal) closeWechatShare();
     if (e.target === qrcodeModal) closeQRCode();
 });
+
+// ========== GA4 事件追踪 ==========
+(function(){
+    // 文章基础信息
+    var articleInfo = {
+        article_id: '<%= page.title %>',
+        article_category: '<% if(page.categories && page.categories.length > 0) { %><%= page.categories.data[0] ? page.categories.data[0].name : page.categories[0].name %><% } else { %>未分类<% } %>',
+        author: '<%= config.author %>'
+    };
+
+    // 1. 文章阅读开始事件 - 页面加载时触发
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'article_view', articleInfo);
+    }
+
+    // 2. 滚动深度事件 - 滚动 > 70% 时触发，只触发一次
+    var hasTrackedRead = false;
+    function trackArticleRead() {
+        if (hasTrackedRead) return;
+        var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        var scrollPercent = Math.round((scrollTop / scrollHeight) * 100);
+
+        if (scrollPercent > 70) {
+            hasTrackedRead = true;
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'article_read', {
+                    article_id: articleInfo.article_id,
+                    read_depth: scrollPercent
+                });
+            }
+            // 触发后移除监听器
+            window.removeEventListener('scroll', trackArticleRead);
+        }
+    }
+    window.addEventListener('scroll', trackArticleRead);
+
+    // 3. 分享按钮点击事件
+    var shareButtons = document.querySelectorAll('.share-btn');
+    shareButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            var method = 'other';
+            var className = this.className || '';
+
+            if (className.indexOf('twitter') !== -1) {
+                method = 'twitter';
+            } else if (className.indexOf('facebook') !== -1) {
+                method = 'facebook';
+            } else if (className.indexOf('linkedin') !== -1) {
+                method = 'linkedin';
+            } else if (className.indexOf('email') !== -1) {
+                method = 'email';
+            } else if (className.indexOf('wechat') !== -1) {
+                method = 'wechat';
+            } else if (className.indexOf('weibo') !== -1) {
+                method = 'weibo';
+            } else if (className.indexOf('telegram') !== -1) {
+                method = 'telegram';
+            } else if (className.indexOf('qrcode') !== -1) {
+                method = 'qrcode';
+            }
+
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    method: method,
+                    article_id: articleInfo.article_id
+                });
+            }
+        });
+    });
+})();
 </script>

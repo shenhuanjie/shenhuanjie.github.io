@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "description": "评论敏感词配置",
+  "sensitiveWords": [
+    "spam",
+    "advertisement",
+    "advertising",
+    "buy now",
+    "click here",
+    "free money",
+    "casino",
+    "viagra",
+    "lottery",
+    "xxx",
+    "porn",
+    "成人内容",
+    "赌博",
+    "诈骗"
+  ],
+  "moderation": {
+    "autoLabel": "pending-review",
+    "approvedLabel": "approved",
+    "rejectedLabel": "rejected",
+    "logFile": ".comments/moderation-log.json"
+  }
+}

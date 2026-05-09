@@ -6,3 +6,9 @@ db.json
 # AI Helper
 .env
 scripts/cache/
+
+# 评论审核日志
+.comments/
+!.comments/.gitkeep
+data/moderation/*.json
+!data/moderation/sensitive-words.json

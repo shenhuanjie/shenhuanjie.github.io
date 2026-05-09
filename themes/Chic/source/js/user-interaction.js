@@ -91,6 +91,61 @@
         });
     }
 
+    // ==============================
+    // 敏感词检查功能 (v2.10)
+    // ==============================
+    var sensitiveWords = [
+        'spam', 'advertisement', 'advertising', 'buy now', 'click here',
+        'free money', 'casino', 'viagra', 'lottery', 'xxx', 'porn',
+        '成人内容', '赌博', '诈骗'
+    ];
+
+    function checkSensitiveContent(text) {
+        if (!text) return { passed: true, foundWords: [] };
+        var lower = text.toLowerCase();
+        var foundWords = [];
+        for (var i = 0; i < sensitiveWords.length; i++) {
+            if (lower.indexOf(sensitiveWords[i].toLowerCase()) !== -1) {
+                foundWords.push(sensitiveWords[i]);
+            }
+        }
+        return {
+            passed: foundWords.length === 0,
+            foundWords: foundWords
+        };
+    }
+
+    function showSensitiveWarning(foundWords) {
+        var notice = document.querySelector('.comments-moderation-notice');
+        if (notice) {
+            notice.classList.add('warning');
+            notice.innerHTML = '<svg class="icon-warning" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>提示：评论内容可能包含敏感词 (' + foundWords.join(', ') + ')，提交后需经审核</span>';
+        }
+    }
+
+    function resetModerationNotice() {
+        var notice = document.querySelector('.comments-moderation-notice');
+        if (notice) {
+            notice.classList.remove('warning');
+            notice.innerHTML = '<svg class="icon-info" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span>所有评论需经审核后公开，请勿提交敏感信息</span>';
+        }
+    }
+
+    function initSensitiveWordCheck() {
+        // Utterances 使用 iframe，直接监听 textarea 比较困难
+        // 这里提供一个全局检查接口，供控制台调用
+        window.checkCommentSensitive = function(text) {
+            var result = checkSensitiveContent(text);
+            if (!result.passed) {
+                console.warn('评论可能包含敏感词:', result.foundWords);
+                showSensitiveWarning(result.foundWords);
+            } else {
+                resetModerationNotice();
+            }
+            return result;
+        };
+    }
+
     // 勋章解锁事件追踪 (v2.7 Phase 15)
     function trackAchievementUnlock(achievementId, achievementName) {
         var pageInfo = getPageInfo();
@@ -728,6 +783,8 @@
                                 trackComment('click');
                             });
                         }
+                        // 初始化敏感词检查（针对 Utterances 的 textarea）
+                        initSensitiveWordCheck();
                     }
                 }
             });

@@ -1090,3 +1090,34 @@
       .dark-theme &
         background #333
         border-color #555
+
+// ==============================
+// 评论审核提示样式 (v2.10)
+// ==============================
+.comments-moderation-notice
+  display flex
+  align-items center
+  gap 8px
+  margin-bottom 1rem
+  padding 10px 14px
+  background #f0f7ff
+  border 1px solid #d0e3ff
+  border-radius 6px
+  font-size 13px
+  color #0066cc
+  .dark-theme &
+    background rgba(0, 102, 204, 0.15)
+    border-color rgba(0, 102, 204, 0.3)
+    color #66b3ff
+
+  &.warning
+    background #fff8e6
+    border-color #ffe580
+    color #b38f00
+    .dark-theme &
+      background rgba(179, 143, 0, 0.15)
+      border-color rgba(179, 143, 0, 0.3)
+      color #ffd633
+
+  svg
+    flex-shrink 0

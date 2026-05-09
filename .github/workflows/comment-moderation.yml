@@ -1,0 +1,95 @@
+name: Comment Moderation
+
+on:
+  issue_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  moderate-comments:
+    if: github.event_name == 'issue_comment' || (github.event_name == 'issues' && github.event.action == 'opened')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read sensitive words config
+        id: config
+        run: |
+          if [ -f "data/moderation/sensitive-words.json" ]; then
+            echo "config_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "config_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for sensitive content
+        if: steps.config.outputs.config_exists == 'true'
+        id: check_content
+        run: |
+          # Get comment/issue body
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            CONTENT="${{ github.event.comment.body }}"
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+            echo "content_type=comment" >> $GITHUB_OUTPUT
+          else
+            CONTENT="${{ github.event.issue.body }}"
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+            echo "content_type=issue" >> $GITHUB_OUTPUT
+          fi
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+          # Check for sensitive words
+          SENSITIVE_WORDS=$(cat data/moderation/sensitive-words.json | grep -o '"[^"]*"' | tr -d '"' | grep -v '^sensitiveWords$\|^moderation$\|^version$\|^description$\|^autoLabel$\|^approvedLabel$\|^rejectedLabel$\|^logFile$')
+          FOUND_WORDS=""
+
+          for word in $SENSITIVE_WORDS; do
+            if echo "$CONTENT" | grep -iq "$word"; then
+              if [ -z "$FOUND_WORDS" ]; then
+                FOUND_WORDS="$word"
+              else
+                FOUND_WORDS="$FOUND_WORDS, $word"
+              fi
+            fi
+          done
+
+          if [ -n "$FOUND_WORDS" ]; then
+            echo "has_sensitive=true" >> $GITHUB_OUTPUT
+            echo "found_words=$FOUND_WORDS" >> $GITHUB_OUTPUT
+          else
+            echo "has_sensitive=false" >> $GITHUB_OUTPUT
+            echo "found_words=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Add pending-review label for new comments
+        if: steps.check_content.outputs.has_sensitive == 'false'
+        run: |
+          # Add pending-review label to new comments for manual review
+          gh issue label add "${{ steps.check_content.outputs.issue_number }}" pending-review --repo ${{ github.repository }} 2>/dev/null || true
+
+      - name: Log moderation action
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p .comments
+          echo "{\"timestamp\":\"$TIMESTAMP\",\"action\":\"reviewed\",\"type\":\"${{ steps.check_content.outputs.content_type }}\",\"issue_number\":${{ steps.check_content.outputs.issue_number }},\"has_sensitive\":${{ steps.check_content.outputs.has_sensitive }},\"found_words\":\"${{ steps.check_content.outputs.found_words }}\"}" >> .comments/moderation-log.json
+
+      - name: Create GitHub issue for flagged content
+        if: steps.check_content.outputs.has_sensitive == 'true'
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          # Create an alert issue in a dedicated repo or add a label
+          gh issue label add "${{ steps.check_content.outputs.issue_number }}" flagged --repo ${{ github.repository }} 2>/dev/null || true
+
+          # Log the flagged content
+          mkdir -p .comments
+          echo "{\"timestamp\":\"$TIMESTAMP\",\"action\":\"flagged\",\"type\":\"${{ steps.check_content.outputs.content_type }}\",\"issue_number\":${{ steps.check_content.outputs.issue_number }},\"found_words\":\"${{ steps.check_content.outputs.found_words }}\"}" >> .comments/flagged-comments.json || true
+
+      - name: Add comment notification
+        if: steps.check_content.outputs.has_sensitive == 'true'
+        run: |
+          # Notify about pending review
+          gh issue comment "${{ steps.check_content.outputs.issue_number }}" --body "您的评论已提交，正在等待博主审核。审核通过后将会公开显示。" --repo ${{ github.repository }} 2>/dev/null || true
