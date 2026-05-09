@@ -40,19 +40,15 @@ jobs:
 
       - name: Run Frontmatter Validation
         run: npm run check:frontmatter
-        continue-on-error: true
 
       - name: Run Link Check
         run: npm run check:links
-        continue-on-error: true
 
       - name: Run Image Check
         run: npm run check:images
-        continue-on-error: true
 
       - name: Run Quality Check
         run: npm run check:quality
-        continue-on-error: true
 
       - name: Upload Check Results
         if: always()
