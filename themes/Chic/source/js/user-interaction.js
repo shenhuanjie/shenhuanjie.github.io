@@ -136,6 +136,221 @@
         });
     }
 
+    // ==============================
+    // 滚动深度追踪 (T24.1 Phase 24)
+    // ==============================
+    var ScrollTracker = {
+        scrollMilestones: [50, 75, 100], // 滚动里程碑
+        trackedMilestones: {}, // 已追踪的里程碑
+        maxScrollDepth: 0, // 最大滚动深度
+
+        init: function() {
+            var pageInfo = getPageInfo();
+            var pageKey = pageInfo.url;
+            // 每次访问重置里程碑追踪状态
+            this.trackedMilestones = {};
+            this.maxScrollDepth = 0;
+
+            // 监听滚动事件
+            window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+        },
+
+        handleScroll: function() {
+            var scrollPercent = this.calculateScrollPercent();
+            if (scrollPercent > this.maxScrollDepth) {
+                this.maxScrollDepth = scrollPercent;
+            }
+
+            var self = this;
+            this.scrollMilestones.forEach(function(milestone) {
+                if (scrollPercent >= milestone && !self.trackedMilestones[milestone]) {
+                    self.trackedMilestones[milestone] = true;
+                    self.trackScrollDepth(milestone);
+                }
+            });
+        },
+
+        calculateScrollPercent: function() {
+            var windowHeight = window.innerHeight;
+            var documentHeight = document.documentElement.scrollHeight - windowHeight;
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (documentHeight <= 0) return 0;
+            return Math.round((scrollTop / documentHeight) * 100);
+        },
+
+        trackScrollDepth: function(depthPercent) {
+            var pageInfo = getPageInfo();
+            trackEvent('scroll_depth', {
+                event_category: 'engagement',
+                depth_percent: depthPercent,
+                page_title: pageInfo.title,
+                page_url: pageInfo.url
+            });
+        },
+
+        // 获取最终滚动深度（用于页面离开时）
+        getMaxScrollDepth: function() {
+            return this.maxScrollDepth;
+        }
+    };
+
+    // ==============================
+    // 阅读时长追踪 (T24.2 Phase 24)
+    // ==============================
+    var ReadingTimeTracker = {
+        startTime: null,
+        totalTime: 0,
+        isVisible: true,
+        timer: null,
+
+        init: function() {
+            this.startTime = Date.now();
+
+            // 监听页面可见性变化
+            document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+
+            // 监听页面离开
+            window.addEventListener('beforeunload', this.handlePageLeave.bind(this));
+
+            // 定期检查阅读状态（每30秒）
+            this.timer = setInterval(this.checkReadingStatus.bind(this), 30000);
+        },
+
+        handleVisibilityChange: function() {
+            if (document.hidden) {
+                this.isVisible = false;
+                this.pauseTracking();
+            } else {
+                this.isVisible = true;
+                this.resumeTracking();
+            }
+        },
+
+        handlePageLeave: function() {
+            this.trackReadingTime(true);
+        },
+
+        pauseTracking: function() {
+            if (this.startTime) {
+                this.totalTime += Date.now() - this.startTime;
+                this.startTime = null;
+            }
+        },
+
+        resumeTracking: function() {
+            if (!this.startTime) {
+                this.startTime = Date.now();
+            }
+        },
+
+        checkReadingStatus: function() {
+            if (this.isVisible && ScrollTracker.getMaxScrollDepth() >= 50) {
+                this.trackReadingTime(false);
+            }
+        },
+
+        getReadingTime: function() {
+            var currentTime = this.startTime ? Date.now() - this.startTime : 0;
+            return Math.round((this.totalTime + currentTime) / 1000); // 返回秒数
+        },
+
+        trackReadingTime: function(isPageLeave) {
+            var readingTimeSeconds = this.getReadingTime();
+            if (readingTimeSeconds < 5) return; // 少于5秒不追踪
+
+            var pageInfo = getPageInfo();
+            trackEvent('reading_time', {
+                event_category: 'engagement',
+                reading_seconds: readingTimeSeconds,
+                max_scroll_depth: ScrollTracker.getMaxScrollDepth(),
+                is_page_leave: isPageLeave,
+                page_title: pageInfo.title,
+                page_url: pageInfo.url
+            });
+        }
+    };
+
+    // ==============================
+    // 回访用户标记 (T24.2 Phase 24)
+    // ==============================
+    var ReturnVisitorTracker = {
+        STORAGE_KEY: 'blog_visitor_info',
+        VISIT_TIMEOUT: 30 * 60 * 1000, // 30分钟内的访问视为同一会话
+
+        init: function() {
+            this.trackVisit();
+        },
+
+        getVisitorInfo: function() {
+            try {
+                var data = localStorage.getItem(this.STORAGE_KEY);
+                return data ? JSON.parse(data) : { firstVisit: null, lastVisit: null, visitCount: 0 };
+            } catch (e) {
+                return { firstVisit: null, lastVisit: null, visitCount: 0 };
+            }
+        },
+
+        saveVisitorInfo: function(info) {
+            try {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(info));
+            } catch (e) {
+                console.warn('LocalStorage write error:', e);
+            }
+        },
+
+        trackVisit: function() {
+            var now = Date.now();
+            var info = this.getVisitorInfo();
+            var isReturnVisitor = false;
+            var daysSinceLastVisit = null;
+
+            if (info.lastVisit) {
+                var timeDiff = now - info.lastVisit;
+                // 如果距离上次访问超过30分钟，视为回访
+                if (timeDiff > this.VISIT_TIMEOUT) {
+                    isReturnVisitor = true;
+                    daysSinceLastVisit = Math.floor(timeDiff / (24 * 60 * 60 * 1000));
+                }
+            }
+
+            // 更新访问信息
+            if (!info.firstVisit) {
+                info.firstVisit = now;
+            }
+            info.lastVisit = now;
+            info.visitCount = (info.visitCount || 0) + 1;
+
+            this.saveVisitorInfo(info);
+
+            // 发送回访事件
+            if (isReturnVisitor) {
+                this.trackReturnVisit(daysSinceLastVisit);
+            }
+
+            // 追踪新访客
+            if (info.visitCount === 1) {
+                this.trackNewVisitor();
+            }
+        },
+
+        trackNewVisitor: function() {
+            trackEvent('new_visitor', {
+                event_category: 'session',
+                visit_count: 1
+            });
+        },
+
+        trackReturnVisit: function(daysSinceLastVisit) {
+            var pageInfo = getPageInfo();
+            trackEvent('return_visitor', {
+                event_category: 'session',
+                days_since_last_visit: daysSinceLastVisit,
+                page_title: pageInfo.title,
+                page_url: pageInfo.url
+            });
+        }
+    };
+
     // 阅读计时器
     var readingTimer = null;
     function startReadingTimer() {
@@ -397,8 +612,18 @@
         Favorites.init();
         ReadingHistory.init();
 
-        // 启动阅读计时器（文章页面）
+        // 文章页面：启用滚动深度追踪、阅读时长追踪、回访标记 (Phase 24 T24.1/T24.2)
         if (document.querySelector('.post-content')) {
+            // 滚动深度追踪
+            ScrollTracker.init();
+
+            // 阅读时长追踪
+            ReadingTimeTracker.init();
+
+            // 回访用户追踪
+            ReturnVisitorTracker.init();
+
+            // 启动阅读计时器
             startReadingTimer();
 
             // 用户离开或滚动时停止计时

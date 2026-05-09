@@ -152,6 +152,165 @@ async function sendFeishuNotification(type, data) {
       };
       break;
 
+    case 'comment':
+      // 新评论通知
+      message = {
+        msg_type: 'interactive',
+        card: {
+          header: {
+            title: { tag: 'plain_text', content: '💬 新评论待审核' },
+            template: 'purple'
+          },
+          elements: [
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `📝 **评论内容**\n${data.comment || '暂无内容'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `👤 **评论者**: ${data.author || '匿名用户'}\n📧 **邮箱**: ${data.email || '未填写'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `📄 **文章**: ${data.articleTitle || '未知文章'}\n🔗 **链接**: ${data.articleUrl || '无'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `⏰ **时间**: ${new Date().toLocaleString('zh-CN')}`
+              }
+            },
+            {
+              tag: 'action',
+              elements: [
+                {
+                  tag: 'a',
+                  text: { tag: 'plain_text', content: '查看评论' },
+                  href: data.articleUrl || '#'
+                }
+              ]
+            }
+          ]
+        }
+      };
+      break;
+
+    case 'comment_reply':
+      // 评论回复通知
+      message = {
+        msg_type: 'interactive',
+        card: {
+          header: {
+            title: { tag: 'plain_text', content: '💬 您的评论收到回复' },
+            template: 'blue'
+          },
+          elements: [
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `💬 **回复内容**\n${data.replyContent || '暂无内容'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `👤 **回复者**: ${data.replyAuthor || '匿名用户'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `📄 **文章**: ${data.articleTitle || '未知文章'}\n🔗 **链接**: ${data.commentUrl || '无'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `⏰ **时间**: ${new Date().toLocaleString('zh-CN')}`
+              }
+            },
+            {
+              tag: 'action',
+              elements: [
+                {
+                  tag: 'a',
+                  text: { tag: 'plain_text', content: '查看回复' },
+                  href: data.commentUrl || '#'
+                }
+              ]
+            }
+          ]
+        }
+      };
+      break;
+
+    case 'comment_flagged':
+      // 评论被标记通知（包含敏感词）
+      message = {
+        msg_type: 'interactive',
+        card: {
+          header: {
+            title: { tag: 'plain_text', content: '⚠️ 评论包含敏感词' },
+            template: 'red'
+          },
+          elements: [
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `📝 **评论内容**\n${data.comment || '暂无内容'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `👤 **评论者**: ${data.author || '匿名用户'}\n📧 **邮箱**: ${data.email || '未填写'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `⚠️ **敏感词**: ${data.flaggedWords ? data.flaggedWords.join(', ') : '未知'}`
+              }
+            },
+            {
+              tag: 'div',
+              text: {
+                tag: 'lark_md',
+                content: `📄 **文章**: ${data.articleTitle || '未知文章'}`
+              }
+            },
+            {
+              tag: 'action',
+              elements: [
+                {
+                  tag: 'a',
+                  text: { tag: 'plain_text', content: '审核评论' },
+                  href: data.articleUrl || '#'
+                }
+              ]
+            }
+          ]
+        }
+      };
+      break;
+
     default:
       message = {
         msg_type: 'text',
@@ -215,6 +374,39 @@ async function sendDingtalkNotification(type, data) {
       };
       break;
 
+    case 'comment':
+      // 新评论通知
+      message = {
+        msgtype: 'markdown',
+        markdown: {
+          title: '💬 新评论待审核',
+          text: `## 💬 新评论待审核\n\n**评论内容**\n${data.comment || '暂无内容'}\n\n**评论者**: ${data.author || '匿名用户'}\n**邮箱**: ${data.email || '未填写'}\n\n**文章**: ${data.articleTitle || '未知文章'}\n**链接**: ${data.articleUrl || '无'}\n\n⏰ **时间**: ${new Date().toLocaleString('zh-CN')}`
+        }
+      };
+      break;
+
+    case 'comment_reply':
+      // 评论回复通知
+      message = {
+        msgtype: 'markdown',
+        markdown: {
+          title: '💬 您的评论收到回复',
+          text: `## 💬 您的评论收到回复\n\n**回复内容**\n${data.replyContent || '暂无内容'}\n\n**回复者**: ${data.replyAuthor || '匿名用户'}\n\n**文章**: ${data.articleTitle || '未知文章'}\n**链接**: ${data.commentUrl || '无'}\n\n⏰ **时间**: ${new Date().toLocaleString('zh-CN')}`
+        }
+      };
+      break;
+
+    case 'comment_flagged':
+      // 评论被标记通知
+      message = {
+        msgtype: 'markdown',
+        markdown: {
+          title: '⚠️ 评论包含敏感词',
+          text: `## ⚠️ 评论包含敏感词\n\n**评论内容**\n${data.comment || '暂无内容'}\n\n**评论者**: ${data.author || '匿名用户'}\n**邮箱**: ${data.email || '未填写'}\n\n**敏感词**: ${data.flaggedWords ? data.flaggedWords.join(', ') : '未知'}\n\n**文章**: ${data.articleTitle || '未知文章'}\n\n⏰ **时间**: ${new Date().toLocaleString('zh-CN')}`
+        }
+      };
+      break;
+
     default:
       message = {
         msgtype: 'text',
@@ -234,6 +426,48 @@ async function sendDingtalkNotification(type, data) {
   } catch (err) {
     console.log('❌ 钉钉通知发送失败:', err.message);
     return { success: false, reason: err.message };
+  }
+}
+
+/**
+ * 发送新评论通知
+ * @param {string} platform - 平台: feishu, dingtalk, all
+ * @param {Object} commentData - 评论数据
+ */
+async function sendCommentNotification(platform, commentData) {
+  if (platform === 'feishu' || platform === 'all') {
+    await sendFeishuNotification('comment', commentData);
+  }
+  if (platform === 'dingtalk' || platform === 'all') {
+    await sendDingtalkNotification('comment', commentData);
+  }
+}
+
+/**
+ * 发送评论回复通知
+ * @param {string} platform - 平台: feishu, dingtalk, all
+ * @param {Object} replyData - 回复数据
+ */
+async function sendCommentReplyNotification(platform, replyData) {
+  if (platform === 'feishu' || platform === 'all') {
+    await sendFeishuNotification('comment_reply', replyData);
+  }
+  if (platform === 'dingtalk' || platform === 'all') {
+    await sendDingtalkNotification('comment_reply', replyData);
+  }
+}
+
+/**
+ * 发送评论敏感词标记通知
+ * @param {string} platform - 平台: feishu, dingtalk, all
+ * @param {Object} flaggedData - 被标记的评论数据
+ */
+async function sendCommentFlaggedNotification(platform, flaggedData) {
+  if (platform === 'feishu' || platform === 'all') {
+    await sendFeishuNotification('comment_flagged', flaggedData);
+  }
+  if (platform === 'dingtalk' || platform === 'all') {
+    await sendDingtalkNotification('comment_flagged', flaggedData);
   }
 }
 
@@ -356,5 +590,8 @@ if (require.main === module) {
 module.exports = {
   sendFeishuNotification,
   sendDingtalkNotification,
-  sendQualityAlert
+  sendQualityAlert,
+  sendCommentNotification,
+  sendCommentReplyNotification,
+  sendCommentFlaggedNotification
 };
