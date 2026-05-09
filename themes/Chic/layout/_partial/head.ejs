@@ -3,11 +3,14 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-<%# 性能优化：预连接关键外部资源域名 %>
+<%# 性能优化：预连接关键外部资源域名 (T31.3) %>
 <link rel="preconnect" href="//qiniu.skyner.cn" crossorigin>
+<link rel="preconnect" href="//cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="//qiniu.skyner.cn">
 <link rel="dns-prefetch" href="//www.googletagmanager.com">
 <link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
 <%
 function compactText(value) {
     return String(value || '')
@@ -286,6 +289,10 @@ gtag('config', '<%= theme.google_analytics.tracking_id %>', {
     <link rel="icon" href="<%- url_for(theme.favicon) %>">
 <% } %>
 
+<%# T31.3 性能优化：预加载关键 CSS 和字体 %>
+<link rel="preload" href="<%- url_for('/css/style.css') %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="<%- url_for('/css/style.css') %>"></noscript>
+
 <%# css list %>
 <% if (theme.stylesheets !== undefined && theme.stylesheets.length > 0) { %>
     <!-- stylesheets list from _config.yml -->
@@ -293,16 +300,16 @@ gtag('config', '<%= theme.google_analytics.tracking_id %>', {
     <link rel="stylesheet" href="<%- url_for(url) %>">
     <% }); %>
 <% } %>
-<%# javascript list %>
+<%# javascript list - 使用 defer 优化页面渲染 %>
 <% if (theme.scripts !== undefined && theme.scripts.length > 0) { %>
     <!-- scripts list from _config.yml -->
     <% theme.scripts.forEach(url => { %>
-    <script src="<%- url_for(url) %>"></script>
+    <script defer src="<%- url_for(url) %>"></script>
     <% }); %>
 <% } %>
 <%# 用户互动功能脚本（收藏、阅读历史）- 已通过 cdn.js 加载 %>
-<%# 二维码生成脚本 %>
-<script src="<%- url_for('/js/qrcode.min.js') %>"></script>
+<%# 二维码生成脚本 - 懒加载，按需加载 %>
+<script defer src="<%- url_for('/js/qrcode.min.js') %>"></script>
 <%# mathjax support %>
 <% if(theme.mathjax.enable!==null&&theme.mathjax.enable===true){ %>
     <%# import mathjax method: global or demand %>
