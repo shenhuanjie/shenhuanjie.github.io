@@ -1,0 +1,66 @@
+name: GA4 Analytics Report
+
+on:
+  schedule:
+    # 每周一早上 9 点生成周报 (北京时间 9:00 = UTC 1:00)
+    - cron: '0 1 * * 1'
+    # 每月 1 号早上 9 点生成月报
+    - cron: '0 1 1 * *'
+  workflow_dispatch:
+    inputs:
+      period:
+        description: 'Report period'
+        required: true
+        default: 'weekly'
+        type: choice
+        options:
+          - daily
+          - weekly
+          - monthly
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Generate GA4 Report
+        run: |
+          if [ "${{ github.event.inputs.period }}" ]; then
+            npm run analytics:report -- --period ${{ github.event.inputs.period }} --notify
+          else
+            # 从 cron 触发，根据时间判断周期
+            npm run analytics:weekly -- --notify
+          fi
+        env:
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT: ${{ secrets.GA4_SERVICE_ACCOUNT }}
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ga4-report-${{ github.run_number }}
+          path: reports/analytics/
+          retention-days: 90

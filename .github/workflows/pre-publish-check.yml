@@ -1,0 +1,99 @@
+name: Pre-Publish Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: 'Strict mode (fail on warnings)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Pre-Publish Checks
+        run: |
+          if [ "${{ github.event.inputs.strict }}" = "true" ]; then
+            npm run check:all -- --strict
+          else
+            npm run check:all
+          fi
+
+  quality-check:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Quality Check
+        run: npm run check:quality -- --verbose
+
+      - name: Frontmatter Check
+        run: npm run check:frontmatter -- --verbose
+
+      - name: Link Check
+        run: npm run check:links
+
+  notify:
+    needs: [check, quality-check]
+    runs-on: ubuntu-latest
+    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Send Failure Notification
+        run: |
+          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            npm run notify:deploy
+          fi
+        env:
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}

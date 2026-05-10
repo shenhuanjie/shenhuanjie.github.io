@@ -22,6 +22,19 @@ const CONFIG = {
   },
   dingtalk: {
     webhook: process.env.DINGTALK_WEBHOOK_URL
+  },
+  twitter: {
+    webhook: process.env.TWITTER_WEBHOOK_URL,
+    apiKey: process.env.TWITTER_API_KEY,
+    apiSecret: process.env.TWITTER_API_SECRET,
+    accessToken: process.env.TWITTER_ACCESS_TOKEN,
+    accessSecret: process.env.TWITTER_ACCESS_SECRET
+  },
+  linkedin: {
+    webhook: process.env.LINKEDIN_WEBHOOK_URL,
+    clientId: process.env.LINKEDIN_CLIENT_ID,
+    clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+    accessToken: process.env.LINKEDIN_ACCESS_TOKEN
   }
 };
 
@@ -430,6 +443,116 @@ async function sendDingtalkNotification(type, data) {
 }
 
 /**
+ * 发送 Twitter 通知
+ */
+async function sendTwitterNotification(type, data) {
+  if (!CONFIG.twitter.webhook) {
+    console.log('⚠️ Twitter Webhook 未配置，跳过通知');
+    return { success: false, reason: 'webhook not configured' };
+  }
+
+  let message;
+
+  switch (type) {
+    case 'publish':
+      // Twitter 风格的消息
+      message = {
+        text: `📝 新文章发布\n\n${data.title || ''}\n\n${data.description || ''}\n\n${data.url || ''}`
+      };
+      break;
+
+    case 'deploy':
+      message = {
+        text: `🚀 网站已部署完成\n${new Date().toLocaleString('zh-CN')}`
+      };
+      break;
+
+    case 'analytics':
+      message = {
+        text: `📊 数据报告\n\n页面浏览: ${data.pageviews || 0}\n独立访客: ${data.uniqueVisitors || 0}\n新用户: ${data.newUsers || 0}`
+      };
+      break;
+
+    default:
+      message = {
+        text: `通知: ${type}`
+      };
+  }
+
+  try {
+    const result = await sendRequest(CONFIG.twitter.webhook, message);
+    if (result.id || result.statusCode === 200) {
+      console.log('✅ Twitter 通知发送成功');
+      return { success: true };
+    } else {
+      console.log('❌ Twitter 通知发送失败:', result.error || result.message);
+      return { success: false, reason: result.error || result.message };
+    }
+  } catch (err) {
+    console.log('❌ Twitter 通知发送失败:', err.message);
+    return { success: false, reason: err.message };
+  }
+}
+
+/**
+ * 发送 LinkedIn 通知
+ */
+async function sendLinkedInNotification(type, data) {
+  if (!CONFIG.linkedin.webhook && !CONFIG.linkedin.accessToken) {
+    console.log('⚠️ LinkedIn 未配置，跳过通知');
+    return { success: false, reason: 'not configured' };
+  }
+
+  let content;
+
+  switch (type) {
+    case 'publish':
+      content = {
+        title: '📝 新文章发布',
+        summary: `${data.title || ''}\n\n${data.description || ''}\n\n${data.url || ''}`,
+        url: data.url,
+        image: data.cover
+      };
+      break;
+
+    case 'deploy':
+      content = {
+        title: '🚀 网站已部署',
+        summary: `部署完成时间: ${new Date().toLocaleString('zh-CN')}`
+      };
+      break;
+
+    case 'analytics':
+      content = {
+        title: '📊 数据报告',
+        summary: `页面浏览: ${data.pageviews || 0}\n独立访客: ${data.uniqueVisitors || 0}\n新用户: ${data.newUsers || 0}`
+      };
+      break;
+
+    default:
+      content = {
+        title: `通知: ${type}`,
+        summary: JSON.stringify(data)
+      };
+  }
+
+  // 如果配置了 webhook，使用 webhook
+  if (CONFIG.linkedin.webhook) {
+    try {
+      const result = await sendRequest(CONFIG.linkedin.webhook, { method: 'POST' }, content);
+      console.log('✅ LinkedIn 通知发送成功');
+      return { success: true };
+    } catch (err) {
+      console.log('❌ LinkedIn 通知发送失败:', err.message);
+      return { success: false, reason: err.message };
+    }
+  }
+
+  console.log('⚠️ LinkedIn Webhook 未配置，跳过');
+  return { success: false, reason: 'webhook not configured' };
+}
+
+/**
  * 发送新评论通知
  * @param {string} platform - 平台: feishu, dingtalk, all
  * @param {Object} commentData - 评论数据
@@ -526,11 +649,23 @@ async function main() {
       case '--url':
         params.url = args[++i];
         break;
+      case '--cover':
+        params.cover = args[++i];
+        break;
       case '--count':
         params.count = parseInt(args[++i], 10);
         break;
       case '--duration':
         params.duration = args[++i];
+        break;
+      case '--pageviews':
+        params.pageviews = parseInt(args[++i], 10);
+        break;
+      case '--uniqueVisitors':
+        params.uniqueVisitors = parseInt(args[++i], 10);
+        break;
+      case '--newUsers':
+        params.newUsers = parseInt(args[++i], 10);
         break;
       case '--help':
       case '-h':
@@ -541,19 +676,24 @@ async function main() {
   node scripts/notify.js [选项]
 
 选项:
-  --platform, -p <平台>  通知平台: feishu, dingtalk, all (默认: feishu)
-  --type, -t <类型>      通知类型: publish, deploy, scraper, quality_alert
+  --platform, -p <平台>  通知平台: feishu, dingtalk, twitter, linkedin, all (默认: feishu)
+  --type, -t <类型>      通知类型: publish, deploy, scraper, quality_alert, analytics
   --title <标题>         文章标题 (publish 类型用)
   --description, --desc <描述>  文章描述 (publish 类型用)
   --url <链接>           文章链接 (publish 类型用)
+  --cover <图片>         封面图 (publish 类型用)
   --count <数量>         采集数量 (scraper 类型用)
   --duration <时间>      执行时长 (scraper 类型用)
+  --pageviews <数量>     页面浏览量 (analytics 类型用)
+  --uniqueVisitors <数量> 独立访客 (analytics 类型用)
+  --newUsers <数量>      新用户数 (analytics 类型用)
   --help, -h             显示帮助
 
 示例:
   node scripts/notify.js --platform feishu --type publish --title "新文章" --url "https://example.com"
   node scripts/notify.js --platform all --type deploy
   node scripts/notify.js --type scraper --count 5 --duration "2m30s"
+  node scripts/notify.js --type analytics --pageviews 1000 --uniqueVisitors 500 --newUsers 100
         `);
         process.exit(0);
     }
@@ -574,6 +714,12 @@ async function main() {
   if (params.platform === 'dingtalk' || params.platform === 'all') {
     results.push(await sendDingtalkNotification(params.type, params));
   }
+  if (params.platform === 'twitter' || params.platform === 'all') {
+    results.push(await sendTwitterNotification(params.type, params));
+  }
+  if (params.platform === 'linkedin' || params.platform === 'all') {
+    results.push(await sendLinkedInNotification(params.type, params));
+  }
 
   const allSuccess = results.every(r => r.success);
   process.exit(allSuccess ? 0 : 1);
@@ -590,6 +736,8 @@ if (require.main === module) {
 module.exports = {
   sendFeishuNotification,
   sendDingtalkNotification,
+  sendTwitterNotification,
+  sendLinkedInNotification,
   sendQualityAlert,
   sendCommentNotification,
   sendCommentReplyNotification,

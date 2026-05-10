@@ -232,8 +232,19 @@ if (is_post()) {
 <% } %>
 <title><%= pageTitle %></title>
 <link rel="canonical" href="<%- canonicalUrl %>">
-<link rel="alternate" hreflang="zh-CN" href="<%- canonicalUrl %>">
+<%# 多语言 SEO：hreflang 标签配置 (T33.2) %>
+<% var currentLang = page.lang || config.language || 'zh'; %>
+<% if (currentLang === 'en') { %>
+<link rel="alternate" hreflang="en" href="<%- canonicalUrl %>">
+<link rel="alternate" hreflang="zh-CN" href="<%- canonicalUrl.replace('/en/', '/') %>">
 <link rel="alternate" hreflang="x-default" href="<%- canonicalUrl %>">
+<% } else { %>
+<link rel="alternate" hreflang="zh-CN" href="<%- canonicalUrl %>">
+<% if (page.translation_of) { %>
+<link rel="alternate" hreflang="en" href="<%- canonicalUrl.replace('/post/', '/en/post/') %>">
+<% } %>
+<link rel="alternate" hreflang="x-default" href="<%- canonicalUrl %>">
+<% } %>
 <meta property="og:type" content="<%= ogType %>">
 <meta property="og:title" content="<%= pageTitle %>">
 <% if(pageDescription){ %>
@@ -241,7 +252,8 @@ if (is_post()) {
 <% } %>
 <meta property="og:url" content="<%- canonicalUrl %>">
 <meta property="og:site_name" content="<%= config.title %>">
-<meta property="og:locale" content="zh_CN">
+<%# 多语言 SEO：动态 og:locale 设置 (T33.2, T33.3) %>
+<meta property="og:locale" content="<%= currentLang === 'en' ? 'en_US' : 'zh_CN' %>">
 <% if(page.cover){ %>
 <meta property="og:image" content="<%= page.cover %>">
 <% } else if(config.og_image){ %>
@@ -257,6 +269,8 @@ if (is_post()) {
 <% } else if(config.og_image){ %>
 <meta name="twitter:image" content="<%= config.og_image %>">
 <% } %>
+<%# 多语言 SEO：Twitter Card locale 设置 (T33.3) %>
+<meta name="twitter:locale" content="<%= currentLang === 'en' ? 'en_US' : 'zh_CN' %>">
 <% if(is_post() && publishedTime){ %>
     <meta property="article:published_time" content="<%= publishedTime %>">
 <% } %>
@@ -292,6 +306,17 @@ gtag('config', '<%= theme.google_analytics.tracking_id %>', {
 <%# T31.3 性能优化：预加载关键 CSS 和字体 %>
 <link rel="preload" href="<%- url_for('/css/style.css') %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="<%- url_for('/css/style.css') %>"></noscript>
+
+<%# T34.1 LCP 优化：预加载关键字体 %>
+<link rel="preload" href="<%- url_for('/fonts/lanting/lanting.woff2') %>" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<%- url_for('/fonts/iconfont/iconfont.woff2') %>" as="font" type="font/woff2" crossorigin>
+
+<%# T34.1 LCP 优化：预加载关键图片（og:image / 文章封面图）%>
+<% if(is_post() && page.cover){ %>
+<link rel="preload" as="image" href="<%= page.cover %>">
+<% } else if(config.og_image){ %>
+<link rel="preload" as="image" href="<%= config.og_image %>">
+<% } %>
 
 <%# css list %>
 <% if (theme.stylesheets !== undefined && theme.stylesheets.length > 0) { %>

@@ -13,10 +13,18 @@
     "check:images": "node scripts/check-article-images.js",
     "check:frontmatter": "node scripts/validate-frontmatter.js",
     "check:quality": "node scripts/quality-check.js",
+    "check:all": "node scripts/pre-publish-check.js --strict",
+    "check:report": "node scripts/pre-publish-check.js --verbose --report",
     "notify": "node scripts/notify.js",
     "notify:publish": "node scripts/notify.js --platform feishu --type publish",
     "notify:deploy": "node scripts/notify.js --platform feishu --type deploy",
-    "notify:scraper": "node scripts/notify.js --platform feishu --type scraper"
+    "notify:scraper": "node scripts/notify.js --platform feishu --type scraper",
+    "publish:dry": "npm run check:all && hexo generate && npm run notify:deploy",
+    "publish:full": "npm run check:all && hexo clean && hexo generate && hexo deploy && npm run notify:deploy",
+    "social:preview": "node scripts/social-preview.js",
+    "social:publish": "node scripts/social-publish.js",
+    "analytics:report": "node scripts/ga4-report.js",
+    "analytics:weekly": "node scripts/ga4-report.js --period weekly"
   },
   "hexo": {
     "version": "8.1.2"

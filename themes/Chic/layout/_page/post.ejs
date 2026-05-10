@@ -285,43 +285,263 @@ document.addEventListener('click', function(e) {
     if (e.target === qrcodeModal) closeQRCode();
 });
 
-// ========== GA4 事件追踪 ==========
+// ============================================================
+// GA4 用户增长分析追踪代码 v2.13
+// ============================================================
+// T35.1 用户漏斗分析：首页→文章点击→阅读完成→深度互动
+// T35.2 内容效果分析：阅读时长、完读率、跳出率
+// T35.3 增长实验设计：A/B 测试框架
+// ============================================================
 (function(){
-    // 文章基础信息
+    'use strict';
+
+    // ==================== 文章基础信息 ====================
     var articleInfo = {
         article_id: '<%= page.title %>',
+        article_slug: '<%= page.slug %>',
         article_category: '<% if(page.categories && page.categories.length > 0) { %><%= page.categories.data[0] ? page.categories.data[0].name : page.categories[0].name %><% } else { %>未分类<% } %>',
-        author: '<%= config.author %>'
+        article_tags: '<% if(page.tags && page.tags.length > 0) { %><%= page.tags.map(function(t){ return t.name || t; }).join(",") %><% } else { %>无<% } %>',
+        author: '<%= config.author %>',
+        publish_date: '<% if(page.date){ %><%= date(page.date, "YYYY-MM-DD") %><% } else { %>未知<% } %>',
+        reading_time: '<%= readingTime %>'
     };
 
-    // 1. 文章阅读开始事件 - 页面加载时触发
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'article_view', articleInfo);
+    // 获取 URL 参数（用于 A/B 测试）
+    function getUrlParam(name) {
+        var params = new URLSearchParams(window.location.search);
+        return params.get(name);
     }
 
-    // 2. 滚动深度事件 - 滚动 > 70% 时触发，只触发一次
-    var hasTrackedRead = false;
-    function trackArticleRead() {
-        if (hasTrackedRead) return;
-        var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        var scrollPercent = Math.round((scrollTop / scrollHeight) * 100);
-
-        if (scrollPercent > 70) {
-            hasTrackedRead = true;
+    // ==================== A/B 测试框架 (T35.3) ====================
+    var abTest = {
+        // 从 URL 或 localStorage 获取实验组别
+        getVariant: function(experimentId) {
+            // 优先从 URL 参数获取
+            var urlVariant = getUrlParam('v');
+            if (urlVariant) {
+                localStorage.setItem('ab_' + experimentId, urlVariant);
+                return urlVariant;
+            }
+            // 从 localStorage 获取
+            var stored = localStorage.getItem('ab_' + experimentId);
+            if (stored) return stored;
+            // 随机分配 (50/50)
+            var variant = Math.random() < 0.5 ? 'A' : 'B';
+            localStorage.setItem('ab_' + experimentId, variant);
+            return variant;
+        },
+        // 追踪实验曝光
+        trackExposure: function(experimentId, experimentName) {
+            var variant = this.getVariant(experimentId);
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'article_read', {
-                    article_id: articleInfo.article_id,
-                    read_depth: scrollPercent
+                gtag('event', 'ab_test_exposure', {
+                    experiment_id: experimentId,
+                    experiment_name: experimentName,
+                    variant: variant
                 });
             }
-            // 触发后移除监听器
-            window.removeEventListener('scroll', trackArticleRead);
+        },
+        // 追踪实验转化
+        trackConversion: function(experimentId, eventName, eventData) {
+            var variant = this.getVariant(experimentId);
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, {
+                    experiment_id: experimentId,
+                    variant: variant,
+                    ...eventData
+                });
+            }
         }
-    }
-    window.addEventListener('scroll', trackArticleRead);
+    };
 
-    // 3. 分享按钮点击事件
+    // T35.3: 标题实验追踪（示例实验）
+    abTest.trackExposure('exp_title_style', 'article_title_style');
+
+    // ==================== 用户漏斗追踪 (T35.1) ====================
+    var funnel = {
+        steps: {
+            STEP1_HOMEPAGE_VIEW: 'homepage_view',
+            STEP2_ARTICLE_CLICK: 'article_click',
+            STEP3_ARTICLE_READ: 'article_read',
+            STEP4_DEEP_ENGAGEMENT: 'deep_engagement'
+        },
+        // 追踪漏斗阶段
+        trackStep: function(stepName, stepNumber, extraData) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'funnel_step', {
+                    step: stepName,
+                    step_number: stepNumber,
+                    article_id: articleInfo.article_id,
+                    article_category: articleInfo.article_category,
+                    ...extraData
+                });
+            }
+        }
+    };
+
+    // T35.1: 漏斗 Step 3 - 文章阅读开始
+    funnel.trackStep(funnel.steps.STEP3_ARTICLE_READ, 3, {read_status: 'start'});
+
+    // ==================== 内容效果分析 (T35.2) ====================
+    var contentAnalytics = {
+        // 滚动深度追踪状态
+        scrollState: {
+            hasTracked25: false,
+            hasTracked50: false,
+            hasTracked75: false,
+            hasTracked90: false,
+            maxScrollDepth: 0
+        },
+        // 阅读时长追踪
+        readingTimer: {
+            startTime: Date.now(),
+            visibleTime: 0,
+            lastVisibleTime: Date.now(),
+            isVisible: true
+        },
+        // 追踪滚动深度
+        trackScrollDepth: function() {
+            var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            var scrollPercent = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
+
+            // 更新最大滚动深度
+            if (scrollPercent > this.scrollState.maxScrollDepth) {
+                this.scrollState.maxScrollDepth = scrollPercent;
+            }
+
+            // 分阶段追踪（25%, 50%, 75%, 90%）
+            var thresholds = [
+                { percent: 25, tracked: 'hasTracked25', event: 'scroll_depth_25' },
+                { percent: 50, tracked: 'hasTracked50', event: 'scroll_depth_50' },
+                { percent: 75, tracked: 'hasTracked75', event: 'scroll_depth_75' },
+                { percent: 90, tracked: 'hasTracked90', event: 'scroll_depth_90' }
+            ];
+
+            var self = this;
+            thresholds.forEach(function(t) {
+                if (scrollPercent >= t.percent && !self.scrollState[t.tracked]) {
+                    self.scrollState[t.tracked] = true;
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', t.event, {
+                            article_id: articleInfo.article_id,
+                            article_category: articleInfo.article_category,
+                            scroll_depth: t.percent,
+                            max_scroll_depth: self.scrollState.maxScrollDepth
+                        });
+                    }
+                }
+            });
+
+            // T35.1: 追踪漏斗 Step 4 - 深度互动（滚动 > 75%）
+            if (scrollPercent >= 75 && !window.__deepEngagementTracked) {
+                window.__deepEngagementTracked = true;
+                funnel.trackStep(funnel.steps.STEP4_DEEP_ENGAGEMENT, 4, {
+                    scroll_depth: scrollPercent,
+                    engagement_type: 'scroll_75'
+                });
+            }
+        },
+        // 追踪阅读时长
+        trackReadingTime: function() {
+            var now = Date.now();
+            var timer = this.readingTimer;
+
+            if (timer.isVisible) {
+                timer.visibleTime += now - timer.lastVisibleTime;
+            }
+            timer.lastVisibleTime = now;
+
+            // 每 30 秒发送一次阅读时长
+            if (!this._lastReportTime) this._lastReportTime = timer.startTime;
+            if (now - this._lastReportTime >= 30000) {
+                this._lastReportTime = now;
+                var totalTime = Math.round((now - timer.startTime) / 1000);
+                var visibleSeconds = Math.round(timer.visibleTime / 1000);
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'reading_time_update', {
+                        article_id: articleInfo.article_id,
+                        total_time_seconds: totalTime,
+                        visible_time_seconds: visibleSeconds
+                    });
+                }
+            }
+        },
+        // 初始化可见性监听
+        initVisibilityListener: function() {
+            var self = this;
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    self.readingTimer.isVisible = false;
+                } else {
+                    self.readingTimer.lastVisibleTime = Date.now();
+                    self.readingTimer.isVisible = true;
+                }
+            });
+        },
+        // 页面离开时发送最终数据
+        trackPageLeave: function() {
+            var timer = this.readingTimer;
+            var now = Date.now();
+            if (timer.isVisible) {
+                timer.visibleTime += now - timer.lastVisibleTime;
+            }
+            var totalTime = Math.round((now - timer.startTime) / 1000);
+            var visibleSeconds = Math.round(timer.visibleTime / 1000);
+            var bounceDetected = totalTime < 10 && this.scrollState.maxScrollDepth < 30;
+
+            if (typeof gtag !== 'undefined') {
+                // T35.2: 跳出率追踪
+                gtag('event', 'article_bounce', {
+                    article_id: articleInfo.article_id,
+                    article_category: articleInfo.article_category,
+                    is_bounce: bounceDetected,
+                    total_time_seconds: totalTime,
+                    visible_time_seconds: visibleSeconds,
+                    max_scroll_depth: this.scrollState.maxScrollDepth
+                });
+
+                // T35.2: 完读率追踪（滚动 > 90%）
+                if (this.scrollState.maxScrollDepth >= 90) {
+                    gtag('event', 'article_completed', {
+                        article_id: articleInfo.article_id,
+                        article_category: articleInfo.article_category,
+                        total_time_seconds: totalTime,
+                        visible_time_seconds: visibleSeconds
+                    });
+                }
+
+                // T35.2: 阅读时长最终报告
+                gtag('event', 'reading_time_final', {
+                    article_id: articleInfo.article_id,
+                    total_time_seconds: totalTime,
+                    visible_time_seconds: visibleSeconds,
+                    max_scroll_depth: this.scrollState.maxScrollDepth,
+                    read_completion: this.scrollState.maxScrollDepth >= 90
+                });
+            }
+        }
+    };
+
+    // 初始化内容分析
+    contentAnalytics.initVisibilityListener();
+
+    // 页面滚动监听
+    window.addEventListener('scroll', function() {
+        contentAnalytics.trackScrollDepth();
+        contentAnalytics.trackReadingTime();
+    });
+
+    // 页面离开监听
+    window.addEventListener('beforeunload', function() {
+        contentAnalytics.trackPageLeave();
+    });
+    // 对于 SPA 或 History API 导航
+    window.addEventListener('pagehide', function() {
+        contentAnalytics.trackPageLeave();
+    });
+
+    // ==================== 分享事件追踪 ====================
     var shareButtons = document.querySelectorAll('.share-btn');
     shareButtons.forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -349,10 +569,64 @@ document.addEventListener('click', function(e) {
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'share', {
                     method: method,
-                    article_id: articleInfo.article_id
+                    content_type: 'article',
+                    article_id: articleInfo.article_id,
+                    article_category: articleInfo.article_category
+                });
+
+                // T35.3: 分享作为转化事件追踪
+                abTest.trackConversion('exp_title_style', 'share_action', {
+                    article_id: articleInfo.article_id,
+                    share_method: method
                 });
             }
         });
     });
+
+    // ==================== 收藏按钮点击追踪 ====================
+    var bookmarkBtn = document.querySelector('.post-bookmark');
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'bookmark_add', {
+                    article_id: articleInfo.article_id,
+                    article_category: articleInfo.article_category
+                });
+            }
+        });
+    }
+
+    // ==================== 相关文章点击追踪 ====================
+    var relatedLinks = document.querySelectorAll('.related-item a');
+    relatedLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'related_article_click', {
+                    from_article: articleInfo.article_id,
+                    to_article: link.href,
+                    click_position: 'related_section'
+                });
+            }
+        });
+    });
+
+    // ==================== 初始页面浏览事件 ====================
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'article_view', {
+            article_id: articleInfo.article_id,
+            article_slug: articleInfo.article_slug,
+            article_category: articleInfo.article_category,
+            article_tags: articleInfo.article_tags,
+            author: articleInfo.author,
+            publish_date: articleInfo.publish_date,
+            reading_time: parseInt(articleInfo.reading_time),
+            content_type: 'article'
+        });
+    }
+
+    // 暴露 abTest 对象到全局供外部实验使用
+    window.__abTest = abTest;
+    window.__funnel = funnel;
+    window.__contentAnalytics = contentAnalytics;
 })();
 </script>

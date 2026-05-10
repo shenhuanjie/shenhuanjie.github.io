@@ -247,7 +247,7 @@ i18n:
 
 # HTML 压缩配置
 html_minifier:
-  enable: false
+  enable: true
   exclude:
     - '*.min.css'
     - '*.min.js'
