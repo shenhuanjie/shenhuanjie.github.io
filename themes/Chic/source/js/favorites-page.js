@@ -102,10 +102,62 @@
                     var url = decodeURI(this.getAttribute('data-url'));
                     self.remove(url);
                     self.render();
+                    // 重新渲染统计
+                    if (window.Stats) window.Stats.render();
                 });
             });
         }
     };
+
+    // ==============================
+    // T40.3 收藏分析统计
+    // ==============================
+    var Stats = {
+        getAllFavorites: function() {
+            return getLocalStorage(STORAGE_KEY_FAVORITES);
+        },
+        getAllHistory: function() {
+            return getLocalStorage(STORAGE_KEY_HISTORY);
+        },
+        getWeekNewItems: function(items) {
+            var now = new Date();
+            var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return items.filter(function(item) {
+                return new Date(item.date) >= weekAgo;
+            }).length;
+        },
+        getAvgReadingPerDay: function() {
+            var history = this.getAllHistory();
+            if (history.length === 0) return 0;
+            // 按日期分组
+            var dates = {};
+            history.forEach(function(item) {
+                var dateKey = item.date.substring(0, 10);
+                dates[dateKey] = (dates[dateKey] || 0) + 1;
+            });
+            var dateCount = Object.keys(dates).length;
+            return dateCount > 0 ? Math.round(history.length / dateCount * 10) / 10 : 0;
+        },
+        render: function() {
+            var favorites = this.getAllFavorites();
+            var history = this.getAllHistory();
+            var weekNew = this.getWeekNewItems(favorites);
+            var avgReading = this.getAvgReadingPerDay();
+
+            var statsFavorites = document.getElementById('stats-favorites');
+            var statsHistory = document.getElementById('stats-history');
+            var statsWeek = document.getElementById('stats-week');
+            var statsAvg = document.getElementById('stats-avg');
+
+            if (statsFavorites) statsFavorites.textContent = favorites.length;
+            if (statsHistory) statsHistory.textContent = history.length;
+            if (statsWeek) statsWeek.textContent = weekNew;
+            if (statsAvg) statsAvg.textContent = avgReading + '篇/天';
+        }
+    };
+
+    // 将 Stats 暴露到全局
+    window.Stats = Stats;
 
     // ==============================
     // 阅读历史
@@ -150,5 +202,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         Favorites.render();
         History.render();
+        // T40.3 渲染统计信息
+        Stats.render();
     });
 })();

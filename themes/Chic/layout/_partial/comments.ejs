@@ -2,9 +2,22 @@
 <%# https://utteranc.es/ %>
 <% if(theme.utterances && theme.utterances.enable && is_post()){ %>
 <section class="post-comments" id="comments">
+    <%# 赞同/反对快速反应按钮 %>
+    <div class="article-reactions">
+        <button class="reaction-btn reaction-like" data-reaction="like" title="赞同">
+            <span class="reaction-icon">👍</span>
+            <span class="reaction-count" id="reaction-like-count">0</span>
+        </button>
+        <button class="reaction-btn reaction-dislike" data-reaction="dislike" title="反对">
+            <span class="reaction-icon">👎</span>
+            <span class="reaction-count" id="reaction-dislike-count">0</span>
+        </button>
+    </div>
     <h3 class="comments-title">
         <span class="comments-icon">💬</span>
         互动讨论
+        <%# 评论数量预览 %>
+        <span class="comments-count-preview" id="comments-count-preview"></span>
     </h3>
     <p class="comments-guide">
         欢迎留下你的见解、疑问或心得，精选评论有机会获得积分奖励哦！

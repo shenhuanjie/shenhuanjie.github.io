@@ -91,6 +91,17 @@
         });
     }
 
+    // T40.4 赞同/反对快速反应事件追踪
+    function trackReaction(reactionType) {
+        var pageInfo = getPageInfo();
+        trackEvent('article_reaction', {
+            event_category: 'engagement',
+            reaction_type: reactionType, // like, dislike
+            page_title: pageInfo.title,
+            page_url: pageInfo.url
+        });
+    }
+
     // ==============================
     // 敏感词检查功能 (v2.10)
     // ==============================
@@ -768,6 +779,50 @@
                 trackCommunityClick('zsxq');
             });
         }
+
+        // T40.1 赞同/反对快速反应按钮事件
+        var reactionButtons = document.querySelectorAll('.reaction-btn');
+        reactionButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var reactionType = btn.getAttribute('data-reaction');
+                trackReaction(reactionType);
+
+                // 更新本地状态（使用 localStorage 存储反应数据）
+                var pageInfo = getPageInfo();
+                var storageKey = 'blog_reactions_' + pageInfo.url;
+                try {
+                    var reactions = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                    // 如果之前点过这个按钮，取消它
+                    if (reactions[reactionType]) {
+                        reactions[reactionType] = false;
+                        btn.classList.remove('active');
+                    } else {
+                        // 取消另一种反应
+                        var otherType = reactionType === 'like' ? 'dislike' : 'like';
+                        reactions[otherType] = false;
+                        reactions[reactionType] = true;
+                        btn.classList.add('active');
+                        // 移除另一个按钮的 active 状态
+                        var otherBtn = document.querySelector('.reaction-' + otherType);
+                        if (otherBtn) otherBtn.classList.remove('active');
+                    }
+                    localStorage.setItem(storageKey, JSON.stringify(reactions));
+                } catch (e) {
+                    console.warn('LocalStorage reaction error:', e);
+                }
+            });
+
+            // 初始化按钮状态
+            var pageInfo = getPageInfo();
+            var storageKey = 'blog_reactions_' + pageInfo.url;
+            try {
+                var reactions = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                var reactionType = btn.getAttribute('data-reaction');
+                if (reactions[reactionType]) {
+                    btn.classList.add('active');
+                }
+            } catch (e) {}
+        });
 
         // 评论事件追踪（监听 utterances iframe）
         var utterancesObserver = new MutationObserver(function(mutations) {

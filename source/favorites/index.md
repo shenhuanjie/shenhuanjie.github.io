@@ -4,6 +4,30 @@ layout: favorites
 ---
 
 <div class="favorites-page">
+    <%# T40.3 收藏分析统计面板 %>
+    <div class="stats-panel" id="stats-panel">
+        <div class="stats-item">
+            <span class="stats-icon">📚</span>
+            <span class="stats-label">收藏文章</span>
+            <span class="stats-value" id="stats-favorites">0</span>
+        </div>
+        <div class="stats-item">
+            <span class="stats-icon">📖</span>
+            <span class="stats-label">阅读历史</span>
+            <span class="stats-value" id="stats-history">0</span>
+        </div>
+        <div class="stats-item">
+            <span class="stats-icon">🔥</span>
+            <span class="stats-label">本周新增</span>
+            <span class="stats-value" id="stats-week">0</span>
+        </div>
+        <div class="stats-item">
+            <span class="stats-icon">⏱️</span>
+            <span class="stats-label">平均阅读</span>
+            <span class="stats-value" id="stats-avg">0篇</span>
+        </div>
+    </div>
+
     <div class="favorites-container">
         <!-- 收藏文章 -->
         <section class="favorites-section" id="favorites-section">

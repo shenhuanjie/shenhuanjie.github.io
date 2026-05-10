@@ -133,6 +133,10 @@ var readingTime = estimateReadingTime(page.content);
                 <a href="https://t.me/share/url?url=<%= encodeURIComponent(page.permalink) %>&text=<%= encodeURIComponent(page.title) %>" target="_blank" rel="noopener noreferrer" class="share-btn telegram" title="Telegram 分享">Telegram</a>
                 <%# 二维码分享 %>
                 <a href="javascript:;" class="share-btn qrcode" onclick="showQRCode()" title="生成二维码">二维码</a>
+                <%# T40.2 分享卡片按钮 %>
+                <a href="javascript:;" class="share-btn share-card" onclick="showShareCard()" title="生成分享卡片">分享卡片</a>
+                <%# 一键复制链接按钮 %>
+                <a href="javascript:;" class="share-btn copy-link" onclick="copyArticleLink()" title="复制链接">复制链接</a>
             </div>
         </section>
         <%# 微信分享弹窗 %>
@@ -155,6 +159,19 @@ var readingTime = estimateReadingTime(page.content);
                 <h3>扫描二维码分享</h3>
                 <div id="qrcode-container"></div>
                 <p class="qrcode-tip">使用微信扫码</p>
+            </div>
+        </div>
+        <%# T40.2 分享卡片弹窗 %>
+        <div id="share-card-modal" class="share-modal">
+            <div class="share-modal-content share-card-modal-content">
+                <span class="share-modal-close" onclick="closeShareCard()">&times;</span>
+                <h3>生成分享卡片</h3>
+                <div id="share-card-preview"></div>
+                <div class="share-card-actions">
+                    <button onclick="downloadShareCard()">下载卡片</button>
+                    <button onclick="copyShareCardImage()">复制图片</button>
+                </div>
+                <p class="share-card-tip">长按或右键保存图片</p>
             </div>
         </div>
         <%# 相关文章推荐模块 %>
@@ -256,6 +273,23 @@ function copyShareLink() {
     document.execCommand('copy');
     alert('链接已复制！');
 }
+// T40.2 一键复制文章链接
+function copyArticleLink() {
+    var url = '<%= page.permalink %>';
+    var title = '<%= page.title %>';
+    navigator.clipboard.writeText(url).then(function() {
+        alert('链接已复制到剪贴板！');
+    }).catch(function() {
+        // 降级处理
+        var textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('链接已复制到剪贴板！');
+    });
+}
 function showQRCode() {
     var modal = document.getElementById('qrcode-modal');
     var container = document.getElementById('qrcode-container');
@@ -277,12 +311,138 @@ function showQRCode() {
 function closeQRCode() {
     document.getElementById('qrcode-modal').style.display = 'none';
 }
+
+// T40.2 生成分享卡片
+var shareCardCanvas = null;
+function showShareCard() {
+    var modal = document.getElementById('share-card-modal');
+    var preview = document.getElementById('share-card-preview');
+    modal.style.display = 'flex';
+    preview.innerHTML = '<div class="share-card-loading">正在生成...</div>';
+
+    // 使用 setTimeout 确保弹窗显示后再生成
+    setTimeout(function() {
+        generateShareCard();
+    }, 100);
+}
+function closeShareCard() {
+    document.getElementById('share-card-modal').style.display = 'none';
+}
+function generateShareCard() {
+    var preview = document.getElementById('share-card-preview');
+    var title = '<%= page.title %>';
+    var url = '<%= page.permalink %>';
+    var description = '<%= page.description || "" %>';
+    var coverImage = '<%= page.cover || "" %>';
+
+    // 创建 Canvas
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var cardWidth = 600;
+    var cardHeight = 400;
+    canvas.width = cardWidth;
+    canvas.height = cardHeight;
+
+    // 绘制背景渐变
+    var gradient = ctx.createLinearGradient(0, 0, cardWidth, cardHeight);
+    gradient.addColorStop(0, '#2d96bd');
+    gradient.addColorStop(1, '#ef3982');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, cardWidth, cardHeight);
+
+    // 添加装饰圆形
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.beginPath();
+    ctx.arc(cardWidth - 100, 100, 200, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(100, cardHeight - 50, 150, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 绘制标题
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    var maxTitleWidth = cardWidth - 80;
+    var titleLines = wrapText(ctx, title, maxTitleWidth, 40);
+    var titleY = 80;
+    titleLines.forEach(function(line) {
+        ctx.fillText(line, 40, titleY);
+        titleY += 44;
+    });
+
+    // 绘制描述
+    if (description) {
+        ctx.font = '18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        var descLines = wrapText(ctx, description, maxTitleWidth, 26);
+        var descY = titleY + 20;
+        descLines.slice(0, 3).forEach(function(line) {
+            ctx.fillText(line, 40, descY);
+            descY += 28;
+        });
+    }
+
+    // 绘制 URL
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.fillText(url, 40, cardHeight - 30);
+
+    // 保存 canvas 引用
+    shareCardCanvas = canvas;
+
+    // 显示预览
+    preview.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    img.style.maxWidth = '100%';
+    img.style.borderRadius = '12px';
+    img.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+    preview.appendChild(img);
+}
+function wrapText(ctx, text, maxWidth, lineHeight) {
+    var words = text.split('');
+    var lines = [];
+    var currentLine = '';
+    for (var i = 0; i < words.length; i++) {
+        var testLine = currentLine + words[i];
+        var metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && i > 0) {
+            lines.push(currentLine);
+            currentLine = words[i];
+        } else {
+            currentLine = testLine;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
+function downloadShareCard() {
+    if (!shareCardCanvas) return;
+    var link = document.createElement('a');
+    link.download = 'share-card-<%= page.slug %>.png';
+    link.href = shareCardCanvas.toDataURL('image/png');
+    link.click();
+}
+function copyShareCardImage() {
+    if (!shareCardCanvas) return;
+    shareCardCanvas.toBlob(function(blob) {
+        var item = new ClipboardItem({ 'image/png': blob });
+        navigator.clipboard.write([item]).then(function() {
+            alert('图片已复制到剪贴板！');
+        }).catch(function() {
+            alert('复制失败，请尝试右键保存图片');
+        });
+    });
+}
+
 // 点击模态框外部关闭
 document.addEventListener('click', function(e) {
     var wechatModal = document.getElementById('wechat-share-modal');
     var qrcodeModal = document.getElementById('qrcode-modal');
+    var shareCardModal = document.getElementById('share-card-modal');
     if (e.target === wechatModal) closeWechatShare();
     if (e.target === qrcodeModal) closeQRCode();
+    if (e.target === shareCardModal) closeShareCard();
 });
 
 // ============================================================

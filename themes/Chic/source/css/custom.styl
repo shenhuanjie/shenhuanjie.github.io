@@ -250,6 +250,90 @@
   .dark-theme &
     border-top-color #333
 
+  // T40.1 赞同/反对快速反应按钮
+  .article-reactions
+    display flex
+    align-items center
+    gap 12px
+    margin-bottom 1rem
+    padding 12px 16px
+    background #f8f9fa
+    border-radius 8px
+    .dark-theme &
+      background #2a2a2a
+
+  .reaction-btn
+    display inline-flex
+    align-items center
+    gap 6px
+    padding 8px 16px
+    font-size 14px
+    background #fff
+    border 1px solid #ddd
+    border-radius 50px
+    cursor pointer
+    transition all 0.2s ease
+    user-select none
+    .dark-theme &
+      background $dark-background-color
+      border-color #444
+      color #eee
+
+    &:hover
+      border-color #2d96bd
+      background rgba(45, 150, 189, 0.05)
+      .dark-theme &
+        border-color #61afef
+        background rgba(97, 175, 239, 0.1)
+
+    &.active
+      border-color #2d96bd
+      background rgba(45, 150, 189, 0.1)
+      .dark-theme &
+        border-color #61afef
+        background rgba(97, 175, 239, 0.15)
+
+    .reaction-icon
+      font-size 18px
+
+    .reaction-count
+      font-weight 600
+      color #666
+      .dark-theme &
+        color #aaa
+
+    &.active .reaction-count
+      color #2d96bd
+      .dark-theme &
+        color #61afef
+
+    // 赞同按钮
+    &.reaction-like.active
+      border-color #07c160
+      background rgba(7, 193, 96, 0.1)
+      .reaction-count
+        color #07c160
+
+    // 反对按钮
+    &.reaction-dislike.active
+      border-color #ff6b6b
+      background rgba(255, 107, 107, 0.1)
+      .reaction-count
+        color #ff6b6b
+
+  .comments-count-preview
+    display inline-block
+    margin-left 12px
+    padding 2px 10px
+    font-size 12px
+    font-weight 500
+    color #666
+    background #f0f0f0
+    border-radius 12px
+    .dark-theme &
+      color #aaa
+      background #333
+
   .comments-title
     font-size 18px
     font-weight 600
@@ -529,6 +613,50 @@
   max-width 800px
   margin 0 auto
   padding 2rem 1rem
+
+// T40.3 收藏分析统计面板
+.stats-panel
+  display grid
+  grid-template-columns repeat(4, 1fr)
+  gap 16px
+  margin-bottom 24px
+  padding 20px
+  background #fff
+  border-radius 12px
+  box-shadow 0 2px 8px rgba(0, 0, 0, 0.08)
+  .dark-theme &
+    background $dark-background-color
+    box-shadow 0 2px 8px rgba(0, 0, 0, 0.3)
+
+  @media screen and (max-width: 600px)
+    grid-template-columns repeat(2, 1fr)
+
+  @media screen and (max-width: 400px)
+    grid-template-columns 1fr
+
+.stats-item
+  display flex
+  flex-direction column
+  align-items center
+  gap 8px
+  padding 12px
+  text-align center
+
+.stats-icon
+  font-size 28px
+
+.stats-label
+  font-size 13px
+  color #666
+  .dark-theme &
+    color #aaa
+
+.stats-value
+  font-size 24px
+  font-weight 700
+  color #2d96bd
+  .dark-theme &
+    color #61afef
 
 .favorites-container
   display flex
@@ -840,6 +968,86 @@
   color #fff
   .dark-theme &
     background-color #e68900
+
+// T40.2 分享卡片按钮
+.share-card
+  background-color #667eea
+  color #fff
+  .dark-theme &
+    background-color #5a67d8
+
+// T40.2 一键复制链接按钮
+.copy-link
+  background-color #48bb78
+  color #fff
+  .dark-theme &
+    background-color #38a169
+
+// T40.2 分享卡片弹窗样式
+.share-card-modal-content
+  max-width 680px
+  padding 24px
+
+  h3
+    margin 0 0 16px 0
+    font-size 18px
+    color #333
+    text-align center
+    .dark-theme &
+      color #eee
+
+#share-card-preview
+  margin 0 auto 16px
+  text-align center
+
+  img
+    max-width 100%
+    border-radius 12px
+    box-shadow 0 4px 20px rgba(0, 0, 0, 0.2)
+
+  .share-card-loading
+    padding 40px
+    text-align center
+    color #999
+    font-size 14px
+
+.share-card-actions
+  display flex
+  gap 12px
+  justify-content center
+  margin-bottom 12px
+
+  button
+    padding 10px 24px
+    font-size 14px
+    border none
+    border-radius 6px
+    cursor pointer
+    transition all 0.2s ease
+
+    &:first-child
+      background #2d96bd
+      color #fff
+      &:hover
+        background #2582a1
+        .dark-theme &
+          background #61afef
+
+    &:last-child
+      background #667eea
+      color #fff
+      &:hover
+        background #5a67d8
+        .dark-theme &
+          background #48bb78
+
+.share-card-tip
+  margin 0
+  font-size 12px
+  color #999
+  text-align center
+  .dark-theme &
+    color #777
 
 // Mobile responsive
 @media screen and (max-width: 479px)

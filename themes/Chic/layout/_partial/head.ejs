@@ -311,11 +311,11 @@ gtag('config', '<%= theme.google_analytics.tracking_id %>', {
 <link rel="preload" href="<%- url_for('/fonts/lanting/lanting.woff2') %>" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<%- url_for('/fonts/iconfont/iconfont.woff2') %>" as="font" type="font/woff2" crossorigin>
 
-<%# T34.1 LCP 优化：预加载关键图片（og:image / 文章封面图）%>
+<%# T38.1 LCP 优化：预加载关键图片（og:image / 文章封面图）+ fetchpriority 高优先级 %>
 <% if(is_post() && page.cover){ %>
-<link rel="preload" as="image" href="<%= page.cover %>">
+<link rel="preload" as="image" href="<%= page.cover %>" fetchpriority="high">
 <% } else if(config.og_image){ %>
-<link rel="preload" as="image" href="<%= config.og_image %>">
+<link rel="preload" as="image" href="<%= config.og_image %>" fetchpriority="high">
 <% } %>
 
 <%# css list %>
