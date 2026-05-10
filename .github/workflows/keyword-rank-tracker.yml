@@ -1,0 +1,91 @@
+name: Keyword Rank Tracker
+
+on:
+  schedule:
+    # 每周一早上 9 点生成周报 (北京时间 9:00 = UTC 1:00)
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'weekly-report'
+        type: choice
+        options:
+          - weekly-report
+          - track-rankings
+          - list-keywords
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  keyword-tracker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Track Keyword Rankings
+        if: github.event.inputs.action == 'track-rankings' || github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'track-rankings'
+        run: node scripts/keyword-rank-tracker.js --track
+        env:
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          GSC_ACCESS_TOKEN: ${{ secrets.GSC_ACCESS_TOKEN }}
+
+      - name: List Keywords
+        if: github.event.inputs.action == 'list-keywords' || github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'list-keywords'
+        run: node scripts/keyword-rank-tracker.js --list
+
+      - name: Generate Weekly Report
+        if: github.event.inputs.action == 'weekly-report' || github.event_name == 'schedule'
+        run: |
+          echo "==========================================="
+          echo "关键词排名周报告生成"
+          echo "==========================================="
+          node scripts/keyword-rank-tracker.js --report
+        env:
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          GSC_ACCESS_TOKEN: ${{ secrets.GSC_ACCESS_TOKEN }}
+
+      - name: Commit Report Data
+        run: |
+          if [ -n "$(git status --porcelain reports/keyword-tracker/)" ]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add reports/keyword-tracker/
+            git commit -m "chore: 更新关键词排名数据 $(date +'%Y-%m-%d')"
+            git push || echo "Push failed or no changes to push"
+          else
+            echo "没有新数据需要提交"
+          fi
+
+  notify:
+    needs: keyword-tracker
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Send Notification
+        if: env.FEISHU_WEBHOOK_URL != ''
+        run: |
+          npm run notify -- --message "关键词排名周报告已生成" || echo "通知发送失败"
+        env:
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
