@@ -1,3 +1,4 @@
+import { unified } from "@astrojs/markdown-remark";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
@@ -29,6 +30,8 @@ export default defineConfig({
 	site: "https://shenhuanjie.github.io/",
 	base: "/",
 	trailingSlash: "always",
+	// keep Astro 6 whitespace handling between inline elements
+	compressHTML: true,
 	integrations: [
 		tailwind({
 			nesting: true,
@@ -103,6 +106,7 @@ export default defineConfig({
 		sitemap(),
 	],
 	markdown: {
+		processor: unified({
 		remarkPlugins: [
 			remarkMath,
 			remarkReadingTime,
@@ -152,6 +156,7 @@ export default defineConfig({
 				},
 			],
 		],
+		}),
 	},
 	vite: {
 		build: {
