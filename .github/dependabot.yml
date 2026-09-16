@@ -21,6 +21,11 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+      # 0.5.20 breaks cross-file @apply of custom classes (e.g. btn-regular-dark
+      # in src/styles/markdown.css) with tailwindcss 3.4.19; source is identical
+      # to 0.5.19, root cause unclear. Revisit on the next upstream release.
+      - dependency-name: "@tailwindcss/typography"
+        versions: ["0.5.20"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
